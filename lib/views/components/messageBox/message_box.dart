@@ -44,18 +44,18 @@ class _MessageBoxState extends State<MessageBox> {
                   onTap: (){
                     Navigator.pop(context);
                   },
-                  child: const Icon(Icons.cancel_outlined,size: 22,color: bgColorDark,),
+                  child: const Icon(Icons.cancel_outlined,size: 22,color: bgColor,),
                 )
               ],
             ):gapHC(5),
             Container(
               padding: const EdgeInsets.all(10),
               decoration: boxDecoration(
-                  widget.mode == "S"? Colors.greenAccent:widget.mode == "E"? Colors.redAccent: widget.mode == "W"? Colors.amber : widget.mode == "I"? bgColorDark : widget.mode == "C"? bgColorDark :subColor, 50),
+                  widget.mode == "S"? Colors.greenAccent:widget.mode == "E"? Colors.redAccent: widget.mode == "W"? Colors.amber : widget.mode == "I"? bgColor : widget.mode == "C"? bgColor :subColor, 50),
               child:  Icon(widget.mode == "S"? Icons.done_all_rounded:widget.mode == "E"? Icons.error: widget.mode == "W"? Icons.warning_amber_outlined : widget.mode == "I"? Icons.info_outline : widget.mode == "C"? widget.icon :Icons.message,color:widget.mode == "W"?  Colors.black: Colors.white,),
             ),
             gapHC(10),
-            tcn(widget.msg.toString(), bgColorDark, 20)
+            tcn(widget.msg.toString(), bgColor, 20)
           ],
         )
 

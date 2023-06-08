@@ -370,7 +370,7 @@ Widget menuCard(icon,fnCallBack,mode,pagemode){
             width: 50,
             decoration: boxDecoration(Colors.white, 5),
             child: Center(
-                child: Icon(icon,size: 18,color: pagemode? bgColorDark :  greyLight,),
+                child: Icon(icon,size: 18,color: pagemode? bgColor :  greyLight,),
             ),
         ),);
 }
@@ -381,7 +381,7 @@ Widget formInput(controller,hint,width,height,errormsg,validate){
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            tcn(hint, bgColorDark, 12),
+            tcn(hint, bgColor, 12),
             gapHC(2),
             Container(
                 height:height?? 45,
@@ -420,7 +420,7 @@ Widget closeButton(){
     return Container(
         height: 35,
         width: 100,
-        decoration: boxDecoration(bgColorDark, 30),
+        decoration: boxDecoration(bgColor, 30),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -452,7 +452,7 @@ Widget holdButton(){
     return Container(
         height: 35,
         width: 100,
-        decoration: boxDecoration(bgColorDark, 30),
+        decoration: boxDecoration(bgColor, 30),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -538,7 +538,7 @@ Widget imageCard(img,context){
                     Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: const [
-                            Icon(Icons.cancel_outlined,color: bgColorDark,size: 15,)
+                            Icon(Icons.cancel_outlined,color: bgColor,size: 15,)
                         ],
                     ),
                     Container(
@@ -617,7 +617,7 @@ Widget radioSet(value,lstrTypeRadio,fnChangeType,title){
                     onTap: (){
                         fnChangeType(value);
                     },
-                    child: tcn(title, bgColorDark, 13),
+                    child: tcn(title, bgColor, 13),
                 )
             ],
         );

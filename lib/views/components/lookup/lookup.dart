@@ -145,7 +145,7 @@ class _LookupState extends State<Lookup> {
                         fnLookupValidate(widget.lstrTable, filter);
                         Navigator.pop(context);
                       },
-                      child: customBButtonFlat('Done', color2, Colors.white, Icons.done_all_rounded),
+                      child: customBButtonFlat('Done', subColor, Colors.white, Icons.done_all_rounded),
                     )
                   ],
                 ),
@@ -242,7 +242,7 @@ class _LookupState extends State<Lookup> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            tcn('Lookup'   , color2, 15)
+                            tcn('Lookup'   , subColor, 15)
                           ],
                         ),
                       )
@@ -324,25 +324,25 @@ class _LookupState extends State<Lookup> {
             [
               Row(
                 children: [
-                  Icon(Icons.account_circle_outlined,color: color2,size: 15,),
+                  Icon(Icons.account_circle_outlined,color: subColor,size: 15,),
                   gapWC(5),
-                  Expanded(child: tc("${(e["SLCODE"]??"").toString()} | ${(e["SLDESCP"]??"").toString()}", color2, 12),)
+                  Expanded(child: tc("${(e["SLCODE"]??"").toString()} | ${(e["SLDESCP"]??"").toString()}", subColor, 12),)
                 ],
               ),
               Divider(),
               Row(
                 children: [
-                  Icon(Icons.call,color: color2,size: 12,),
+                  Icon(Icons.call,color: subColor,size: 12,),
                   gapWC(5),
-                  tc((e["MOBILE"]??"").toString(), color2, 10),
+                  tc((e["MOBILE"]??"").toString(), subColor, 10),
                 ],
               ),
               gapHC(5),
               Row(
                 children: [
-                  Icon(Icons.alternate_email_outlined,color: color2,size: 12,),
+                  Icon(Icons.alternate_email_outlined,color: subColor,size: 12,),
                   gapWC(5),
-                  tc((e["EMAIL"]??"").toString(), color2, 10),
+                  tc((e["EMAIL"]??"").toString(), subColor, 10),
                 ],
               ),
             ]:lstrLayoutName == "CPN"?
@@ -419,7 +419,7 @@ class _LookupState extends State<Lookup> {
   fnColumnList(datalist){
     final children = <Widget>[];
     for ( var i in widget.lstrColumnList){
-      children.add( i['Column'] != null && i['Column'] != "" ? datalist[i['Column']] != null ?tcn('${i['Display']} :  ${datalist[i['Column']]}',bgColorDark,12):tcn(i['Display'].toString() +' :  ',bgColorDark,12) :Text(''));
+      children.add( i['Column'] != null && i['Column'] != "" ? datalist[i['Column']] != null ?tcn('${i['Display']} :  ${datalist[i['Column']]}',bgColor,12):tcn(i['Display'].toString() +' :  ',bgColor,12) :Text(''));
     }
 
     return children;

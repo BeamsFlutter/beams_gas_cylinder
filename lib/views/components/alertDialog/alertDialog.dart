@@ -272,7 +272,7 @@ class PageDialog{
                                       height: 40,
                                       width: 100,
                                       margin: const EdgeInsets.only(right: 5),
-                                      decoration: boxBaseDecoration(color2, 30),
+                                      decoration: boxBaseDecoration(subColor, 30),
                                       child: Center(
                                         child: tc('Yes', Colors.white, 15),
                                       ),
@@ -548,9 +548,9 @@ class PageDialog{
                                     height: 35,
                                     width: 80,
                                     margin: const EdgeInsets.only(right: 5),
-                                    decoration: boxOutlineCustom1(Colors.white, 30, color3, 1.0),
+                                    decoration: boxOutlineCustom1(Colors.white, 30, subColor, 1.0),
                                     child: Center(
-                                      child: tcn('No', color3, 15),
+                                      child: tcn('No', subColor, 15),
                                     ),
                                   ),
                                 ),
@@ -562,7 +562,7 @@ class PageDialog{
                                     height: 35,
                                     width: 80,
                                     margin: const EdgeInsets.only(right: 5),
-                                    decoration: boxDecoration(color2, 30),
+                                    decoration: boxDecoration(subColor, 30),
                                     child: Center(
                                       child: tc('Yes', Colors.white, 15),
                                     ),
@@ -702,9 +702,9 @@ class PageDialog{
                                       height: 35,
                                       width: 80,
                                       margin: const EdgeInsets.only(right: 5),
-                                      decoration: boxOutlineCustom1(Colors.white, 30, color3, 1.0),
+                                      decoration: boxOutlineCustom1(Colors.white, 30, subColor, 1.0),
                                       child: Center(
-                                        child: tcn('No', color3, 15),
+                                        child: tcn('No', subColor, 15),
                                       ),
                                     ),
                                   ),
@@ -719,7 +719,7 @@ class PageDialog{
                                       height: 35,
                                       width: 80,
                                       margin: const EdgeInsets.only(right: 5),
-                                      decoration: boxDecoration(color2, 30),
+                                      decoration: boxDecoration(subColor, 30),
                                       child: Center(
                                         child: tc('Yes', Colors.white, 15),
                                       ),
@@ -816,18 +816,18 @@ class PageDialog{
                         children: [
                           Image.asset("assets/gifs/done.gif",width: 120,),
                           gapHC(5),
-                          tc("#$code", color2, 15),
-                          tcn('New Task Created !!!', color2, 20),
+                          tc("#$code", subColor, 15),
+                          tcn('New Task Created !!!', subColor, 20),
                           lineC(0.5, greyLight),
                           gapHC(5),
-                          tcn('Thank you for reaching out to us and raising a support ticket.  We appreciate your patience and understanding as we work to resolve your issue.', color3, 10)
+                          tcn('Thank you for reaching out to us and raising a support ticket.  We appreciate your patience and understanding as we work to resolve your issue.', subColor, 10)
 
                         ],
                       ),
                     )),
                     Container(
                       padding: const EdgeInsets.all(5),
-                      decoration: boxBaseDecorationC(color2, 0,0,20,20),
+                      decoration: boxBaseDecorationC(subColor, 0,0,20,20),
                       child: Column(
                         children: [
                           Row(
@@ -873,18 +873,18 @@ class PageDialog{
                         children: [
                           Image.asset("assets/gifs/done.gif",width: 120,),
                           gapHC(5),
-                          tc("#$code", color2, 15),
-                          tcn('Task Updated !!!', color2, 20),
+                          tc("#$code", subColor, 15),
+                          tcn('Task Updated !!!', subColor, 20),
                           lineC(0.5, greyLight),
                           gapHC(5),
-                          tcn('Thank you for reaching out to us and raising a support ticket.  We appreciate your patience and understanding as we work to resolve your issue.', color3, 10)
+                          tcn('Thank you for reaching out to us and raising a support ticket.  We appreciate your patience and understanding as we work to resolve your issue.', subColor, 10)
 
                         ],
                       ),
                     )),
                     Container(
                       padding: const EdgeInsets.all(5),
-                      decoration: boxBaseDecorationC(color2, 0,0,20,20),
+                      decoration: boxBaseDecorationC(subColor, 0,0,20,20),
                       child: Column(
                         children: [
                           Row(

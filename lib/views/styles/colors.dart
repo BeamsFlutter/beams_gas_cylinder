@@ -2,23 +2,13 @@ import 'package:flutter/material.dart';
 
 //=====================================================APP COLORS
 
-const Color primaryColor = Color(0xFF063261);
-const Color subColor = Colors.redAccent;
-const Color blackYellow = Color(0xFFFBBC05);
-const Color blackBlue = Color(0xFF001540);
-const Color buttonColor = Color(0xFF001540);
+const Color primaryColor = Color(0xFFF55A00);
+const Color subColor = Color(0xFF1A6887); ////border Color
 const Color txtColor = Color(0xFF000000);
-const Color txtSubColor = Color(0xFF4D4D4D);
 const Color black = Color(0xFF000000);
 const Color white = Color(0xFFFFFFFF);
-// const Color bgColor = Color(0xFF586BFF);
-// const Color bgColorDark = Color(0xFF3546C9);
-const Color bgColor = Color(0xFF063261);
-const Color bgColorDark = Color(0xFF4B60D0);
-
-const Color color1 = Color(0xFF049DDB);
-const Color color2 = Color(0xFF224AFF);
-const Color color3 = Color(0xFF679FC9);
+const Color buttonGreen = Color(0xFF0AB448);
+const Color bgColor = Color(0xFFF2F7F9);
 const Color bGreyLight = Color(0xFFF8F9FA);
 const Color bGreyRedLight = Color(0xFFEFA2A2);
 
@@ -86,15 +76,14 @@ class GradientColors {
       0xFFFFAB00)];
   static List<Color> blueGradientOp = [const Color(0xFF4444A2).withOpacity(0.9), const Color(
       0xFF191965).withOpacity(0.7)];
-  static List<Color> bgGradient = [bgColorDark.withOpacity(0.9), bgColorDark.withOpacity(0.7)];
+
   static List<Color> whiteOpacity = [const Color(0xFFFFFFFF).withOpacity(0.4), const Color(
       0xFFFAFAFA).withOpacity(0.4)];
   static List<Color> whiteOpacity2 = [const Color(0xFFFFFFFF).withOpacity(0.6), const Color(
       0xFFFAFAFA).withOpacity(0.6)];
   static List<Color> whiteOpacity0 = [const Color(0xFFFFFFFF).withOpacity(0.1), const Color(
       0xFFFAFAFA).withOpacity(0.1)];
-  static List<Color> blueGradient2 = [color1,  color2];
-  static List<Color> waterBg = [ color2.withOpacity(0.9), color1.withOpacity(0.4)];
+
 }
 class GradientTemplate {
   static List<GradientColors> gradientTemplate = [
@@ -119,12 +108,10 @@ class GradientTemplate {
     GradientColors(GradientColors.redGradient4),
     GradientColors(GradientColors.yellowGradient4),
     GradientColors(GradientColors.blueGradientOp),
-    GradientColors(GradientColors.bgGradient),
     GradientColors(GradientColors.whiteOpacity),
     GradientColors(GradientColors.whiteOpacity2),
     GradientColors(GradientColors.whiteOpacity0),
-    GradientColors(GradientColors.blueGradient2),
-    GradientColors(GradientColors.waterBg),
+
 
   ];
 }

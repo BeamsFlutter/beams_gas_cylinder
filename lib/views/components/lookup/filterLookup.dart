@@ -156,7 +156,7 @@ class _FilterLookupState extends State<FilterLookup> {
                 },
                 child: Container(
                   margin: const EdgeInsets.only(top: 5),
-                  decoration: boxBaseDecoration(color2, 30),
+                  decoration: boxBaseDecoration(subColor, 30),
                   padding: const EdgeInsets.all(15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -201,7 +201,7 @@ class _FilterLookupState extends State<FilterLookup> {
                Container(
                  height: 15,
                  width: 15,
-                 decoration:flRtnList.contains(e)? boxDecoration(color2, 5): boxOutlineCustom1(Colors.white, 5, color2, 1.0),
+                 decoration:flRtnList.contains(e)? boxDecoration(subColor, 5): boxOutlineCustom1(Colors.white, 5, subColor, 1.0),
                  child: flRtnList.contains(e)?const Icon(Icons.done,color: Colors.white,size: 10,):gapHC(0),
               ),
               gapWC(5),
@@ -239,7 +239,7 @@ class _FilterLookupState extends State<FilterLookup> {
   fnColumnList(datalist){
     final children = <Widget>[];
     for ( var i in widget.lstrColumnList){
-      children.add( i['Column'] != null && i['Column'] != "" ? datalist[i['Column']] != null ?tcn(i['Display'].toString() +' :  ' + datalist[i['Column']].toString(),bgColorDark,12):tcn(i['Display'].toString() +' :  ',bgColorDark,12) :Text(''));
+      children.add( i['Column'] != null && i['Column'] != "" ? datalist[i['Column']] != null ?tcn(i['Display'].toString() +' :  ' + datalist[i['Column']].toString(),bgColor,12):tcn(i['Display'].toString() +' :  ',bgColor,12) :Text(''));
     }
     return children;
   }
