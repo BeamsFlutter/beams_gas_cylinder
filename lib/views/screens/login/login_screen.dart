@@ -48,8 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  tc('Beams', Colors.white, 45),
-                  tc('Cylinder',Colors.white, 60),
+                  tc1('Beams', Colors.white, 45),
+                  tc1('CYLINDER',Colors.white, 50),
                   gapHC(40)
 
                 ],
@@ -77,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           gapHC(40),
                           tc("User Login", txtColor, 25),
+
                           gapHC(30),
                           tcn(" Username", txtColor, 14),
                           gapHC(1),
@@ -87,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIconColor: Colors.grey.shade600,
                             txtSize: 12,
                           ),
-                          gapHC(12),
+                          gapHC(15),
                           tcn(" Password", txtColor, 14),
                           gapHC(1),
                           Obx(() => CommonTextField(
@@ -109,8 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             dprint("Login...........");
                           }),
                           gapHC(50),
-                          Divider(thickness: 1,color:Colors.grey.shade500,endIndent: 70,indent: 70,),
-                          gapHC(30),
+                          Divider(thickness: 1,color:Colors.grey.shade400,endIndent: 70,indent: 70,),
+                          gapHC(5),
                           Center(child: tcn("Registration Details? Click Here", Colors.grey.shade700, 13))
 
                         ],
@@ -122,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         tcn('Powered By', txtColor, 10),
-                        tc('BEAMS', txtColor, 8),
+                        tc('BEAMS', txtColor, 13),
 
                       ],
                     ),
