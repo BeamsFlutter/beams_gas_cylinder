@@ -21,9 +21,7 @@ class TextFieldContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Container(
       height: labelYn == 'Y'? 80: 55,
       margin: const EdgeInsets.only(bottom: 0),

@@ -24,18 +24,21 @@ class Global {
     _wstrDeviceIP ='';
     _wstrCompany = "";
     _wstrYearcode = "";
+    _wstrMainCompany = "";
 
 
   }
   var _wstrToken  = '';
   var _wstrIp = '';
   var _wstrBaseUrl = "";
-  var  _wstrVersionName = '';
-  var  _wstrDeviceName ='';
-  var  _wstrDeivceId ='';
-  var  _wstrDeviceIP ='';
-  var  _wstrCompany = "";
-  var  _wstrYearcode = "";
+  var _wstrVersionName = '';
+  var _wstrDeviceName ='';
+  var _wstrDeivceId ='';
+  var _wstrDeviceIP ='';
+  var _wstrCompany = "";
+  var _wstrYearcode = "";
+  var _wstrAppID = "";
+  var  _wstrMainCompany = "";
 
 
   get wstrBaseUrl => _wstrBaseUrl;
@@ -73,9 +76,19 @@ class Global {
     _wstrDeviceIP = value;
   }
 
+  get wstrAppID => _wstrAppID;
+  set wstrAppID(value) {
+    _wstrAppID = value;
+  }
+
   get wstrCompany => _wstrCompany;
   set wstrCompany(value) {
     _wstrCompany = value;
+  }
+
+  get wstrMainCompany => _wstrMainCompany;
+  set wstrMainCompany(value) {
+    _wstrMainCompany = value;
   }
 
   get wstrYearcode => _wstrYearcode;

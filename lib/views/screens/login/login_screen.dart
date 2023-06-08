@@ -1,5 +1,3 @@
-import 'package:beams_gas_cylinder/views/components/common/common.dart';
-import 'package:beams_gas_cylinder/views/styles/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,10 +10,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: tc("Login", txtColor, 12),
-      ),
-    );
+    return const Placeholder();
   }
 }
