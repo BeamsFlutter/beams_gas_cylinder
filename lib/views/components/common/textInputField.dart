@@ -49,13 +49,13 @@ class TextInputField extends StatelessWidget {
           fontSize: txtSize,
         ),
         decoration: InputDecoration(
-          /*    suffixIcon: InkWell(
+            suffixIcon: InkWell(
             onTap: suffixIconOnclick??fn(),
             child: Icon(
               suffixIcon,
               color: Colors.black ,
             ),
-          ),*/
+          ),
 
           hintText: hintText,
           border: InputBorder.none,

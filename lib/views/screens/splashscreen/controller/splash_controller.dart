@@ -14,7 +14,8 @@ import '../../../../global/globalValues.dart';
 import '../../../../servieces/api_controller.dart';
 import '../../../components/alertDialog/alertDialog.dart';
 import '../../../components/common/common.dart';
-import '../../login.dart';
+import '../../login/login_screen.dart';
+
 
 class SplashController extends GetxController{
 

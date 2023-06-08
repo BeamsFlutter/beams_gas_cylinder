@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../components/common/common.dart';
 import '../../components/common/commonButton.dart';
+import '../login/login_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -19,6 +20,9 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
   final SplashController splashController = Get.put(SplashController());
+
+
+
 
   @override
   void initState() {
@@ -52,6 +56,8 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             CommonButton(btnName: "Start", btnColor: white,iconYN: false,txtColor: Colors.grey.shade700,
                 onTap: (){
+                  Get.to(LoginScreen());
+              dprint("strt>>>>>>>>>>");
             }),
             gapHC(30),
             Center(
@@ -67,6 +73,10 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
 
             gapHC(15)
+
+
+
+
 
           ],
         ),

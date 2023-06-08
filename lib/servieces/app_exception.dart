@@ -2,7 +2,8 @@
 import 'package:get/get.dart';
 import '../views/components/common/common.dart';
 import '../views/screens/ErrorScreen.dart';
-import '../views/screens/login.dart';
+
+import '../views/screens/login/login_screen.dart';
 
 class AppException implements Exception {
   final String? message;
@@ -30,6 +31,6 @@ class ApiNotRespondingException extends AppException {
 class UnAuthorizedException extends AppException {
   UnAuthorizedException([String? message, String? url]) {
     dprint(message);
-    Get.to(()=>  const LoginScreen());
+    Get.to(()=>   LoginScreen());
   }
 }
