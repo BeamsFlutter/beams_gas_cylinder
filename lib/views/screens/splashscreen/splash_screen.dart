@@ -20,9 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   final SplashController splashController = Get.put(SplashController());
 
-
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -35,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Container(
         color: primaryColor,
-        padding: EdgeInsets.symmetric(horizontal: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,18 +43,17 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                crossAxisAlignment: CrossAxisAlignment.start,
                children: [
-                 tc('Beams', Colors.white, 55),
-                 tc('Cylinder',Colors.white, 70),
-
+                 const Row(),
+                 tc1('Beams', Colors.white, 45),
+                 tc1('CYLINDER',Colors.white, 55),
+                 //tcn('Management Application',Colors.white, 13),
                ],
            ),
             ),
             CommonButton(btnName: "Start", btnColor: white,iconYN: false,txtColor: Colors.grey.shade700,
                 onTap: (){
-
-              dprint("strt>>>>>>>>>>");
             }),
-            gapHC(15),
+            gapHC(30),
             Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,10 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
 
             gapHC(15)
-
-
-
-
 
           ],
         ),

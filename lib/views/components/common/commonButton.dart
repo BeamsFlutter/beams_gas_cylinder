@@ -26,7 +26,7 @@ class CommonButton extends StatelessWidget {
        child: Center(child: Row(
          mainAxisAlignment: MainAxisAlignment.center,
          children: [
-           tc(btnName, txtColor,17),
+           tc(btnName, txtColor,15),
            iconYN==true? Icon(icon,color: txtColor,size: 17,) :const SizedBox()
          ],
        )),

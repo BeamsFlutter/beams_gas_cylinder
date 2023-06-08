@@ -20,6 +20,7 @@ Text ts(text,color,double size) => Text(text,style: TextStyle(fontFamily: 'Robot
 Text tcn(text,color,double size) => Text(text,style: GoogleFonts.poppins(fontSize: size,color: color));
 Text tcnL(text,color,double size) => Text(text,style: GoogleFonts.poppins(fontSize: size,color: color),maxLines: 100,);
 Text tc(text,color,double size) => Text(text,style: GoogleFonts.beVietnamPro(fontSize: size,color: color,fontWeight: FontWeight.bold));
+Text tc1(text,color,double size) => Text(text,style: GoogleFonts.aclonica(fontSize: size,color: color,fontWeight: FontWeight.bold));
 Text thL(text,color,double size) => Text(text,style: GoogleFonts.poppins(fontSize: size,color: color,fontWeight: FontWeight.bold),maxLines: 100,);
 
 //Strike Line
