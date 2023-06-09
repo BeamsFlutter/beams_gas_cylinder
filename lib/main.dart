@@ -1,4 +1,5 @@
 import 'package:beams_gas_cylinder/views/components/common/strings/commonStrings.dart';
+import 'package:beams_gas_cylinder/views/screens/booking/booking.dart';
 import 'package:beams_gas_cylinder/views/screens/info/info.dart';
 import 'package:beams_gas_cylinder/views/screens/splashscreen/splash_screen.dart';
 import 'package:beams_gas_cylinder/views/styles/colors.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           secondary: bgColor,
         ),
       ),
-      home: const SplashScreen(),
+      home: const BookingScreen(),
     );
   }
 }
