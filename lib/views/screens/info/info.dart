@@ -32,58 +32,22 @@ class _RegisterState extends State<Register> {
               gapHC(40),
               tc('Registration Details', black, 20),
               gapH(),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  tcn('Appcode:', black, 15),
-                  gapWC(5),
-                  tcn('Cylinder',black,15)
-                ],
-              ),
+              Rowcard('Appcode', 'Cylinder'),
               const Divider(),
               gapHC(5),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  tcn('Version:', black, 15),
-                  gapWC(5),
-                  tcn('version 1.0.0',black,15)
-                ],
-              ),
+              Rowcard('Version', 'V.1.0.0'),
               const Divider(),
               gapHC(5),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  tcn('Registration:', black, 15),
-                  gapWC(5),
-                  tcn('reg',black,15)
-                ],
-              ),
+              Rowcard('Registration', 'reg'),
               const Divider(),
               gapHC(5),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  tcn('MainCompany:', black, 15),
-                  gapWC(5),
-                  tcn('maincompany',black,15)
-                ],
-              ),
+              Rowcard('MainCompany', 'maincompany'),
               const Divider(),
               gapHC(5),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  tcn('Company:', black, 15),
-                  gapWC(5),
-                  tcn('BEAMS',black,15)
-                ],
-              ),
+              Rowcard('Company', 'Beams'),
               const Divider(),
               gapHC(5),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  tcn('Yearcode:', black, 15),
-                  gapWC(5),
-                  tcn('2023',black,15)
-                ],
-              ),
+              Rowcard('Yearcode','2023'),
               gapHC(5),
               CommonButton(btnName: "Register", btnColor: buttonGreen,iconYN: false,txtColor: Colors.white,
                   onTap: (){
@@ -95,6 +59,15 @@ class _RegisterState extends State<Register> {
           ),
         ),
       ),
+    );
+  }
+  Widget Rowcard(text1, text2) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+    tcn(text1, black, 15),
+    gapWC(5),
+    tcn(text2,black,15)
+    ],
     );
   }
 }
