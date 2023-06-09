@@ -9,8 +9,9 @@ class CommonButton extends StatelessWidget {
   final IconData ? icon;
   final Color ? btnColor;
   final Color ? txtColor;
+  final double ? iconSize;
 
-  const CommonButton({super.key, required this.btnName,required this.onTap, this.iconYN, this.icon, this.btnColor, this.txtColor});
+  const CommonButton({super.key, required this.btnName,required this.onTap, this.iconYN, this.icon, this.btnColor, this.txtColor, this.iconSize});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class CommonButton extends StatelessWidget {
          mainAxisAlignment: MainAxisAlignment.center,
          children: [
            tc(btnName, txtColor,15),
-           iconYN==true? Icon(icon,color: txtColor,size: 17,) :const SizedBox()
+           iconYN==true? Icon(icon,color: txtColor,size: iconSize,) :const SizedBox()
          ],
        )),
       ),

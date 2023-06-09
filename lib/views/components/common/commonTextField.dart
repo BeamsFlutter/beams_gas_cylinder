@@ -42,8 +42,6 @@ class CommonTextField extends StatelessWidget {
       ),
       controller: txtController,
       obscureText:obscureY,
-
-      onTap: suffixIconOnclick,
       onChanged: (value) {
         // do something
       },

@@ -1,6 +1,7 @@
 
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
 import 'package:beams_gas_cylinder/views/screens/info/info.dart';
+import 'package:beams_gas_cylinder/views/screens/bottomNavbar.dart';
 import 'package:beams_gas_cylinder/views/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
@@ -110,8 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           )),
                           gapHC(20),
-                          CommonButton(btnName: "Login",iconYN: true,icon:Icons.arrow_forward_rounded,btnColor: primaryColor,txtColor: white,onTap: (){
+                          CommonButton(btnName: "Login",iconYN: true,icon:Icons.arrow_forward_rounded,btnColor: primaryColor,iconSize: 17,txtColor: white,onTap: (){
                             dprint("Login...........");
+                            Get.to(const BottomnavBar());
                           }),
                           gapHC(50),
                           Divider(thickness: 1,color:Colors.grey.shade400,endIndent: 70,indent: 70,),
