@@ -1,6 +1,7 @@
 import 'package:beams_gas_cylinder/views/components/common/common.dart';
 import 'package:beams_gas_cylinder/views/styles/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../components/common/commonButton.dart';
 
@@ -21,38 +22,43 @@ class _RegisterState extends State<Register> {
           padding: const EdgeInsets.all(10),
           child: Column(crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Row(mainAxisAlignment: MainAxisAlignment.end,
+              Row(mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(Icons.close),
+                  GestureDetector(
+                    onTap: (){
+                      Get.back();
+                    },
+                    child: const Icon(Icons.close),
+                  )
                 ],
               ),
               gapH(),
-              tc1('Beams', primaryColor, 30),
-              tc1('CYLINDER',primaryColor, 40),
+              tc1('Beams', subColor, 30),
+              tc1('CYLINDER',subColor, 40),
               gapHC(40),
-              tc('Registration Details', black, 20),
+              tcn('Registration Details', black, 20),
               gapH(),
-              Rowcard('Appcode', 'Cylinder'),
+              Rowcard('Appcode', 'CYLINDER'),
               const Divider(),
               gapHC(5),
               Rowcard('Version', 'V.1.0.0'),
               const Divider(),
               gapHC(5),
-              Rowcard('Registration', 'reg'),
+              Rowcard('Registration', '1456523'),
               const Divider(),
               gapHC(5),
-              Rowcard('MainCompany', 'maincompany'),
+              Rowcard('Main Company', '0BMS1235'),
               const Divider(),
               gapHC(5),
-              Rowcard('Company', 'Beams'),
+              Rowcard('Company', '01 | BEAMS'),
               const Divider(),
               gapHC(5),
               Rowcard('Yearcode','2023'),
               gapHC(5),
-              CommonButton(btnName: "Register", btnColor: buttonGreen,iconYN: false,txtColor: Colors.white,
-                  onTap: (){
-
-                  }),
+              // CommonButton(btnName: "Register", btnColor: buttonGreen,iconYN: false,txtColor: Colors.white,
+              //     onTap: (){
+              //
+              //     }),
 
 
             ],
@@ -62,11 +68,11 @@ class _RegisterState extends State<Register> {
     );
   }
   Widget Rowcard(text1, text2) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center,
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-    tcn(text1, black, 15),
+    tcn(text1, black, 13),
     gapWC(5),
-    tcn(text2,black,15)
+    tc(text2,black,13)
     ],
     );
   }
