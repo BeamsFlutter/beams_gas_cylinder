@@ -19,42 +19,60 @@ class _RegisterState extends State<Register> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Container(decoration: boxDecoration(white, 20),
+          margin: MediaQuery.of(context).padding,
           padding: const EdgeInsets.all(10),
           child: Column(crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      Get.back();
-                    },
-                    child: const Icon(Icons.close),
-                  )
-                ],
+              Expanded(child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: (){
+                            Get.back();
+                          },
+                          child: const Icon(Icons.close),
+                        )
+                      ],
+                    ),
+                    gapH(),
+                    tc1('Beams', subColor, 30),
+                    tc1('CYLINDER',subColor, 40),
+                    gapHC(40),
+                    tcn('Registration Details', black, 20),
+                    gapH(),
+                    Rowcard('Appcode', 'CYLINDER'),
+                    const Divider(),
+                    gapHC(5),
+                    Rowcard('Version', 'V.1.0.0'),
+                    const Divider(),
+                    gapHC(5),
+                    Rowcard('Registration', '1456523'),
+                    const Divider(),
+                    gapHC(5),
+                    Rowcard('Main Company', '0BMS1235'),
+                    const Divider(),
+                    gapHC(5),
+                    Rowcard('Company', '01 | BEAMS'),
+                    const Divider(),
+                    gapHC(5),
+                    Rowcard('Yearcode','2023'),
+                    gapHC(5),
+                  ],
+                ),
+              )),
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    tcn('Powered By', txtColor, 10),
+                    tc('BEAMS', txtColor, 13),
+
+                  ],
+                ),
               ),
-              gapH(),
-              tc1('Beams', subColor, 30),
-              tc1('CYLINDER',subColor, 40),
-              gapHC(40),
-              tcn('Registration Details', black, 20),
-              gapH(),
-              Rowcard('Appcode', 'CYLINDER'),
-              const Divider(),
-              gapHC(5),
-              Rowcard('Version', 'V.1.0.0'),
-              const Divider(),
-              gapHC(5),
-              Rowcard('Registration', '1456523'),
-              const Divider(),
-              gapHC(5),
-              Rowcard('Main Company', '0BMS1235'),
-              const Divider(),
-              gapHC(5),
-              Rowcard('Company', '01 | BEAMS'),
-              const Divider(),
-              gapHC(5),
-              Rowcard('Yearcode','2023'),
-              gapHC(5),
+
               // CommonButton(btnName: "Register", btnColor: buttonGreen,iconYN: false,txtColor: Colors.white,
               //     onTap: (){
               //
