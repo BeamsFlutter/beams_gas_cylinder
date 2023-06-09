@@ -1,5 +1,6 @@
 
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
+import 'package:beams_gas_cylinder/views/screens/info/info.dart';
 import 'package:beams_gas_cylinder/views/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
@@ -58,7 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Positioned(
              top: 35,right: 5,
-              child: IconButton(onPressed: (){}, icon: const Icon(Icons.settings_outlined,color: white,size: 35,))),
+              child: IconButton(onPressed: (){
+                Get.to(const Register());
+
+              }, icon: const Icon(Icons.settings_outlined,color: white,size: 35,))),
           FractionallySizedBox(
             heightFactor: 0.7,
             alignment: Alignment.bottomCenter,

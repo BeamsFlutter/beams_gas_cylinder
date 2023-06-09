@@ -57,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen> {
             CommonButton(btnName: "Start", btnColor: white,iconYN: false,txtColor: Colors.grey.shade700,
                 onTap: (){
                   Get.to(LoginScreen());
-              dprint("strt>>>>>>>>>>");
             }),
             gapHC(30),
             Center(
