@@ -1,4 +1,5 @@
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
 import 'package:beams_gas_cylinder/views/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
@@ -123,9 +124,12 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     ),
                   ),
                   gapHC(10),
-                  Expanded(child: Padding(padding: EdgeInsets.only(bottom: 10),child: pages[homeController.pageIndex.value],)),
-                 // wHome()
-
+                  Expanded(
+                      child: Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: pages[homeController.pageIndex.value],
+                  )),
+                  // wHome()
                 ],
               ),
             ),
@@ -181,9 +185,18 @@ class _BottomnavBarState extends State<BottomnavBar> {
                       ),
                     ),
                   )
-                : const Icon(
-                    Icons.assignment,
-                    size: 25,
+                : badges.Badge(
+                    showBadge: true,
+                    badgeStyle: badges.BadgeStyle(
+                      shape: badges.BadgeShape.circle,
+                      padding: const EdgeInsets.all(7),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                    badgeContent: tcn("6", white, 10),
+                    child: const Icon(
+                      Icons.assignment,
+                      size: 25,
+                    ),
                   ),
           ),
           Bounce(
@@ -276,11 +289,9 @@ class _BottomnavBarState extends State<BottomnavBar> {
 
   wReport() {
     return Container(
-
       decoration: boxDecoration(bgColor, 12),
-
       child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -288,72 +299,95 @@ class _BottomnavBarState extends State<BottomnavBar> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    wMenuCard("Booking",Icons.calendar_month,55.0),
+                    wMenuCard("Daily Sales", Icons.calendar_month, 55.0,() {
+                      dprint("DailySales................");
+                    }),
                     gapWC(10),
-                    wMenuCard("Assignment",Icons.assignment,55.0)
+                    wMenuCard(
+                        "Collections", Icons.featured_play_list_outlined, 55.0,() {
+                      dprint("Collections................");
+                        },)
                   ],
                 ),
               ),
               gapHC(10),
               Flexible(
-
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    wMenuCard("Delivery Order",Icons.delivery_dining,55.0),
+                    wMenuCard("Assignment", Icons.assignment, 55.0,() {
+                      dprint("Assignment................");
+                    }),
                     gapWC(10),
-                    wMenuCard("Sales",Icons.point_of_sale,55.0),
+                    wMenuCard("Booking", Icons.calendar_month, 55.0,() {
+                      dprint("Booking................");
+                    }),
                   ],
                 ),
               ),
               gapHC(10),
-
-
+              Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    wMenuCard("Customer Balance", Icons.balance, 55.0,() {
+                      dprint("Customer Balance................");
+                    }),
+                    gapWC(10),
+                    wMenuCard("Others", Icons.more_horiz, 55.0,() {
+                      dprint("Others................");
+                    }),
+                  ],
+                ),
+              ),
             ],
-          )
-      ),
+          )),
     );
   }
 
   wHome() {
     return Container(
-
       decoration: boxDecoration(bgColor, 12),
-
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible( 
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [ 
-                  wMenuCard("Booking",Icons.calendar_month,55.0),
-                  gapWC(10),
-                  wMenuCard("Assignment",Icons.assignment,55.0)
-                ],
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    wMenuCard("Booking", Icons.calendar_month, 55.0,() {
+                       dprint("Booking.............");
+                    }),
+                    gapWC(10),
+                    wMenuCard("Assignment", Icons.assignment, 55.0,() {
+                     Get.to(HmeAssignmnet());
+                    },)
+                  ],
+                ),
               ),
-            ),
-            gapHC(10),
-            Flexible(
-
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  wMenuCard("Delivery Order",Icons.delivery_dining,55.0),
-                  gapWC(10),
-                  wMenuCard("Sales",Icons.point_of_sale,55.0),
-                ],
+              gapHC(10),
+              Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    wMenuCard("Delivery Order", Icons.delivery_dining, 55.0,() {
+                      dprint("Delivery Order.............");
+                    }),
+                    gapWC(10),
+                    wMenuCard("Sales", Icons.point_of_sale, 55.0,() {
+                      dprint("Sales.............");
+                    }),
+                  ],
+                ),
               ),
-            ),
-            gapHC(10),
-            wCollCard("Collections", Icons.collections_bookmark, 25),
-            gapHC(10),
-            wCollCard("Reports", Icons.arrow_forward_ios_outlined, 25)
-          ],
-        )
-      ),
+              gapHC(10),
+              wCollCard("Collections", Icons.collections_bookmark, 25),
+              gapHC(10),
+              wCollCard("Reports", Icons.arrow_forward_ios_outlined, 25)
+            ],
+          )),
     );
   }
 
@@ -384,8 +418,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     onTap: () {},
                   ),
                   ListTile(
-                    leading: const Icon(Icons.bar_chart,
-                        color: black),
+                    leading: const Icon(Icons.bar_chart, color: black),
                     title: const Text("Report"),
                     onTap: () {},
                   ),
@@ -422,26 +455,28 @@ class _BottomnavBarState extends State<BottomnavBar> {
     );
   }
 
-  wMenuCard(title,icon,double iconSize) {
+  wMenuCard(title, icon, double iconSize,VoidCallback onTap) {
     return Flexible(
       child: Bounce(
           duration: const Duration(milliseconds: 110),
-          onPressed: () {},
+          onPressed: onTap,
           child: Container(
             decoration: BoxDecoration(
-                color: subColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: Center(child: Column(
+                color: subColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12)),
+            child: Center(
+                child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon,color: subColor.withOpacity(0.8),size: iconSize),
-                gapHC(3),
+                Icon(icon, color: subColor.withOpacity(0.8), size: iconSize),
                 tc(title, subColor, 14),
               ],
             )),
           )),
     );
   }
-  wCollCard(title,icon,double iconSize) {
+
+  wCollCard(title, icon, double iconSize) {
     return Flexible(
       child: Bounce(
           duration: const Duration(milliseconds: 110),
@@ -449,14 +484,13 @@ class _BottomnavBarState extends State<BottomnavBar> {
           child: Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-                color: subColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                color: subColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 tc(title, subColor, 14),
-                Icon(icon,color: subColor,size: iconSize),
-
-
+                Icon(icon, color: subColor, size: iconSize),
               ],
             ),
           )),

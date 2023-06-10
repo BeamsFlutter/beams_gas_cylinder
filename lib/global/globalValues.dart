@@ -25,7 +25,8 @@ class Global {
     _wstrCompany = "";
     _wstrYearcode = "";
     _wstrMainCompany = "";
-
+    _wstrBuildingCode="";
+    _wstrBuildingName="";
 
   }
   var _wstrToken  = '';
@@ -39,11 +40,23 @@ class Global {
   var _wstrYearcode = "";
   var _wstrAppID = "";
   var  _wstrMainCompany = "";
+  var  _wstrBuildingCode = "";
+  var  _wstrBuildingName = "";
 
 
   get wstrBaseUrl => _wstrBaseUrl;
   set wstrBaseUrl(value) {
     _wstrBaseUrl = value;
+  }
+
+  get wstrBuildingName => _wstrBuildingName;
+  set wstrBuildingName(value) {
+    _wstrBuildingName = value;
+  }
+
+  get wstrBuildingCode => _wstrBuildingCode;
+  set wstrBuildingCode(value) {
+    _wstrBuildingCode = value;
   }
 
   get wstrIp => _wstrIp;

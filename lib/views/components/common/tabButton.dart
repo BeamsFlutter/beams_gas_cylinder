@@ -27,8 +27,10 @@ class TabButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return SizedBox(
-      width: size.width * width,
+    return Container(
+      width: size.width/2.1,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(25)) ,
+
       child: GestureDetector(
         onTap: (){
           onPressed();
@@ -51,6 +53,7 @@ class TabButton extends StatelessWidget {
             horizontal: selectedPage == pageNumber ? 0 : 20.0,
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 child: Icon(icon ?? null,
