@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../views/components/bottomNavigationBar/bottom_navigator_item.dart';
 import '../views/components/common/common.dart';
 import '../views/styles/colors.dart';
 

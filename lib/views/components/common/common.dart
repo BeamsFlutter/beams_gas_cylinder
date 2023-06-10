@@ -652,7 +652,7 @@ Widget subHead(name){
         var dateRtn  = "";
         var formatDate1 = DateFormat('yyyy-MM-dd hh:mm:ss');
         var formatDate2 = DateFormat('yyyy-MM-dd');
-        var formatDate3 = DateFormat('yyyy-MM-dd hh:mm');
+        var formatDate3 = DateFormat('yyyy-MM-dd hh:mm a');
         var formatDate4 = DateFormat('yyyy-MM-dd hh:mm:ss a');
         var formatDate5 = DateFormat('hh:mm:ss a');
         var formatDate6 = DateFormat('dd-MM-yyyy');
@@ -662,7 +662,7 @@ Widget subHead(name){
         var formatDate10 = DateFormat('hh:mm:ss');
         var formatDate11 = DateFormat('hh:mm a');
         var formatDate12 = DateFormat('yyyy-MM-dd');
-        var formatDate13 = DateFormat('dd-MMM-yyyy');
+        var formatDate13 = DateFormat('dd MMM yyyy hh:mm a');
         var formatDate14 = DateFormat('MMMM');
         var formatDate15 = DateFormat('dd MMM yyyy');
 
