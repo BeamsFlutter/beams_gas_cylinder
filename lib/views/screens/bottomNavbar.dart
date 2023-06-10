@@ -1,5 +1,6 @@
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmBooking.dart';
 import 'package:beams_gas_cylinder/views/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
@@ -358,6 +359,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     wMenuCard("Booking", Icons.calendar_month, 55.0,() {
+                      Get.to(HmeBooking());
                        dprint("Booking.............");
                     }),
                     gapWC(10),
