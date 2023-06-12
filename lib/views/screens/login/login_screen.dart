@@ -102,6 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: "Password",
                             prefixIconColor: Colors.grey.shade600,
                             txtSize: 12,
+                            maxline: 1,
                             suffixIcon:loginController.passWordView.value==true? Icons.visibility_outlined:Icons.visibility_off_outlined,
                             suffixIconOnclick: (){
                               dprint( loginController.passWordView.value);

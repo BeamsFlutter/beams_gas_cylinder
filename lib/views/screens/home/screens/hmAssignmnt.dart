@@ -9,6 +9,7 @@ import '../../../components/bottomNavigationBar/bottom_navigator_item.dart';
 import '../../../components/common/common.dart';
 import '../../../components/common/tabButton.dart';
 import '../../../styles/colors.dart';
+import '../controller/hmAssignmntController.dart';
 
 
 class HmeAssignmnet extends StatefulWidget {
@@ -18,7 +19,7 @@ class HmeAssignmnet extends StatefulWidget {
 }
 
 class _HmeAssignmnetState extends State<HmeAssignmnet> {
-  final HomeController homeController = Get.put(HomeController());
+  final HmAssignmentController hmAssignmnt = Get.put(HmAssignmentController());
 
   var orderlist  = [
 
@@ -43,8 +44,8 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
   ];
   @override
   void initState() {
-    homeController.pageController = PageController();
-    homeController.wstrPageMode.value = 'VIEW';
+    hmAssignmnt.pageController = PageController();
+    hmAssignmnt.wstrPageMode.value = 'VIEW';
     // assignmentController.apiViewAssignment('', "LAST");
     // TODO: implement initState
     super.initState();
@@ -60,7 +61,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            homeController.fnBackPage(context);
+            hmAssignmnt.fnBackPage(context);
           },
           icon: const Icon(Icons.arrow_back),
         ),
@@ -93,7 +94,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           color: black,weight: 100,
                           size: 15,
                         ),
-                        tc(homeController.frDocno.value, txtColor, 12)
+                        tc(hmAssignmnt.frDocno.value, txtColor, 12)
                       ],
                     ),
                     Row(
@@ -104,7 +105,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           size: 15,
                         ),
                         gapWC(3),
-                        tcn(setDate(7, homeController.docDate.value).toString().toUpperCase(), txtColor, 12)
+                        tcn(setDate(7, hmAssignmnt.docDate.value).toString().toUpperCase(), txtColor, 12)
                       ],
                     ),
                   ],
@@ -251,7 +252,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               tcn("Last Assigned", black, 12),
-                              tcn( setDate(7, homeController.docDate.value).toString().toUpperCase(), txtColor, 12)
+                              tcn( setDate(7, hmAssignmnt.docDate.value).toString().toUpperCase(), txtColor, 12)
 
                             ],
                           ),
@@ -271,12 +272,8 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
               ],
             ),
             Container(
-
               padding: EdgeInsets.symmetric(vertical: 2),
-
-
               decoration: boxDecoration(primaryColor, 25),
-
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -284,9 +281,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       width: 0.3,
                       text: "Choose Booking",
                       pageNumber: 0,
-                      selectedPage: homeController.selectedPage.value,
+                      selectedPage: hmAssignmnt.selectedPage.value,
                       onPressed: () {
-                        homeController.lstrSelectedPage.value = "AT";
+                        hmAssignmnt.lstrSelectedPage.value = "AT";
                         changePage(0);
                       },
                       icon: Icons.calendar_month),
@@ -294,9 +291,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       width: 0.3,
                       text: "Item Details",
                       pageNumber: 1,
-                      selectedPage:homeController.selectedPage.value,
+                      selectedPage:hmAssignmnt.selectedPage.value,
                       onPressed: () {
-                        homeController.lstrSelectedPage .value= "ID";
+                        hmAssignmnt.lstrSelectedPage .value= "ID";
                         changePage(1);
                       },
                       icon: Icons.all_inbox),
@@ -318,10 +315,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                     Expanded(
                       child: PageView(
                         onPageChanged: (int page) {
-                          homeController.selectedPage.value = page;
+                          hmAssignmnt.selectedPage.value = page;
 
                         },
-                        controller: homeController.pageController,
+                        controller: hmAssignmnt.pageController,
                         children:  [
                           // 1st page design ------ Choose Item
                           chooseBookingScreen(MediaQuery.of(context).size),
@@ -344,19 +341,19 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
           ],
         ),
       ),
-      bottomNavigationBar: (homeController.wstrPageMode.value ==
+      bottomNavigationBar: (hmAssignmnt.wstrPageMode.value ==
           "VIEW")
           ? BottomNavigationItem(
-        mode: homeController.wstrPageMode.value,
-        fnAdd: homeController.fnAdd,
-        fnEdit: homeController.fnEdit,
-        fnCancel: homeController.fnCancel,
-        fnPage: homeController.fnPage,
-        fnSave: homeController.fnSave,
-        fnDelete: homeController.fnDelete,
+        mode: hmAssignmnt.wstrPageMode.value,
+        fnAdd: hmAssignmnt.fnAdd,
+        fnEdit: hmAssignmnt.fnEdit,
+        fnCancel: hmAssignmnt.fnCancel,
+        fnPage: hmAssignmnt.fnPage,
+        fnSave: hmAssignmnt.fnSave,
+        fnDelete: hmAssignmnt.fnDelete,
       )
-          : (homeController.wstrPageMode.value == "ADD" ||
-          homeController.wstrPageMode.value == "EDIT")
+          : (hmAssignmnt.wstrPageMode.value == "ADD" ||
+          hmAssignmnt.wstrPageMode.value == "EDIT")
           ? Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -366,7 +363,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                 onPressed: () {
                   // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
                   // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
-                  homeController.fnSave;
+                  hmAssignmnt.fnSave;
                 },
                 duration: const Duration(milliseconds: 110),
                 child: Container(
@@ -390,7 +387,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
             ),
             Bounce(
               onPressed: () {
-                homeController.fnCancel();
+                hmAssignmnt.fnCancel();
               },
               duration: const Duration(milliseconds: 110),
               child: Container(
@@ -437,7 +434,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                 child: Bounce(
                   duration: const Duration(milliseconds: 110),
                   onPressed: () {
-                    if(homeController.wstrPageMode=="VIEW"){
+                    if(hmAssignmnt.wstrPageMode=="VIEW"){
                       return;
                     }else{
                       dprint("Search bookingggggggggg");
@@ -460,10 +457,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                   ),
                 ),
               ),
-             homeController.wstrPageMode.value=="VIEW"?gapHC(0):Checkbox(checkColor: primaryColor,
-                value: homeController.checkAll.value,
+             hmAssignmnt.wstrPageMode.value=="VIEW"?gapHC(0):Checkbox(checkColor: primaryColor,
+                value: hmAssignmnt.checkAll.value,
                 onChanged: (bool ? checkvalu) {
-                  homeController.checkAll.value = checkvalu!;
+                  hmAssignmnt.checkAll.value = checkvalu!;
                 },
 
               )
@@ -579,8 +576,8 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
             decoration: boxBaseDecoration(bgColor.withOpacity(0.9), 8),
             child: Row(
               children: [
-                homeController.wstrPageMode.value=="VIEW"?gapHC(0): Checkbox(value: homeController.checkAll.value, activeColor: primaryColor,onChanged: (bool ? checkvalu) {
-                  homeController.checkAll.value = checkvalu!;
+                hmAssignmnt.wstrPageMode.value=="VIEW"?gapHC(0): Checkbox(value: hmAssignmnt.checkAll.value, activeColor: primaryColor,onChanged: (bool ? checkvalu) {
+                  hmAssignmnt.checkAll.value = checkvalu!;
                 },),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -608,8 +605,8 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   changePage(int pageNum) {
 
-    homeController.selectedPage.value = pageNum;
-    homeController.pageController.animateToPage(
+    hmAssignmnt.selectedPage.value = pageNum;
+    hmAssignmnt.pageController.animateToPage(
       pageNum,
       duration: const Duration(milliseconds: 1000),
       curve: Curves.fastLinearToSlowEaseIn,
@@ -617,13 +614,13 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
 
     if (pageNum == 0) {
-      homeController.lstrSelectedPage.value = "CB";
+      hmAssignmnt.lstrSelectedPage.value = "CB";
 
     }
 
     if (pageNum == 1) {
 
-      homeController.lstrSelectedPage.value = "ID";
+      hmAssignmnt.lstrSelectedPage.value = "ID";
 
     }
 

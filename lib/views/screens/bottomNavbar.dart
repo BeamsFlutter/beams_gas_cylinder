@@ -1,4 +1,6 @@
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
+import 'package:beams_gas_cylinder/views/screens/assignmnets/assignment_screen.dart';
+import 'package:beams_gas_cylinder/views/screens/home/controller/hmAssignmntController.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmBooking.dart';
 import 'package:beams_gas_cylinder/views/screens/settings/settings.dart';
@@ -20,11 +22,11 @@ class BottomnavBar extends StatefulWidget {
 }
 
 class _BottomnavBarState extends State<BottomnavBar> {
-  final HomeController homeController = Get.put(HomeController());
+  final HmAssignmentController hmAssignmentController = Get.put(HmAssignmentController());
   var pages = [];
   @override
   void initState() {
-    pages = [wAssignmnt(), wHome(), wReport(), const SettingsScreen()];
+    pages = [AssignmentScreen(), wHome(), wReport(), const SettingsScreen()];
     // TODO: implement initState
     super.initState();
   }
@@ -128,7 +130,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   Expanded(
                       child: Padding(
                     padding: EdgeInsets.only(bottom: 10),
-                    child: pages[homeController.pageIndex.value],
+                    child: pages[hmAssignmentController.pageIndex.value],
                   )),
                   // wHome()
                 ],
@@ -158,10 +160,10 @@ class _BottomnavBarState extends State<BottomnavBar> {
         children: [
           Bounce(
             onPressed: () {
-              homeController.pageIndex.value = 0;
+              hmAssignmentController.pageIndex.value = 0;
             },
             duration: const Duration(milliseconds: 110),
-            child: homeController.pageIndex.value == 0
+            child: hmAssignmentController.pageIndex.value == 0
                 ? badges.Badge(
                     showBadge: true,
                     badgeStyle: badges.BadgeStyle(
@@ -202,10 +204,10 @@ class _BottomnavBarState extends State<BottomnavBar> {
           ),
           Bounce(
             onPressed: () {
-              homeController.pageIndex.value = 1;
+              hmAssignmentController.pageIndex.value = 1;
             },
             duration: const Duration(milliseconds: 110),
-            child: homeController.pageIndex.value == 1
+            child: hmAssignmentController.pageIndex.value == 1
                 ? Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -227,10 +229,10 @@ class _BottomnavBarState extends State<BottomnavBar> {
           ),
           Bounce(
             onPressed: () {
-              homeController.pageIndex.value = 2;
+              hmAssignmentController.pageIndex.value = 2;
             },
             duration: const Duration(milliseconds: 110),
-            child: homeController.pageIndex.value == 2
+            child: hmAssignmentController.pageIndex.value == 2
                 ? Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -253,10 +255,10 @@ class _BottomnavBarState extends State<BottomnavBar> {
           ),
           Bounce(
             onPressed: () {
-              homeController.pageIndex.value = 3;
+              hmAssignmentController.pageIndex.value = 3;
             },
             duration: const Duration(milliseconds: 110),
-            child: homeController.pageIndex.value == 3
+            child: hmAssignmentController.pageIndex.value == 3
                 ? Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -282,11 +284,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
     );
   }
 
-  wAssignmnt() {
-    return Container(
-      child: tc("Assignmnetr", black, 12),
-    );
-  }
+
 
   wReport() {
     return Container(
