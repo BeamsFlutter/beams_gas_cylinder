@@ -53,8 +53,8 @@ class _HmeBookingState extends State<HmeBooking> {
           ),
         ],
       ),
-          body: Padding(
-            padding: const EdgeInsets.all(10),
+          body: Container(
+            margin: EdgeInsets.symmetric(horizontal: 6,vertical: 5),
             child: Column(
               children: [
                 Row(

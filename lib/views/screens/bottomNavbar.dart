@@ -3,6 +3,7 @@ import 'package:beams_gas_cylinder/views/screens/assignmnets/assignment_screen.d
 import 'package:beams_gas_cylinder/views/screens/home/controller/hmAssignmntController.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmBooking.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmCollection.dart';
 import 'package:beams_gas_cylinder/views/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
@@ -383,9 +384,16 @@ class _BottomnavBarState extends State<BottomnavBar> {
                 ),
               ),
               gapHC(10),
-              wCollCard("Collections", Icons.collections_bookmark, 25),
+              wCollCard("Collections", Icons.collections_bookmark, 25,
+                  (){
+                   Get.to(HmeCollections());
+
+                  }),
               gapHC(10),
-              wCollCard("Reports", Icons.arrow_forward_ios_outlined, 25)
+              wCollCard("Reports", Icons.arrow_forward_ios_outlined, 25,(){
+                dprint("REport..................");
+
+              })
             ],
           )),
     );
@@ -476,11 +484,11 @@ class _BottomnavBarState extends State<BottomnavBar> {
     );
   }
 
-  wCollCard(title, icon, double iconSize) {
+  wCollCard(title, icon, double iconSize,onTap) {
     return Flexible(
       child: Bounce(
           duration: const Duration(milliseconds: 110),
-          onPressed: () {},
+          onPressed: onTap,
           child: Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
