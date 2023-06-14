@@ -61,7 +61,11 @@ class _CollectionScreenState extends State<HmeCollections> {
                         dprint("lookup>>>>>>>Booking");
                       },
                       child: Container(
-
+                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: primaryColor),
+                            borderRadius: BorderRadius.circular(30)
+                        ),
                         child: Row(
                           children: [
                             Row(
@@ -99,8 +103,8 @@ class _CollectionScreenState extends State<HmeCollections> {
                     ),
                   ],
                 ),
-                gapHC(10),
-                tc('Party Details', black, 13.0),
+                gapHC(15),
+                tc('Party Details', black, 12.0),
                 gapHC(10),
                 Bounce(
                   onPressed: () {
@@ -161,23 +165,22 @@ class _CollectionScreenState extends State<HmeCollections> {
                     ),
                   ),
                 ),
-                gapHC(5),
-                tc('Collection Amount', black, 13.0),
                 gapHC(10),
+                tc('Collection Amount', black, 12.0),
+                gapHC(5),
                 CommonTextField(obscureY: false,txtController: hmcollectionController.txtCollectionAmt,prefixIcon: Icons.attach_money,
                   keybordType: TextInputType.number,enableY:hmcollectionController.wstrPageMode.value=="VIEW"? false:true,
                 inputformate: mfnInputDecFormatters(),
                 textAlignment: TextAlign.right,),
                 gapHC(10),
-                tc('Payment Details', black, 13),
+                tc('Payment Details', black, 12),
 
-                GetBuilder<HmCollectionController>(
-                    builder: (controller){
+                GetBuilder<HmCollectionController>(builder: (controller){
 
                       return  Column(
                         children: controller.paymentList.asMap().entries.map((e) =>
 
-                            RadioListTile(
+                            RadioListTile(contentPadding: EdgeInsets.zero,
                                 title: tcn(e.value["PDETAILS"].toString(), txtColor,12),
                                 value: e.value["PDETAILS"],
                                 activeColor: primaryColor,
@@ -188,31 +191,31 @@ class _CollectionScreenState extends State<HmeCollections> {
                     }
 
                 ),
-                tc('Total', black, 13),
+                tc('Total', black, 12),
                 gapHC(10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    tcn('Outstanding Amount', black, 13),
-                    tc("20", txtColor, 15)
+                    tcn('Outstanding Amount', black, 12),
+                    tc("20", txtColor, 13)
 
                   ],
                 ),
-                gapHC(13),
+                gapHC(10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    tcn('Paid Amount', black, 13),
-                    tc("20", txtColor, 15)
+                    tcn('Paid Amount', black, 12),
+                    tc("20", txtColor, 13)
 
                   ],
                 ),
-                gapHC(13),
+                gapHC(10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    tcn('Balance Amount', black, 13),
-                    tc("20", txtColor, 15)
+                    tcn('Balance Amount', black, 12),
+                    tc("20", txtColor, 13)
 
                   ],
                 ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../global/globalValues.dart';
 import '../../../components/alertDialog/alertDialog.dart';
 
-class ReportController extends GetxController {
-
+class HmReportController extends GetxController{
   late PageController pageController;
   late Future <dynamic> futureform;
   var wstrPageMode = "VIEW".obs;
@@ -14,6 +14,28 @@ class ReportController extends GetxController {
   RxInt selectedPage = 0.obs;
   var lstrSelectedPage = "AT".obs;
 
+  var reportlist  = [
+
+    {
+      "CODE":"001",
+      "RNAME":"Daily Sales Reports",
+    },
+    {
+      "CODE":"002",
+      "RNAME":"Collection Reports",
+    },
+    {
+      "CODE":"003",
+      "RNAME":"Assignemnt Details",
+    },
+    {
+      "CODE":"004",
+      "RNAME":"Booking Details",
+
+    }
+
+  ].obs;
+
   fnBackPage(context) {
     PageDialog().exitDialog(context, fnEnd);
   }
@@ -22,5 +44,6 @@ class ReportController extends GetxController {
     Get.back();
     Get.back();
   }
+
 
 }

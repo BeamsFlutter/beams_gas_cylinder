@@ -66,6 +66,11 @@ class _HmeBookingState extends State<HmeBooking> {
                         dprint("lookup>>>>>>>Booking");
                       },
                       child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: primaryColor),
+                          borderRadius: BorderRadius.circular(30)
+                        ),
                   
                         child: Row(
                           children: [
@@ -104,10 +109,9 @@ class _HmeBookingState extends State<HmeBooking> {
                     ),
                   ],
                 ),
-                gapHC(25),
+                gapHC(15),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: Colors.grey.shade200,
@@ -132,7 +136,7 @@ class _HmeBookingState extends State<HmeBooking> {
                               const Icon(Icons.location_on,
                                   size: 18, color: primaryColor),
                               gapWC(3),
-                              tcn("AL NAHDA", black, 13)
+                              tcn("AL NAHDA", txtColor, 13)
                             ],
                           ),
                         ),
@@ -154,7 +158,7 @@ class _HmeBookingState extends State<HmeBooking> {
                               const Icon(Icons.circle,
                                   size: 18, color: Colors.red),
                               gapWC(4),
-                              tcn("Emergency", black, 13)
+                              tcn("Emergency", txtColor, 13)
                             ],
                           ),
                         ),
@@ -163,7 +167,7 @@ class _HmeBookingState extends State<HmeBooking> {
                         padding:
                             const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                         decoration: BoxDecoration(
-                            color: Colors.greenAccent,
+                            color: Colors.greenAccent.shade400,
                             borderRadius: BorderRadius.circular(10)),
                         child: tcn("Assigned", white, 12),
                       )
@@ -458,7 +462,7 @@ class _HmeBookingState extends State<HmeBooking> {
                     child: CommonTextField(prefixIconColor: txtColor,
                   txtController: hmBookingController.txtCustomerCode,
                   obscureY: false,
-                      prefixIcon: Icons.align_vertical_center,
+                      prefixIcon: Icons.tag_outlined,
                 )),
                 hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
                 hmBookingController.wstrPageMode.value != 'VIEW'
@@ -659,7 +663,7 @@ class _HmeBookingState extends State<HmeBooking> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            tc('Priority', black, 15),
+            tc('Priority',txtColor, 12),
             gapHC(5),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -689,7 +693,7 @@ class _HmeBookingState extends State<HmeBooking> {
                 ],
               ),
             ),
-            gapHC(12),
+            gapHC(10),
             tc('Delivery Required date', black, 12),
             gapHC(5),
             Bounce(
@@ -708,27 +712,7 @@ class _HmeBookingState extends State<HmeBooking> {
                 enableY: false,
               ),
             ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     tc('Delivery Required date', txtColor, 12),
-            //     // Bounce(
-            //     //   duration: const Duration(milliseconds: 110),
-            //     //   onPressed: () {
-            //     //     hmBookingController.wSelectDate(context);
-            //     //     gapHC(5);
-            //     //   },
-            //     //   child: Row(
-            //     //     children: [
-            //     //       const Icon(Icons.calendar_month,color: Colors.black,size: 15,),
-            //     //       gapWC(5),
-            //     //       tc(setDate(15, hmBookingController.delivryDate.value).toString().toUpperCase(), txtColor, 12)
-            //     //     ],
-            //     //   ),
-            //     // ),
-            //   ],
-            // ),
-            gapHC(12),
+            gapHC(10),
             tc('Driver', black, 12),
             gapHC(5),
             const CommonTextField(
@@ -736,7 +720,7 @@ class _HmeBookingState extends State<HmeBooking> {
               prefixIcon: Icons.directions_car_filled_outlined,
               prefixIconColor: black,
             ),
-            gapHC(12),
+            gapHC(10),
             tc('Vehicle Number', black, 12),
             gapHC(5),
             const CommonTextField(

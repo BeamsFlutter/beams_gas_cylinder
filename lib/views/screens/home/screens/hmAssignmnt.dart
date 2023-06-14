@@ -87,15 +87,22 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.tag,
-                          color: black,weight: 100,
-                          size: 15,
-                        ),
-                        tc(hmAssignmnt.frDocno.value, txtColor, 12)
-                      ],
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: primaryColor),
+                          borderRadius: BorderRadius.circular(30)
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.tag,
+                            color: black,weight: 100,
+                            size: 15,
+                          ),
+                          tc(hmAssignmnt.frDocno.value, txtColor, 12)
+                        ],
+                      ),
                     ),
                     Row(
                       children: [
@@ -110,7 +117,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                     ),
                   ],
                 ),
-                gapHC(5),
+                gapHC(15),
                 Container(
 
                   padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),

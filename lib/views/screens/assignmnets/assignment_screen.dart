@@ -157,13 +157,13 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
 todayAssignmnt() {
   return Padding(
     padding: const EdgeInsets.all(8.0),
-    child: Column(
-     crossAxisAlignment: CrossAxisAlignment.start,
- children: [
-     tc("Emergency", txtColor, 12),
-     gapHC(3),
-     Flexible(
-       child: Column(
+    child: SingleChildScrollView(
+      child: Column(
+       crossAxisAlignment: CrossAxisAlignment.start,
+       children: [
+       tc("Emergency", txtColor, 12),
+       gapHC(3),
+       Column(
          children: [
            Container(
              height: 60,
@@ -174,38 +174,45 @@ todayAssignmnt() {
              height: 60,
              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
            ),
-           gapHC(3),
+
 
          ],
-       ),
-     ),
-   tc("Others", txtColor, 12),
-   gapHC(3),
-   Column(
-     children: [
-       Container(
+       ),    gapHC(10),
+
+        tc("Others", txtColor, 12),
+         gapHC(3),
+         Column(children: [
+           Container(
          height: 60,
          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-       ),
-       gapHC(3),
-       Container(
+           ),
+           gapHC(3),
+           Container(
          height: 60,
          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-       ),
-       gapHC(3),
-       Container(
+           ),
+           gapHC(3),
+           Container(
          height: 60,
          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-       ),
-       gapHC(3),
-       Container(
+           ),
+           gapHC(3),
+           Container(
          height: 60,
          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-       ),
-     ],
-   )
+           ),
+           gapHC(3),
+           Container(
+             height: 60,
+             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
+           ),
+         ],
+
+         )
+
 
  ],
+      ),
     ),
   );
 }

@@ -13,6 +13,7 @@ class HmAssignmentController extends GetxController{
   late Future <dynamic> futureform;
   var wstrPageMode = "VIEW".obs;
   var g  = Global();
+
   var buildingCode  =  "".obs;
   Rx<DateTime> docDate = DateTime.now().obs;
   RxInt selectedPage = 0.obs;

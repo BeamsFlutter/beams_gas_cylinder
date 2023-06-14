@@ -4,6 +4,15 @@ import 'package:beams_gas_cylinder/views/screens/home/controller/hmAssignmntCont
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmBooking.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmCollection.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmDeliveryOrder.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmReport.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmSalse.dart';
+import 'package:beams_gas_cylinder/views/screens/report/screens/RepAssignment.dart';
+import 'package:beams_gas_cylinder/views/screens/report/screens/RepBooking.dart';
+import 'package:beams_gas_cylinder/views/screens/report/screens/RepCollection.dart';
+import 'package:beams_gas_cylinder/views/screens/report/screens/RepCustomerbalanceScreen.dart';
+import 'package:beams_gas_cylinder/views/screens/report/screens/RepDailySales.dart';
+import 'package:beams_gas_cylinder/views/screens/report/screens/RepOthers.dart';
 import 'package:beams_gas_cylinder/views/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
@@ -25,9 +34,10 @@ class BottomnavBar extends StatefulWidget {
 class _BottomnavBarState extends State<BottomnavBar> {
   final HmAssignmentController hmAssignmentController = Get.put(HmAssignmentController());
   var pages = [];
+  final GlobalKey<ScaffoldState> key = GlobalKey();
   @override
   void initState() {
-    pages = [AssignmentScreen(), wHome(), wReport(), const SettingsScreen()];
+    pages = [const AssignmentScreen(), wHome(), wReport(), const SettingsScreen()];
     // TODO: implement initState
     super.initState();
   }
@@ -36,22 +46,34 @@ class _BottomnavBarState extends State<BottomnavBar> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Obx(() => Scaffold(
+        key: key,
             backgroundColor: bgColor,
-            drawer: wDrawer(),
+            drawer:  wDrawer(),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
                   gapHC(20),
-                  const Row(
+                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.segment, color: Colors.black, size: 25),
-                      Icon(
-                        Icons.power_settings_new_outlined,
-                        color: Colors.black,
-                        size: 25,
+                      Bounce(
+                          duration: const Duration(milliseconds: 110),
+                          onPressed: () {
+                            key.currentState!.openDrawer();
+                          },
+                          child: const Icon(Icons.segment, color: Colors.black, size: 25)),
+                       Bounce(
+                         duration: const Duration(milliseconds: 110),
+                         onPressed: (){
+                           dprint("SignOut.......");
+                         },
+                         child: const Icon(
+                          Icons.power_settings_new_outlined,
+                          color: Colors.black,
+                          size: 25,
                       ),
+                       ),
                     ],
                   ),
                   gapHC(15),
@@ -71,7 +93,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                                   text: 'Good Morning,',
                                   style: TextStyle(color: white, fontSize: 15)),
                               TextSpan(
-                                text: ' Beams',
+                                text: ' ${hmAssignmentController.g.wstrUsername.toString()}',
                                 style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     color: white,
@@ -130,7 +152,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   gapHC(10),
                   Expanded(
                       child: Padding(
-                    padding: EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: pages[hmAssignmentController.pageIndex.value],
                   )),
                   // wHome()
@@ -301,10 +323,12 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   children: [
                     wMenuCard("Daily Sales", Icons.calendar_month, 55.0,() {
                       dprint("DailySales................");
+                      Get.to(const RepDailySalesScreen());
                     }),
                     gapWC(10),
                     wMenuCard(
                         "Collections", Icons.featured_play_list_outlined, 55.0,() {
+                      Get.to(RepCollectionScreen());
                       dprint("Collections................");
                         },)
                   ],
@@ -316,10 +340,12 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     wMenuCard("Assignment", Icons.assignment, 55.0,() {
+                      Get.to(const RepAssignmentScreen());
                       dprint("Assignment................");
                     }),
                     gapWC(10),
                     wMenuCard("Booking", Icons.calendar_month, 55.0,() {
+                      Get.to(const RepBookingScreen());
                       dprint("Booking................");
                     }),
                   ],
@@ -331,11 +357,16 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     wMenuCard("Customer Balance", Icons.balance, 55.0,() {
+
+
                       dprint("Customer Balance................");
+                      Get.to(const RepCustomerBalanceScreen());
                     }),
                     gapWC(10),
                     wMenuCard("Others", Icons.more_horiz, 55.0,() {
-                      dprint("Others................");
+                      Get.to(const RepOthers());
+
+
                     }),
                   ],
                 ),
@@ -358,12 +389,12 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     wMenuCard("Booking", Icons.calendar_month, 55.0,() {
-                      Get.to(HmeBooking());
+                      Get.to(const HmeBooking());
                        dprint("Booking.............");
                     }),
                     gapWC(10),
                     wMenuCard("Assignment", Icons.assignment, 55.0,() {
-                     Get.to(HmeAssignmnet());
+                     Get.to(const HmeAssignmnet());
                     },)
                   ],
                 ),
@@ -374,10 +405,11 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     wMenuCard("Delivery Order", Icons.delivery_dining, 55.0,() {
-                      dprint("Delivery Order.............");
+                      Get.to(const HmeDeliveryOrder());
                     }),
                     gapWC(10),
                     wMenuCard("Sales", Icons.point_of_sale, 55.0,() {
+                      Get.to(const HmeSales());
                       dprint("Sales.............");
                     }),
                   ],
@@ -386,11 +418,12 @@ class _BottomnavBarState extends State<BottomnavBar> {
               gapHC(10),
               wCollCard("Collections", Icons.collections_bookmark, 25,
                   (){
-                   Get.to(HmeCollections());
+                   Get.to(const HmeCollections());
 
                   }),
               gapHC(10),
               wCollCard("Reports", Icons.arrow_forward_ios_outlined, 25,(){
+                Get.to(const HmReport());
                 dprint("REport..................");
 
               })
@@ -416,13 +449,25 @@ class _BottomnavBarState extends State<BottomnavBar> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.receipt_long_sharp, color: black),
-                    title: const Text("Home"),
+                    leading: const Icon(Icons.calendar_month_outlined, color: black),
+                    title: const Text("Booking"),
+                    onTap: () {
+
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.assignment, color: black),
+                    title: const Text("Assignment"),
                     onTap: () {},
                   ),
                   ListTile(
-                    leading: const Icon(Icons.history, color: black),
-                    title: const Text("History"),
+                    leading: const Icon(Icons.delivery_dining, color: black),
+                    title: const Text("Delivery Order"),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.point_of_sale, color: black),
+                    title: const Text("Sales"),
                     onTap: () {},
                   ),
                   ListTile(
@@ -490,7 +535,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
           duration: const Duration(milliseconds: 110),
           onPressed: onTap,
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
                 color: subColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12)),

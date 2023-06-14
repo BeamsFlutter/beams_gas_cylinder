@@ -68,14 +68,16 @@ class TabButton extends StatelessWidget {
                   color: selectedPage == pageNumber ? fStxtColor : fNtxtColor),
               ),
               gapWC(5),
-              Text(
-                text ?? "",
-                style: TextStyle(
-                  color: selectedPage == pageNumber ? fStxtColor : fNtxtColor,
-                  fontSize: 10,
-                  fontWeight: selectedPage==pageNumber?FontWeight.bold:FontWeight.normal
+              Flexible(
+                child: Text(
+                  text ?? "",
+                  style: TextStyle(
+                    color: selectedPage == pageNumber ? fStxtColor : fNtxtColor,
+                    fontSize: 10,
+                    fontWeight: selectedPage==pageNumber?FontWeight.bold:FontWeight.normal
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
 
             ],

@@ -41,12 +41,12 @@ class SplashController extends GetxController{
   fnGetPageData(context){
     initPlatformState(context);
     fnDefaultPageSettings();
-    // var duration = const Duration(seconds: 5);
-    // return Timer(duration, route);
+    var duration = const Duration(seconds: 5);
+    return Timer(duration, route);
   }
 
   route() async{
-   Get.offAll(LoginScreen());
+   Get.offAll(()=>LoginScreen());
   }
 
   //========================================SYSTEM INFO

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class CommonTextField extends StatelessWidget {
   final String ? hintText;
   final String ? pageMode;
+  final FormFieldValidator ? validate;
   final IconData ? prefixIcon;
   final IconData ? suffixIcon;
   final VoidCallback ? suffixIconOnclick;
@@ -21,7 +22,7 @@ class CommonTextField extends StatelessWidget {
   final dynamic inputformate;
   final ValueChanged<String> ? onChanged;
   final ValueChanged<String> ? onSubmit;
-  const CommonTextField({super.key, this.hintText, this.prefixIcon, this.prefixIconColor, this.txtController, this.txtSize, this.onChanged, this.onSubmit, required this.obscureY, this.suffixIcon, this.suffixIconOnclick, this.maxline,  this.lookupY, this.pageMode,  this.enableY, this.textStyle, this.keybordType, this.textAlignment, this.inputformate});
+  const CommonTextField({super.key, this.hintText, this.prefixIcon, this.prefixIconColor, this.txtController, this.txtSize, this.onChanged, this.onSubmit, required this.obscureY, this.suffixIcon, this.suffixIconOnclick, this.maxline,  this.lookupY, this.pageMode,  this.enableY, this.textStyle, this.keybordType, this.textAlignment, this.inputformate, this.validate});
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +59,7 @@ class CommonTextField extends StatelessWidget {
       inputFormatters: inputformate,
       obscureText:obscureY,
       maxLines: maxline,
+      validator:validate,
       style:textStyle ,
       onChanged: (value) {
         // do something
