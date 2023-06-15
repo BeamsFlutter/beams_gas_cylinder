@@ -85,7 +85,6 @@ class ApiCall  with BaseController{
 
   //============================================LOOKUP
   Future<dynamic> LookupSearch(lstrTable,lstrColumn,lstrPage,lstrPageSize,lstrFilter) async {
-
     var request = jsonEncode(<dynamic, dynamic>{
       "lstrTable" : lstrTable,
       "lstrSearchColumn" :lstrColumn,
@@ -95,7 +94,6 @@ class ApiCall  with BaseController{
     });
     dprint('api/lookupSearch');
     dprint(request);
-
     var response = await ApiManager().post('api/lookupSearch',request).catchError((error){
       if (error is BadRequestException) {
         var apiError = json.decode(error.message!);

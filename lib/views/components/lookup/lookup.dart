@@ -260,7 +260,6 @@ class _LookupState extends State<Lookup> {
     List<Widget> rtnList = [];
     rtnList.add(gapHC(10));
     for(var e in pageData){
-      dprint("gggggg  ${e}");
       rtnList.add(Bounce(
         onPressed: (){
           fnCallback(e);

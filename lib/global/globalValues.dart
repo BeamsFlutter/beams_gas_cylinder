@@ -45,7 +45,8 @@ class Global {
   var  _wstrMainCompany = "";
   var  _wstrBuildingCode = "";
   var  _wstrBuildingName = "";
-
+  var  _wstrApartmentCode = "";
+  var  _wstrApartmentName = "";
   var  _wstrLoginDate = "";
   var  _wstrUserCD = "";
   var  _wstrUsername = "";
@@ -78,6 +79,15 @@ class Global {
   get wstrBuildingCode => _wstrBuildingCode;
   set wstrBuildingCode(value) {
     _wstrBuildingCode = value;
+  }
+  get wstrApartmentName => _wstrApartmentName;
+  set wstrApartmentName(value) {
+    _wstrApartmentName = value;
+  }
+
+  get wstrApartmentCode => _wstrApartmentCode;
+  set wstrApartmentCode(value) {
+    _wstrApartmentCode = value;
   }
 
   get wstrIp => _wstrIp;
