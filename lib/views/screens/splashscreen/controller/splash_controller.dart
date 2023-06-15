@@ -191,7 +191,7 @@ class SplashController extends GetxController{
 
   //==================================API
   gApiRegister(){
-    futureGlobal = ApiCall().gapiDeviceRegister(g.wstrDeivceId.value,g.wstrAppID.value, g.wstrDeviceName.value,txtMainCompany.text);
+    futureGlobal = ApiCall().gapiDeviceRegister(g.wstrDeivceId.toString(),g.wstrAppID.toString(), g.wstrDeviceName.toString(),txtMainCompany.text);
     futureGlobal.then((value) => gApiRegisterRes(value));
   }
   gApiRegisterRes(value){
