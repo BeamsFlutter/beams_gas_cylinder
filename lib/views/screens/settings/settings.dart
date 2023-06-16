@@ -13,7 +13,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: tc("Setttings", black, 12),
+      child: tc("Settings", black, 12),
     );
   }
 }

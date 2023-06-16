@@ -172,12 +172,12 @@ class ApiCall  with BaseController{
     return response;
 
   }
-  Future<dynamic> addAppartmnt(code,aprtmntcode) async{
-    dprint("cooooodeeeeeeeeeeeeeeee  ${code}");
+  Future<dynamic> addAppartmnt(aprtmntcode,buildingcode) async{
+    dprint("cooooodeeeeeeeeeeeeeeee  ${buildingcode}");
     dprint("naaaaaaaaaaaaaaaaaame  ${aprtmntcode}");
     var request = jsonEncode(<dynamic, dynamic>{
       "COMPANY":g.wstrCompany,
-      "BUILDING_CODE":code,
+      "BUILDING_CODE":buildingcode,
       "APARTMENT_CODE":aprtmntcode
     });
     dprint('api/saveApartmentMast');

@@ -30,7 +30,6 @@ class SplashController extends GetxController{
   RxString deviceIp = ''.obs;
   RxString deviceMode =''.obs;
   RxString appError = "".obs;
-
   var appMode  = "A";
 
   //Controller
@@ -41,8 +40,7 @@ class SplashController extends GetxController{
   fnGetPageData(context){
     initPlatformState(context);
     fnDefaultPageSettings();
-    var duration = const Duration(seconds: 5);
-    return Timer(duration, route);
+
   }
 
   route() async{
@@ -101,28 +99,19 @@ class SplashController extends GetxController{
 
   }
   _readWebBrowserInfo(WebBrowserInfo data)  {
-
-
       deviceMode.value = 'W';
       deviceId.value = describeEnum(data.browserName);
       deviceName.value =  describeEnum(data.browserName);
-
-
-
   }
   _readMacOsDeviceInfo(MacOsDeviceInfo data) {
-
       deviceMode.value = '';
       deviceId.value = data.systemGUID??'';
       deviceName.value =  data.computerName;
-
   }
   _readWindowsDeviceInfo(WindowsDeviceInfo data) {
-
       deviceMode.value = '';
       deviceId.value = data.computerName;
       deviceName.value =  data.computerName;
-
   }
 
 

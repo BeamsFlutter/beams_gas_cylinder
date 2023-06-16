@@ -46,7 +46,7 @@ class ApiManager {
     var url="${baseUrl+'/'+ api}";
     var uri = Uri.parse(url);
     dprint("Uriiiddd......... ${uri}");
-    dprint("bodyyyy......... ${body}");
+
 
     var payload = body;
     try {
@@ -58,6 +58,7 @@ class ApiManager {
             'TOKEN': g.wstrToken
           },
           body: payload);
+
       return _processResponse(response);
     } on SocketException {
 

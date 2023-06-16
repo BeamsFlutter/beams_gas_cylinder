@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../global/globalValues.dart';
 import '../../../../servieces/api_controller.dart';
+import '../../../../servieces/api_params.dart';
 import '../../../components/alertDialog/alertDialog.dart';
 import '../../../components/common/common.dart';
 import '../../../components/lookup/lookup.dart';
@@ -17,7 +18,7 @@ class HmBookingController extends GetxController{
   Rx<DateTime> docDate = DateTime.now().obs;
   var wstrPageMode = "VIEW".obs;
   var g  = Global();
-  Rx<DateTime> delivryDate = DateTime.now().obs;
+  // Rx<DateTime> delivryDate = DateTime.now().obs;
   RxString frDocno="".obs;
   RxString frDocType="".obs;
   RxString frDriver="".obs;
@@ -28,7 +29,7 @@ class HmBookingController extends GetxController{
   RxString priorityvalue=''.obs;
   RxInt selectedPage = 0.obs;
   var lstrSelectedPage = "CD".obs;
-
+  final customerformKey = GlobalKey<FormState>().obs;
   // RxString cstmrApartmentDescp = "".obs;
   // RxString cstmrApartmentCode = "".obs;
   // RxString cstmrBuildingDescp = "".obs;
@@ -41,6 +42,7 @@ class HmBookingController extends GetxController{
   RxString cstmrName = "".obs;
   // RxString cstmrMobile = "".obs;
   RxList lstrBookedList =[].obs;
+
 
   //************************Customer_CONTROLLER
   final txtCustomerCode = TextEditingController();
@@ -58,9 +60,9 @@ class HmBookingController extends GetxController{
   var txtdelivryDate = TextEditingController();
   var txtdriver = TextEditingController();
   var txtvehicleNumber = TextEditingController();
-  //************************Lookup
   var txtController = TextEditingController();
-
+  var lstrProductTypeList = [].obs;
+  var lstrProductItemDetailList =[].obs;
   //************************WIDGETS
   Future<void> wSelectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -68,11 +70,10 @@ class HmBookingController extends GetxController{
         firstDate: DateTime.now(),
         lastDate:DateTime(2025, 8),
         initialDate: DateTime.now());
-    if (pickedDate != null && pickedDate != delivryDate.value){
-      delivryDate.value = pickedDate;
-      txtdelivryDate.text =setDate(15, delivryDate.value);
-      dprint(delivryDate.value);
-      dprint("DeliveryDate DATE:  ${DateFormat('dd-MM-yyyy').format(delivryDate.value)}");
+    if (pickedDate != null){
+
+
+      txtdelivryDate.text =setDate(15, pickedDate);
     }
 
   }
@@ -103,10 +104,7 @@ class HmBookingController extends GetxController{
   fnAdd() {
     fnClear();
     wstrPageMode.value = 'ADD';
-
-
     print( wstrPageMode.value);
-
     update();
 
   }
@@ -141,69 +139,101 @@ class HmBookingController extends GetxController{
   }
 
   fnClear(){
+    fnCustomerClear();
+    txtdelivryDate.text =setDate(15,DateTime.now());
+    lstrBookedList.value =[];
+    priorityvalue.value='NORMAL';
+    txtdriver.clear();
+    txtvehicleNumber.clear();
+    frLocation.value ="";
+    frDocno.value="";
+    frDocType.value="";
+
 
   }
 
-  fnFill(data){
-    dprint("Values>>>>>>>  ${data}");
-    if(wstrPageMode != "VIEW"){
-      return;
-    }
 
-    fnClear();
 
-    var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
-    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
-    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
-    dprint("HEADERLIST>>>>>>> ${headerList}");
-    dprint("DET__LIST>>>>>>> ${detList}");
-    dprint("ASSIGNMNT__LIST>>>>>>> ${assignmentList}");
-    if(g.fnValCheck(headerList)){
-      frDocno.value = (headerList["DOCNO"]??"").toString();
-      frDocType.value = (headerList["DOCTYPE"]??"").toString();
-      frLocation.value = (headerList["LOCATION"]??"").toString();
-      priorityvalue.value = (headerList["PRIORITY"]??"").toString();
-      txtCustomerName.text = (headerList["PARTY_NAME"]??"").toString();
-      cstmrName.value = (headerList["PARTY_NAME"]??"").toString();
-      txtCustomerCode.text = (headerList["PARTY_CODE"]??"").toString();
-      cstmrCode.value = (headerList["PARTY_CODE"]??"").toString();
-      txtContactNo.text = (headerList["MOBILE_NO"]??"").toString();
-      txtBuildingCode.text = (headerList["BLDG_NO"]??"").toString();
-      txtApartmentCode.text = (headerList["APARTMENT_NO"]??"").toString();
-      txtRemark.text = (headerList["REMARKS"]??"").toString();
-      txtAddress.text = (headerList["CUST_ADDRESS"]??"").toString();
-      txtLandmark.text = (headerList["LANDMARK"]??"").toString();
-      frAssignmentStatus.value = (headerList["ASSIGNMENT_STATUS"]??"").toString();
-      docDate.value =headerList["DOCDATE"] != null ||headerList["DOCDATE"] != ""?DateTime.parse(headerList["DOCDATE"].toString()):DateTime.now();
-      delivryDate.value =headerList["DELIVERY_DATE"] != null ||headerList["DELIVERY_DATE"] != ""?DateTime.parse(headerList["DELIVERY_DATE"].toString()):DateTime.now();
-      txtdelivryDate.text=setDate(15, delivryDate.value);
-    }
-    if(g.fnValCheck(detList)){
-      int i = 1;
-      lstrBookedList.value = [];
-      for (var e in detList) {
-        var datas = Map<String,dynamic>.from({
-          "STKCODE":e["STOCK_CODE"],
-          "STKDESCP":e["STOCK_DESC"],
-          "RATE":e["RATE"],
-          "QTY": e["QTY1"],
-          "AMT":  g.mfnDbl(e["QTY1"])*g.mfnDbl(e["RATE"]),
+  fnSave(context) {
+    dprint("sssssssssaaaveeeeee");
+    if (customerformKey.value.currentState!.validate()) {
+
+      dprint("11111111111111111111111111");
+      List header =[];
+      List det=[];
+      List assignmnt =[];
+      List assignmnt_details =[];
+      header.add({
+        ApiParams.company :g.wstrCompany,
+        ApiParams.yearcode :g.wstrYearcode,
+        ApiParams.mobileno :txtContactNo.text,
+        ApiParams.partycode :txtCustomerCode.text,
+        ApiParams.partyname :txtCustomerName.text,
+        ApiParams.bldgno :txtBuildingCode.text,
+        ApiParams.aprtmntno :txtApartmentCode.text,
+        ApiParams.incomngid :"",
+        "AREA_CODE":txtAreaCode.text,
+        ApiParams.location :frLocation.value,
+        ApiParams.landmrk :txtLandmark.text,
+        ApiParams.custaddrss :txtAddress.text,
+        ApiParams.remark :txtRemark.text,
+        ApiParams.priorty :priorityvalue.value,
+        ApiParams.delmancode :txtdriver.text,
+        ApiParams.delivrydate : txtdelivryDate.text,
+        ApiParams.delivryreqdate :txtdelivryDate.text,
+        "DOCNO":frDocno.value,
+        "DOCTYPE":frDocType.value
+
+
+      });
+      if(txtdriver.text.isNotEmpty){
+        assignmnt.add(  {
+          "COMPANY": g.wstrCompany,
+          "YEARCODE": g.wstrYearcode,
+          "EMP_CODE": txtdriver.text,
+          "AREA_CODE":txtAreaCode.text,
+          ApiParams.delivrydate : txtdelivryDate.text,
         });
-
-        txtvehicleNumber.text =(e["VEHICLE_NO"]??"").toString();
-        txtdriver.text =(e["DEL_MAN_CODE"]??"").toString();
-        lstrBookedList.value.add(datas);
-        i++;
-        update();
       }
-      update();
-
+      int i=1;
+      for(var e in lstrBookedList.value){
+        det.add(    {
+          "COMPANY": g.wstrCompany,
+          "YEARCODE": g.wstrYearcode,
+          "SRNO": i,
+          "CYLINDER_CAT": "",
+          "STOCK_CODE": e["STKCODE"].toString(),
+          "STOCK_DESC": e["STKDESCP"].toString(),
+          "QTY1": e["QTY"],
+          "RATE": e["RATE"].toString(),
+          "AMT":  g.mfnDbl(e["QTY"])*g.mfnDbl(e["RATE"]),
+          "REASSIGN": "",
+          "DEL_MAN_CODE": txtdriver.text,
+          "VEHICLE_NO": txtvehicleNumber.text,
+          "PARTY_CODE":txtCustomerCode.text
+        } );
+        if(txtdriver.text.isNotEmpty){
+          assignmnt_details.add({
+            "COMPANY": g.wstrCompany,
+            "YEARCODE": g.wstrYearcode,
+            "SRNO": i,
+            "EMP_CODE": txtdriver.text,
+            "STATUS": frAssignmentStatus.value.toString(),
+            "CYLINDER_CAT": "",
+            "STOCK_CODE": e["STKCODE"].toString(),
+            "STOCK_DESC": e["STKDESCP"].toString(),
+            "PARTY_CODE": txtCustomerCode.text,
+            "VEHICLE_NO": txtvehicleNumber.text,
+            "BOOKING_SRNO": i
+          });
+        }
+        i++;
+      }
+      fnProceedToSave(context,header,det,assignmnt,assignmnt_details);
+    }else{
+      dprint("Not validate..........................");
     }
-
-
   }
-
-  fnSave(){}
 
   fnDelete(){}
 
@@ -211,12 +241,15 @@ class HmBookingController extends GetxController{
 
   fnLookup(mode){
 
-    if(wstrPageMode.value  == "VIEW"){
-      return;
-    }
+    // if(wstrPageMode.value  == "VIEW"){
+    //   return;
+    // }
     dprint(mode);
     dprint(g.wstrCompany);
-    if(mode == "GCYLINDER_CALL_LOGIN"){
+    if(mode == "GCYLINDER_BOOKING"){
+      if(wstrPageMode.value  != "VIEW"){
+        return;
+      }
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DOCNO', 'Display': 'Code'},
         {'Column': 'PARTY_CODE', 'Display': 'PCode'},
@@ -227,14 +260,14 @@ class HmBookingController extends GetxController{
         // {'Column': 'APARTMENT_NO', 'Display': 'Apartment'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany.value, 'JoinType': 'AND'}];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
 
 
       Get.to(
           Lookup(
             txtControl: txtController,
             oldValue: "",
-            lstrTable: 'GCYLINDER_CALL_LOGIN',
+            lstrTable: 'GCYLINDER_BOOKING',
             title: 'Booking Details',
             lstrColumnList: lookup_Columns,
             lstrFilldata: lookup_Filldata,
@@ -294,9 +327,10 @@ class HmBookingController extends GetxController{
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'BUILDING_CODE', 'Display': 'Code'},
         {'Column': 'DESCP', 'Display': 'Name'},
+        {'Column': 'AREA', 'Display': 'Area'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany.value, 'JoinType': 'AND'}];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
       Get.to(
           Lookup(
             txtControl: txtController,
@@ -325,7 +359,7 @@ class HmBookingController extends GetxController{
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [
       ];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany.value, 'JoinType': 'AND'}];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
       if(txtBuildingCode.text.isNotEmpty){
         lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': txtBuildingCode.text, 'JoinType': 'AND'});
       }
@@ -350,6 +384,65 @@ class HmBookingController extends GetxController{
           )
       );
     }
+    else if(mode == "CRDELIVERYMANMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
+        {'Column': 'NAME', 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'CRDELIVERYMANMASTER',
+            title: 'Driver Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'GUEST_CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "CRVEHICLEMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'VEHICLE_NO', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'CRVEHICLEMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'VEHICLE_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
 
   }
 
@@ -362,7 +455,9 @@ txtRemark.clear();
 txtAddress.clear();
 txtLandmark.clear();
 txtCustomerCode.clear();
-txtCustomerCode.clear();
+txtCustomerName.clear();
+cstmrName.value="";
+cstmrCode.value="";
 
 
 
@@ -370,22 +465,22 @@ txtCustomerCode.clear();
 
   fnFillCustomerData(data,mode){
 
-    //Clear
-    if(mode == "GBUILDINGMASTER"){
-      g.wstrBuildingCode.value = "";
-      g.wstrBuildingName.value = "";
-      txtBuildingCode.text = "";
-      txtBuildingName.text  = "";
-      txtApartmentCode.text  = "";
-      fnCustomerClear();
-    }
-    else if(mode == "GAPARTMENTMASTER"){
-      txtApartmentCode.text = "";
-      fnCustomerClear();
-    }
-    else if(mode == "GUESTMASTER"){
-      fnCustomerClear();
-    }
+    // //Clear
+    // if(mode == "GBUILDINGMASTER"){
+    //   g.wstrBuildingCode= "";
+    //   g.wstrBuildingName= "";
+    //   txtBuildingCode.text = "";
+    //   txtBuildingName.text  = "";
+    //   txtApartmentCode.text  = "";
+    //   fnCustomerClear();
+    // }
+    // else if(mode == "GAPARTMENTMASTER"){
+    //   txtApartmentCode.text = "";
+    //   fnCustomerClear();
+    // }
+    // else if(mode == "GUESTMASTER"){
+    //   fnCustomerClear();
+    // }
 
     //Fill
     if(g.fnValCheck(data)){
@@ -394,14 +489,14 @@ txtCustomerCode.clear();
 
         txtBuildingCode.text = data["BUILDING_CODE"]??"";
         txtBuildingName.text = data["DESCP"]??"";
-        g.wstrBuildingCode.value = data["BUILDING_CODE"]??"";
-        g.wstrBuildingName.value = data["DESCP"]??"";
+        txtAreaCode.text = data["AREA"]??"";
+        g.wstrBuildingCode = data["BUILDING_CODE"]??"";
+        g.wstrBuildingName = data["DESCP"]??"";
 
 
       }
       else if(mode  ==  "GAPARTMENTMASTER"){
-        txtApartmentCode.text = data["APARTMENT_CODE"]??"";
-        g.wstrApartmentCode.value  = data["APARTMENT_CODE"]??"";
+        g.wstrApartmentCode  = data["APARTMENT_CODE"]??"";
         txtApartmentCode.text =data["APARTMENT_CODE"]??"";
         //   apiGetCustomerDetails();
       }
@@ -417,16 +512,26 @@ txtCustomerCode.clear();
         g.wstrApartmentCode  = data["APARTMENT_CODE"]??"";
         //    apiGetCustomerInfo();
       }
+      else if(mode  ==  "CRDELIVERYMANMASTER"){
+        dprint("1111111111111111111111");
+        txtdriver.text = data["DEL_MAN_CODE"]??"";
+
+      }
+      else if(mode  ==  "CRVEHICLEMASTER"){
+        txtvehicleNumber.text = data["VEHICLE_NO"]??"";
+
+        //   apiGetCustomerDetails();
+      }
     }
 
   }
   fnFillData(data,mode){
-
-
     //Fill
     if(g.fnValCheck(data)){
       if(mode== "GCYLINDER_CALL_LOGIN"){
+        dprint("Booking dataaaaaaaaaaa ${data}");
         frDocno.value = data["DOCNO"];
+        apiViewBooking(frDocno.value, "");
         update();
 
       }
@@ -435,11 +540,348 @@ txtCustomerCode.clear();
 
   }
 
+  fnFill(data){
+    dprint("Values>>>>>>>  ${data}");
+    if(wstrPageMode != "VIEW"){
+      return;
+    }
+
+    fnClear();
+
+    var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
+    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
+    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
+    dprint("HEADERLIST>>>>>>> ${headerList}");
+    dprint("DET__LIST>>>>>>> ${detList}");
+    dprint("ASSIGNMNT__LIST>>>>>>> ${assignmentList}");
+    if(g.fnValCheck(headerList)){
+      frDocno.value = (headerList["DOCNO"]??"").toString();
+      frDocType.value = (headerList["DOCTYPE"]??"").toString();
+      frLocation.value = (headerList["LOCATION"]??"").toString();
+      priorityvalue.value = (headerList["PRIORITY"]??"").toString();
+      txtCustomerName.text = (headerList["PARTY_NAME"]??"").toString();
+
+      cstmrName.value = (headerList["PARTY_NAME"]??"").toString();
+      txtCustomerCode.text = (headerList["PARTY_CODE"]??"").toString();
+      cstmrCode.value = (headerList["PARTY_CODE"]??"").toString();
+      txtContactNo.text = (headerList["MOBILE_NO"]??"").toString();
+      txtBuildingCode.text = (headerList["BLDG_NO"]??"").toString();
+      txtApartmentCode.text = (headerList["APARTMENT_NO"]??"").toString();
+      txtRemark.text = (headerList["REMARKS"]??"").toString();
+      txtAddress.text = (headerList["CUST_ADDRESS"]??"").toString();
+      txtLandmark.text = (headerList["LANDMARK"]??"").toString();
+      txtAreaCode.text = (headerList["AREA_CODE"]??"").toString();
+      frAssignmentStatus.value = (headerList["ASSIGNMENT_STATUS"]??"").toString();
+      if(headerList["DELIVERY_REQ_DATE"] != null|| headerList["DELIVERY_REQ_DATE"] != ""){
+        try{
+          txtdelivryDate.text =setDate(15, DateTime.parse(headerList["DELIVERY_REQ_DATE"].toString()));
+
+        }catch(e){
+          dprint(e);
+        }
+      }
+
+      if(headerList["DOCDATE"] != null|| headerList["DOCDATE"] != ""){
+        try{
+          docDate.value=DateTime.parse(headerList["DOCDATE"].toString());
+        }catch(e){
+          docDate.value =DateTime.now();
+        }
+      }
+
+    }
+    if(g.fnValCheck(detList)){
+      int i = 1;
+      lstrBookedList.value = [];
+      for (var e in detList) {
+        var datas = Map<String,dynamic>.from({
+          "STKCODE":e["STOCK_CODE"],
+          "STKDESCP":e["STOCK_DESC"],
+          "RATE":e["RATE"],
+          "QTY": e["QTY1"],
+          "AMT":  g.mfnDbl(e["QTY1"])*g.mfnDbl(e["RATE"]),
+        });
+
+        txtvehicleNumber.text =(e["VEHICLE_NO"]??"").toString();
+        txtdriver.text =(e["DEL_MAN_CODE"]??"").toString();
+        lstrBookedList.value.add(datas);
+        i++;
+        update();
+      }
+      update();
+
+    }
+
+
+  }
+
+  fnProceedToSave(context,header,det,assignmnt,assignmnt_details){
+    if(txtCustomerName.value.text.isEmpty){
+      errorMsg(context, "Choose Customer");
+      return;
+    }
+    if(txtBuildingCode.text.isEmpty){
+      errorMsg(context, "Choose Building");
+      return;
+    }
+    //
+    if(txtApartmentCode.text.isEmpty){
+      errorMsg(context, "Choose Apartment");
+      return;
+    }
+
+    if(lstrBookedList.value.isEmpty){
+      errorMsg(context, "Choose Items");
+      return;
+    }
+
+
+    apiSaveBooking(header,det,assignmnt,assignmnt_details,context);
+
+
+
+
+  }
+
+
+  fnChngeQty(itemCode,mode,rate) {
+    var taxAmount = ''.obs;
+    var itemMenu = lstrProductItemDetailList.value.where((element) => element["STKCODE"] == itemCode).toList();
+
+    dprint("Item>>>>>> ${itemMenu}");
+    dprint("Mode>>>>> ${mode}");
+    dprint("price>>>>> ${rate}");
+    
+    if(mode == "A"){
+      if(lstrBookedList.where((e) => e["STKCODE"] == itemCode).isEmpty){
+        var datas = Map<String, Object>.from({
+          "STKCODE": itemCode,
+          "STKDESCP": itemMenu[0]["STKDESCP"],
+          "QTY": 1,
+          "HEADER_DISC": 0.0,
+          "DISC_AMT": 0.0,
+          "AMT": 0.0,
+          "RATE":rate,
+          "TAX_PER":0.0,
+          "TAXABLE_AMT": 0.0,
+          "TOTAL_TAX_AMOUNT": 0.0,
+          "NET_AMOUNT": 0.0,
+        });
+        lstrBookedList.add(datas);
+      }
+      else{
+        var item = lstrBookedList.where((element) => element["STKCODE"] == itemCode).toList();
+        if(item.isNotEmpty){
+          item[0]["QTY"] = g.mfnDbltoInt(item[0]["QTY"]) + 1;
+        }
+      }
+    }else{
+      var item = lstrBookedList.where((element) => element["STKCODE"] == itemCode).toList();
+      if(item.isNotEmpty){
+        item[0]["QTY"] = item[0]["QTY"] == 0?0: g.mfnDbltoInt(item[0]["QTY"]) - 1;
+      }
+    }
+    lstrBookedList.removeWhere((element) => element["QTY"] <= 0);
+
+  }
+
+  var selectedproduct="".obs;
+
+  wOpenBottomSheet(context) {
+    dprint("bottomsheetvalue..........  ${lstrProductTypeList.value}");
+    Get.bottomSheet(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft:Radius.circular(30) ),
+        ),
+        backgroundColor: Colors.white,
+        isScrollControlled: true,
+        StatefulBuilder(
+          builder: (context,setState){
+            return Container(
+              height: MediaQuery.of(context).size.height*0.7,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        gapHC(10),
+                        tc("Product Type", txtColor, 15),
+                        Container(
+                          width: 80,
+                          height: 5,
+                          decoration: BoxDecoration(
+                              color: primaryColor,
+                              borderRadius: BorderRadius.circular(10)
+                          ),
+                        ),
+                        gapHC(10),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          child: Row(
+                            children: wProductItem(),
+                          ),
+                        ),
+                        gapHC(10),
+                        Expanded(child:StatefulBuilder(
+                            builder: (BuildContext context, StateSetter setstate) {
+                              // dprint("CylinderType :: ${selectedcylinder.value}");
+                              return Obx(() => Column(
+                                children: [
+                                  gapHC(3),
+
+                                  Expanded(
+                                    child: ListView.builder(
+                                        itemCount: lstrProductItemDetailList.value.length,
+                                        itemBuilder: (context, index) {
+
+                                          //    {  "STKCODE": "FIVE", "STKDESCP": "5L", "NRATE": 20.0, "RRATE": 10.0,"TYPE":"R","QTY":1},
+                                          var itemName = (lstrProductItemDetailList[index]["STKDESCP"] ?? "").toString();
+                                          var itemCode = (lstrProductItemDetailList[index]["STKCODE"] ?? "").toString();
+
+                                          var price1 = g.mfnDbl(lstrProductItemDetailList[index]["PRICE1"].toString());
+
+                                          var item = lstrBookedList.where((element) => element["STKCODE"] == itemCode).toList();
+                                           dprint("iteeeeeeeeeee ${item}");
+                                          var vat = g.mfnDbl(lstrProductItemDetailList[index]["VAT"]
+                                                  .toString());
+                                          dprint("vaaattttttttttt  ${vat}");
+                                          var qty = item.isNotEmpty?item[0]["QTY"]:0;
+
+
+                                          return Container(
+                                            margin: const EdgeInsets.symmetric(horizontal: 5,vertical:3),
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: boxDecorationS(white, 10),
+                                            child: Column(
+                                              children: [
+                                                gapHC(2),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Expanded(child: tc(itemName,txtColor, 10)),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                      children: [
+                                                        qty>0?
+                                                        Bounce(onPressed: () {
+                                                          setstate(()
+                                                          {
+                                                            fnChngeQty(itemCode,"D",price1);
+                                                        });
+                                                          },
+                                                          duration: const Duration(milliseconds: 110), child: Container(
+                                                              height: 30,
+                                                              width: 35,
+                                                              decoration:boxDecorationS(primaryColor, 10),
+                                                              // decoration:qty!=0||qty!=0?boxGradientDecoration(0, 10):null,
+                                                              //        decoration:selectedcylinder=="new"&&newQty!=0?boxGradientDecoration(0, 10):null,
+                                                              child: const Center(
+                                                                  child: Icon(
+                                                                    Icons.remove,
+                                                                    color: Colors.white,
+                                                                    size: 16,
+                                                                  ))),
+                                                        ):gapHC(0),
+                                                        gapWC(5),
+                                                        qty>0?
+                                                        tc((qty.toString()), txtColor, 12):gapHC(0),
+                                                        gapWC(5),
+                                                        Bounce(
+                                                          onPressed: () {
+                                                            setstate(() {
+                                                              fnChngeQty(itemCode,"A",price1);
+                                                            });
+                                                          },
+                                                          duration: const Duration(
+                                                              milliseconds: 110),
+                                                          child: Container(
+                                                              height: 30,
+                                                              width:qty>0? 35:60,
+                                                              decoration:boxDecoration(primaryColor, 10),
+                                                              child: const Center(
+                                                                  child: Icon(
+                                                                    Icons.add,
+                                                                    color: Colors.white,
+                                                                    size: 16,
+                                                                  ))),
+                                                        ),
+                                                      ],
+                                                    ),
+
+
+
+                                                  ],
+                                                ),
+
+                                              ],
+                                            ),
+                                          );
+                                        }),
+                                  )
+                                ],
+                              ));
+                            }))
 
 
 
 
 
+                      ],
+                    ),
+                  ),
+
+                ],
+              ),
+            );
+          },
+
+        )
+
+    );
+    // apiProductTypeDetails(34, callback);
+
+  }
+  wProductItem() {
+    List<Widget> rtnPrdctList = [];
+    int i=0;
+    for (var e in lstrProductTypeList.value) {
+      var productName = e["CODE"];
+
+      rtnPrdctList.add(
+          Obx(() =>  Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: GestureDetector(
+              onTap: (){
+                selectedproduct.value=productName??"";
+                apiProductTypeDetails(selectedproduct.value);
+
+                dprint("aaaaaaaaaaaaac ${productName}");
+              },
+              child: Container(
+                decoration:BoxDecoration(
+                  color: selectedproduct.value==productName?subColor: white,
+                  border: Border.all(color: subColor,width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                child: Center(
+                  child: tc(productName, selectedproduct.value==productName?white:txtColor, 12),
+                ),
+              ),
+            ),
+          )));
+      i++;
+    }
+    update();
+    return rtnPrdctList;
+  }
 
 
   //**************************************************API
@@ -459,7 +901,7 @@ txtCustomerCode.clear();
   apiGetPriority(){
     var lstrFilter= [];
     var columnList  =  'CODE|DESCP|';
-    futureform = ApiCall().LookupSearch("GPRIORITYMASTER ", columnList,0, 100, lstrFilter);
+    futureform = ApiCall().LookupSearch("GPRIORITYMASTER ",columnList,0, 100, lstrFilter);
     futureform.then((value) => apiGetPriorityRes(value));
   }
   apiGetPriorityRes(value){
@@ -473,4 +915,114 @@ txtCustomerCode.clear();
 
   }
 
+  apiAddBuilding(code,name,context){
+    futureform = ApiCall().addBuilding(code,name);
+    futureform.then((value) => apiAddBuildinggRes(value,context));
+  }
+  apiAddBuildinggRes(value,context){
+    dprint("ddvaaalaueeeeeeeeeee ${value}");
+    if(g.fnValCheck(value)){
+      var sts = value[0]["STATUS"];
+      var msg = value[0]["MSG"];
+      var buildingCode = value[0]["CODE"];
+      if(sts=="1"){
+        dprint(msg);
+        txtBuildingCode.text = buildingCode;
+        Get.back();
+      }else{
+        errorMsg(context, msg);
+      }
+
+
+    }
+
+  }
+
+  apiAddApartment(aprtmntcode,buildingcode,context){
+    futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
+    futureform.then((value) => apiAddApartmentRes(value,context));
+  }
+  apiAddApartmentRes(value,context){
+    dprint("apaaaaaaaaart ${value}");
+    if(g.fnValCheck(value)){
+      var sts = value[0]["STATUS"];
+      var msg = value[0]["MSG"];
+      var buildingCode = value[0]["CODE"];
+      if(sts=="1"){
+        dprint(msg);
+        txtApartmentCode.text = buildingCode;
+        Get.back();
+      }else{
+          errorMsg(context, msg);
+      }
+
+
+    }
+
+  }
+
+  apiProductType() {
+    var lstrFilter = [];
+    var columnList = 'CODE|DESCP|';
+    futureform = ApiCall().LookupSearch("PRODUCT_TYPE", columnList, 0, 100, lstrFilter);
+    futureform.then((value) => apiGetProductTypeRes(value));
+  }
+  apiGetProductTypeRes(value) {
+    if (g.fnValCheck(value)) {
+      dprint("xxxxxxxx  ${value}");
+      lstrProductTypeList.value = value;
+      update();
+    }
+  }
+
+  apiProductTypeDetails(product_type) {
+    dprint("product_type..... ${product_type}");
+    var lstrFilter = [
+      {
+        'Column': "COMPANY",
+        'Operator': '=',
+        'Value': g.wstrCompany,
+        'JoinType': 'AND'
+      },
+      {
+        'Column': "PRODUCT_TYPE",
+        'Operator': '=',
+        'Value': product_type,
+        'JoinType': 'AND'
+      },
+    ];
+
+    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|';
+    futureform = ApiCall().LookupSearch("STOCKMASTER", columnList, 0, 100, lstrFilter);
+    futureform.then((value) => apiProductTypeDetailsRes(value));
+  }
+  apiProductTypeDetailsRes(value) {
+    if (g.fnValCheck(value)) {
+      dprint("Producttypeppp43243ppppp  ${value}");
+      lstrProductItemDetailList.value = value;
+      update();
+    }
+  }
+
+  apiSaveBooking(header,det,assignmnt,assignmnt_details,context){
+    dprint("!!!!!!!!!!!!!apiiii");
+
+    futureform = ApiCall().saveBooking(wstrPageMode.value,header,det,assignmnt,assignmnt_details);
+    futureform.then((value) => apiSaveBookingRes(value,context));
+  }
+  apiSaveBookingRes(value,context){
+
+    if(g.fnValCheck(value)){
+      var sts  =  value[0]["STATUS"];
+      var msg  =  value[0]["MSG"]??"";
+      if(sts == "1"){
+        frDocno.value = value[0]["CODE"];
+        var doctype = value[0]["DOCTYPE"];
+        wstrPageMode.value ="VIEW";
+
+        // CustomToast.showToast(msg.toString(), ToastType.success, ToastPositionType.end);
+      }
+      successMsg(context, msg);
+    }
+  }
 }

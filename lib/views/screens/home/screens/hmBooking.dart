@@ -26,8 +26,9 @@ class _HmeBookingState extends State<HmeBooking> {
   void initState() {
     hmBookingController.pageController = PageController();
     hmBookingController.wstrPageMode.value = 'VIEW';
-    hmBookingController.apiViewBooking('', "LAST");
+    hmBookingController.apiViewBooking('',"LAST");
     hmBookingController.apiGetPriority();
+    hmBookingController.apiProductType();
     // TODO: implement initState
     super.initState();
   }
@@ -57,7 +58,7 @@ class _HmeBookingState extends State<HmeBooking> {
         ],
       ),
           body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 6,vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 6,vertical: 5),
             child: Column(
               children: [
                 Row(
@@ -66,10 +67,10 @@ class _HmeBookingState extends State<HmeBooking> {
                     Bounce(
                       duration: const Duration(milliseconds: 110),
                       onPressed: () {
-                        hmBookingController.fnLookup("GCYLINDER_CALL_LOGIN");
+                        hmBookingController.fnLookup("GCYLINDER_BOOKING");
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                         decoration: BoxDecoration(
                           border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(30)
@@ -139,7 +140,7 @@ class _HmeBookingState extends State<HmeBooking> {
                               const Icon(Icons.location_on,
                                   size: 18, color: primaryColor),
                               gapWC(3),
-                              tcn(hmBookingController.frLocation.value.toString(), txtColor, 13)
+                              tcn(hmBookingController.txtAreaCode.text.toString(), txtColor, 13)
                             ],
                           ),
                         ),
@@ -241,27 +242,30 @@ class _HmeBookingState extends State<HmeBooking> {
                   child: Container(
                     width: size.width,
                     decoration: boxDecoration(white, 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: PageView(
-                            onPageChanged: (int page) {
-                              hmBookingController.selectedPage.value = page;
-                            },
-                            controller: hmBookingController.pageController,
-                            children: [
-                              // 1st page design ------ Choose Item
-                              Customertab(),
-                              //2nd Page  design -----------------------------------
-                              Itemtab(),
-                              // 3rd Page for Delivery Details
-                              Deliverytab()
-                              // Container for  1st page   design -----------------------------------
-                            ],
+                    child: Form(
+                      key: hmBookingController.customerformKey.value,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: PageView(
+                              onPageChanged: (int page) {
+                                hmBookingController.selectedPage.value = page;
+                              },
+                              controller: hmBookingController.pageController,
+                              children: [
+                                // 1st page design ------ Choose Item
+                                Customertab(),
+                                //2nd Page  design -----------------------------------
+                                Itemtab(),
+                                // 3rd Page for Delivery Details
+                                Deliverytab()
+                                // Container for  1st page   design -----------------------------------
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -292,7 +296,7 @@ class _HmeBookingState extends State<HmeBooking> {
                                 // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
                                 // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
 
-                                hmBookingController.fnSave();
+                                hmBookingController.fnSave(context);
                               },
                               duration: const Duration(milliseconds: 110),
                               child: Container(
@@ -341,6 +345,15 @@ class _HmeBookingState extends State<HmeBooking> {
                       ),
                     )
                   : const BottomAppBar(),
+         floatingActionButton: Obx(() => (hmBookingController.wstrPageMode.value != "VIEW" )? FloatingActionButton(
+          backgroundColor: primaryColor,
+          tooltip: 'Add Items',
+          onPressed: () {
+            hmBookingController.wOpenBottomSheet(context);
+          },
+          child: Icon(Icons.add),
+        ):SizedBox()
+        )
         ));
   }
 
@@ -376,7 +389,7 @@ class _HmeBookingState extends State<HmeBooking> {
         () => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            hmBookingController.wstrPageMode.value!="VIEW"?    tc('Customer Details', txtColor, 12):gapHC(0),
+            hmBookingController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
             hmBookingController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
             hmBookingController.wstrPageMode.value!="VIEW"?   Bounce(
               onPressed: () {
@@ -405,7 +418,7 @@ class _HmeBookingState extends State<HmeBooking> {
                               size: 15,
                             ),
                             gapWC(5),
-                            tc(hmBookingController.txtCustomerCode.text,
+                            tc(hmBookingController.cstmrCode.value,
                                 Colors.black, 12)
                           ],
                         ),
@@ -430,8 +443,8 @@ class _HmeBookingState extends State<HmeBooking> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc("${hmBookingController.txtCustomerName.text}", Colors.black, 12),
-                     tcn("Credit Balance", Colors.black, 10),
+                        tc(hmBookingController.cstmrName.value, Colors.black, 12),
+                        tcn("Credit Balance", Colors.black, 10),
 
                       ],
                     ),
@@ -451,7 +464,7 @@ class _HmeBookingState extends State<HmeBooking> {
                   txtController: hmBookingController.txtCustomerCode,
                   obscureY: false,
                        textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                       enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
+                       enableY: false,
                       prefixIcon: Icons.tag_outlined,
 
                 )),
@@ -480,10 +493,24 @@ class _HmeBookingState extends State<HmeBooking> {
             ),
             gapHC(10),
             wRoundedInputField(
-                hmBookingController.txtCustomerName, "Customer Name", "N",prefixicon: Icons.drive_file_rename_outline ),
+                hmBookingController.txtCustomerName, "Customer Name", "N",prefixicon: Icons.drive_file_rename_outline,
+            validate: (value){
+              if(value.isEmpty ||value==null){
+                return "Please Enter a Value";
+              }else{
+                return null;
+              }
+            }),
             gapHC(10),
             wRoundedInputField(
-                hmBookingController.txtContactNo, "Contact No", "N",prefixicon: Icons.phone_android_outlined ,inputType: TextInputType.number),
+                hmBookingController.txtContactNo, "Contact No", "N",prefixicon: Icons.phone_android_outlined ,inputType: TextInputType.number,
+                validate: (value){
+                  if(value.isEmpty ||value==null){
+                    return "Please Enter a Value";
+                  }else{
+                    return null;
+                  }
+                }),
             gapHC(10),
             tc("Building Code", txtColor, 12),
             gapHC(5),
@@ -491,13 +518,22 @@ class _HmeBookingState extends State<HmeBooking> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: CommonTextField(
+                    child: Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+                        hmBookingController.fnLookup("GBUILDINGMASTER");
+                      },
+                      child: CommonTextField(
                   txtController: hmBookingController.txtBuildingCode,
                   obscureY: false,textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                      prefixIconColor: txtColor,
-                      enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
-                      prefixIcon: Icons.apartment,
-                )),
+                        prefixIconColor: txtColor,
+                        enableY: false,
+                        prefixIcon: Icons.apartment,
+                        lookupY: true,
+                        sufixIconColor: txtColor,
+                        suffixIcon: Icons.search,
+                ),
+                    )),
                 hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
                 hmBookingController.wstrPageMode.value != 'VIEW'
                     ? Bounce(
@@ -505,7 +541,7 @@ class _HmeBookingState extends State<HmeBooking> {
                         onPressed: () {
                           wAddBuildAprtmntCode("Add Building", "Building Code", "Building Name", hmBookingController.txtBuildingCode, hmBookingController.txtBuildingName, Icons.apartment,
                               (){
-                            dprint("Building adddddddddddd");
+                                hmBookingController.apiAddBuilding(hmBookingController.txtBuildingCode.text,hmBookingController.txtBuildingName.text,context);
 
                               });
                         },
@@ -531,12 +567,21 @@ class _HmeBookingState extends State<HmeBooking> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                      prefixIcon:   Icons.apartment,
-                      enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
+                    child: Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+                        hmBookingController.fnLookup("GAPARTMENTMASTER");
+                      },
+                      child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+                        prefixIcon:   Icons.apartment,
+                        enableY:false,
+
+                  suffixIcon: Icons.search,
+                  sufixIconColor: txtColor,
                   txtController: hmBookingController.txtApartmentCode,
                   obscureY: false,prefixIconColor: txtColor,
-                )),
+                ),
+                    )),
                 hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
                 hmBookingController.wstrPageMode.value != 'VIEW'
                     ? Bounce(
@@ -544,7 +589,7 @@ class _HmeBookingState extends State<HmeBooking> {
                   onPressed: () {
                     wAddBuildAprtmntCode("Add Apartment", "Apartment Code", "Apartment Name", hmBookingController.txtApartmentCode, hmBookingController.txtApartmentName, Icons.apartment,
                             (){
-                          dprint("Apartment adddddddddddd");
+                              hmBookingController.apiAddApartment(hmBookingController.txtApartmentCode.text,hmBookingController.txtBuildingCode.text,context);
 
                         });
                   },
@@ -572,6 +617,7 @@ class _HmeBookingState extends State<HmeBooking> {
                     child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
                       prefixIcon:   Icons.apartment,prefixIconColor: txtColor,
                       enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
+
                   txtController: hmBookingController.txtAreaCode,
                   obscureY: false,
                 )),
@@ -591,7 +637,7 @@ class _HmeBookingState extends State<HmeBooking> {
     );
   }
 
-  wRoundedInputField(contrlr, hintTxt, lookup, {maxLine,prefixicon,inputType}) {
+  wRoundedInputField(contrlr, hintTxt, lookup, {maxLine,prefixicon,inputType,validate}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -601,6 +647,8 @@ class _HmeBookingState extends State<HmeBooking> {
           enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
           txtController: contrlr,
           textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+          validate: validate,
+
 
           prefixIconColor: txtColor,
           obscureY: false,
@@ -611,45 +659,44 @@ class _HmeBookingState extends State<HmeBooking> {
   }
 
   Widget Itemtab() {
-    return Column(
-      children: [
-        Container(
-          decoration: boxBaseDecoration(subColor, 5),
-          //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              Flexible(
-                  flex: 3,
-                  child: Row(
-                    children: [tcn('Item', Colors.white, 10)],
-                  )),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            decoration: boxBaseDecoration(subColor, 5),
+            //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(
+                    child: tcn('Item', Colors.white, 10)),
 
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [tcn('Price', Colors.white, 10)],
-                  )),
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [tcn('Qty', Colors.white, 10)],
-                  )),
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [tcn('Total', Colors.white, 10)],
-                  )),
-            ],
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [tcn('Price', Colors.white, 10)],
+                    )),
+                Flexible(
+                    flex: 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [tcn('Qty', Colors.white, 10)],
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [tcn('Total', Colors.white, 10)],
+                    )),
+              ],
+            ),
           ),
-        ),
-        Obx(() => Column(
-          children: wFilledItemLIst(),
-        )),
-      ],
+          Obx(() => Column(
+            children: wFilledItemLIst(),
+          )),
+        ],
+      ),
     );
   }
 
@@ -724,13 +771,14 @@ class _HmeBookingState extends State<HmeBooking> {
                    return;
                  }else{
                    dprint(" Driver Lookupp");
+                   hmBookingController.fnLookup("CRDELIVERYMANMASTER");
                  }
                },
                child: CommonTextField(
                  sufixIconColor: Colors.black,
                 lookupY: true,
                 obscureY: false,
-                 textStyle: TextStyle(color: txtColor),
+                 textStyle: const TextStyle(color: txtColor),
                 prefixIcon: Icons.directions_car_filled_outlined,
                 prefixIconColor: black,
                 txtController: hmBookingController.txtdriver,
@@ -747,13 +795,14 @@ class _HmeBookingState extends State<HmeBooking> {
                    return;
                  }else{
                    dprint(" VehicleNumb Lookupp");
+                   hmBookingController.fnLookup("CRVEHICLEMASTER");
                  }
                },
                child: CommonTextField(
                  lookupY: true,
                 obscureY: false,
 
-                textStyle: TextStyle(color:txtColor),
+                textStyle: const TextStyle(color:txtColor),
                 prefixIcon: Icons.tag,
                 sufixIconColor: Colors.black,
                 prefixIconColor: black,
@@ -769,7 +818,7 @@ class _HmeBookingState extends State<HmeBooking> {
 
   wAddBuildAprtmntCode(heading,codetxt,nametxt,codetxtController,nametxtController,prefixIcon,onTap){
     return  Get.bottomSheet(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft:Radius.circular(30) ),
         ),
       backgroundColor: Colors.white,
@@ -878,13 +927,11 @@ class _HmeBookingState extends State<HmeBooking> {
 
 
     for (var e in bookedlist) {
-
-      dprint("rrQWWWEW >> ${e}");
-
+      dprint(e);
 
       var itemName = (e["STKDESCP"] ?? "").toString();
+      var itemCode = (e["STKCODE"] ?? "").toString();
       var rate = hmBookingController.g.mfnDbl(e["RATE"].toString());
-      var type = (e["TYPE"] ?? "").toString();
       var qty = hmBookingController.g.mfnDbl(e["QTY"].toString());
       var total = qty * rate;
       dprint("Qty>>> ${qty}");
@@ -900,11 +947,8 @@ class _HmeBookingState extends State<HmeBooking> {
         padding: const EdgeInsets.all(10),
         child: Row(
           children: [
-            Flexible(
-                flex: 3,
-                child: Row(
-                  children: [tcn(itemName.toString(), Colors.black, 10)],
-                )),
+            Expanded(
+                child: tcn(itemName.toString(), Colors.black, 10)),
             Flexible(
                 flex: 1,
                 child: Row(
@@ -912,10 +956,50 @@ class _HmeBookingState extends State<HmeBooking> {
                   children: [tcn(rate.toString(), Colors.black, 10)],
                 )),
             Flexible(
-                flex: 1,
+                flex: 2,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [tcn(qty.toString(), Colors.black, 10)],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                   hmBookingController.wstrPageMode!="VIEW"?  Bounce(
+                      onPressed: () {
+                        hmBookingController.fnChngeQty(itemCode, "A", rate);
+                        },
+                      duration: const Duration(
+                          milliseconds: 110),
+                      child: Container(
+                          height: 20,
+                          width:20,
+                          decoration:boxDecoration(primaryColor, 10),
+                          child: const Center(
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 16,
+                              ))),
+                    ):gapHC(0),
+                    gapWC(5),
+                    tcn(qty.toString(), Colors.black, 10),
+                    gapWC(5),
+                    hmBookingController.wstrPageMode!="VIEW"?   Bounce(
+                      onPressed: () {
+                        hmBookingController.fnChngeQty(itemCode, "D", rate);
+                      },
+                      duration: const Duration(
+                          milliseconds: 110),
+                      child: Container(
+                          height: 20,
+                          width:20,
+                          decoration:boxDecoration(primaryColor, 10),
+                          child: const Center(
+                              child: Icon(
+                                Icons.remove,
+                                color: Colors.white,
+                                size: 16,
+                              ))),
+                    ):gapHC(0),
+
+                  ],
+
                 )),
             Flexible(
                 flex: 1,
