@@ -418,7 +418,7 @@ class _HmeBookingState extends State<HmeBooking> {
                               size: 15,
                             ),
                             gapWC(5),
-                            tc(hmBookingController.cstmrCode.value,
+                            tc(hmBookingController.txtCustomerCode.text,
                                 Colors.black, 12)
                           ],
                         ),
@@ -443,7 +443,7 @@ class _HmeBookingState extends State<HmeBooking> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc(hmBookingController.cstmrName.value, Colors.black, 12),
+                        tc(hmBookingController.txtCustomerName.text, Colors.black, 12),
                         tcn("Credit Balance", Colors.black, 10),
 
                       ],
@@ -942,72 +942,75 @@ class _HmeBookingState extends State<HmeBooking> {
       var amt = total;
       ftotal += amt;
       dprint("FNTotal>>> ${ftotal}");
-      rtnList.add(Container(
-        decoration: boxBaseDecoration(bGreyLight, 0),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            Expanded(
-                child: tcn(itemName.toString(), Colors.black, 10)),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [tcn(rate.toString(), Colors.black, 10)],
-                )),
-            Flexible(
-                flex: 2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                   hmBookingController.wstrPageMode!="VIEW"?  Bounce(
-                      onPressed: () {
-                        hmBookingController.fnChngeQty(itemCode, "A", rate);
+      rtnList.add(Padding(
+        padding: const EdgeInsets.only(bottom: 3),
+        child: Container(
+          decoration: boxBaseDecoration(bGreyLight, 0),
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              Expanded(
+                  child: tcn(itemName.toString(), Colors.black, 10)),
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [tcn(rate.toString(), Colors.black, 10)],
+                  )),
+              Flexible(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                     hmBookingController.wstrPageMode!="VIEW"?  Bounce(
+                        onPressed: () {
+                          hmBookingController.fnChngeQty(itemCode, "A", rate);
+                          },
+                        duration: const Duration(
+                            milliseconds: 110),
+                        child: Container(
+                            height: 20,
+                            width:20,
+                            decoration:boxDecoration(primaryColor, 10),
+                            child: const Center(
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 16,
+                                ))),
+                      ):gapHC(0),
+                      gapWC(5),
+                      tcn(qty.toString(), Colors.black, 10),
+                      gapWC(5),
+                      hmBookingController.wstrPageMode!="VIEW"?   Bounce(
+                        onPressed: () {
+                          hmBookingController.fnChngeQty(itemCode, "D", rate);
                         },
-                      duration: const Duration(
-                          milliseconds: 110),
-                      child: Container(
-                          height: 20,
-                          width:20,
-                          decoration:boxDecoration(primaryColor, 10),
-                          child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 16,
-                              ))),
-                    ):gapHC(0),
-                    gapWC(5),
-                    tcn(qty.toString(), Colors.black, 10),
-                    gapWC(5),
-                    hmBookingController.wstrPageMode!="VIEW"?   Bounce(
-                      onPressed: () {
-                        hmBookingController.fnChngeQty(itemCode, "D", rate);
-                      },
-                      duration: const Duration(
-                          milliseconds: 110),
-                      child: Container(
-                          height: 20,
-                          width:20,
-                          decoration:boxDecoration(primaryColor, 10),
-                          child: const Center(
-                              child: Icon(
-                                Icons.remove,
-                                color: Colors.white,
-                                size: 16,
-                              ))),
-                    ):gapHC(0),
+                        duration: const Duration(
+                            milliseconds: 110),
+                        child: Container(
+                            height: 20,
+                            width:20,
+                            decoration:boxDecoration(primaryColor, 10),
+                            child: const Center(
+                                child: Icon(
+                                  Icons.remove,
+                                  color: Colors.white,
+                                  size: 16,
+                                ))),
+                      ):gapHC(0),
 
-                  ],
+                    ],
 
-                )),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [tcn(total.toString(), Colors.black, 10)],
-                )),
-          ],
+                  )),
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [tcn(total.toString(), Colors.black, 10)],
+                  )),
+            ],
+          ),
         ),
       ));
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../components/bottomNavigationBar/bottom_navigator_item.dart';
 import '../../../components/common/common.dart';
@@ -53,7 +54,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
           ],
         ),
         body: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: Obx(
               () => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,14 +65,15 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
-                          dprint("lookup>>>>>>>Booking");
+                          hmDelivryOrderController.fnLookup("CRDELIVERYMANMASTER");
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                           decoration: BoxDecoration(
                               border: Border.all(color: primaryColor),
                               borderRadius: BorderRadius.circular(30)
                           ),
+
                           child: Row(
                             children: [
                               Row(
@@ -82,15 +84,11 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                                     weight: 100,
                                     size: 15,
                                   ),
-                                  tc(hmDelivryOrderController.frDocno.value,
-                                      txtColor, 12)
+                                  tc(hmDelivryOrderController.frDocno.value, txtColor, 12)
                                 ],
                               ),
                               gapWC(5),
-                              const Icon(
-                                Icons.search,
-                                size: 14,
-                              )
+                              const Icon(Icons.search,size: 14,)
                             ],
                           ),
                         ),
@@ -114,14 +112,18 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                     ],
                   ),
                   gapHC(15),
-                  tc('Customer Details', txtColor, 12),
-                  gapHC(5),
-                  Bounce(
-                    onPressed: () {},
+                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
+                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
+                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
+                    onPressed: () {
+                      hmDelivryOrderController.fnLookup("GUESTMASTER");
+
+                    },
                     duration: const Duration(milliseconds: 110),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
+
                         borderRadius: BorderRadius.circular(10),
                       ),
                       padding: const EdgeInsets.all(10),
@@ -139,23 +141,21 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                                     size: 15,
                                   ),
                                   gapWC(5),
-                                  tc(
-                                      hmDelivryOrderController
-                                          .txtCustomerName.text,
-                                      Colors.black,
-                                      12)
+                                  tc(hmDelivryOrderController.cstmrCode.value,
+                                      Colors.black, 12)
                                 ],
                               ),
+
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 0),
-                                  width: MediaQuery.of(context).size.width - 95,
-                                  child: const Divider(thickness: 1)),
+                                  margin: const EdgeInsets.symmetric(horizontal:0),
+                                  width: size.width-95,
+                                  child: const Divider(thickness:1)),
+
                               const Icon(
                                 Icons.search,
                                 color: txtColor,
@@ -163,49 +163,23 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                               )
                             ],
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              tc("${"Hassjls"} | ${"jjjdakk"}", Colors.black,
-                                  12),
-                              hmDelivryOrderController.wstrPageMode.value !=
-                                      "VIEW"
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            tcn('Credit Balance', Colors.black,
-                                                10)
-                                          ],
-                                        ),
-                                        Container(
-                                          height: 20,
-                                          width: 1,
-                                          decoration:
-                                              boxDecoration(Colors.black, 10),
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            tcn('Balance Coupon', Colors.black,
-                                                10)
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  : gapHC(0),
+                              tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
+                              tcn("Credit Balance", Colors.black, 10),
+
                             ],
                           ),
+
                         ],
                       ),
                     ),
-                  ),
-                  gapHC(10),
+                  ):gapHC(0),
+
+                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
+
+
                   Container(
 
                     padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 2),
@@ -412,6 +386,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
           txtController: contrlr,
           prefixIconColor: txtColor,
           obscureY: false,
+          textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
           maxline: maxLine,
         )
       ],
@@ -630,7 +605,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             ),
             gapHC(10),
             wRoundedInputField(
-              hmDelivryOrderController.txtApartmentName,
+              hmDelivryOrderController.txtApartmentCode,
               "Apartment",
               "N",
               prefixicon: Icons.apartment,
@@ -678,21 +653,54 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // tc('Driver Details', txtColor, 12),
-        // gapHC(10),
-        wRoundedInputField(
-          hmDelivryOrderController.txtDriver,enable: true,
-          "Driver",
-          "N",
-          prefixicon: Icons.drive_eta_outlined,
+        tc('Driver', black, 12),
+        gapHC(5),
+        Bounce(
+          duration: const Duration(milliseconds: 110),
+          onPressed: (){
+            if(hmDelivryOrderController.wstrPageMode.value  == "VIEW"){
+              return;
+            }else{
+              dprint(" Driver Lookupp");
+              hmDelivryOrderController.fnLookup("CRDELIVERYMANMASTER");
+            }
+          },
+          child: CommonTextField(
+            sufixIconColor: Colors.black,
+            lookupY: true,
+            obscureY: false,
+            textStyle: const TextStyle(color: txtColor),
+            prefixIcon: Icons.directions_car_filled_outlined,
+            prefixIconColor: black,
+            txtController: hmDelivryOrderController.txtDriver,
+            enableY:false,
+          ),
         ),
         gapHC(10),
-        wRoundedInputField(
-          hmDelivryOrderController.txtVehiclenumber,enable: true,
-          "Vehicle Number",
-          "N",
-          prefixicon: Icons.tag_outlined,
-        ),
+        tc('Vehicle Number', black, 12),
+        gapHC(5),
+        Bounce(
+          duration: const Duration(milliseconds: 110),
+          onPressed: (){
+            if(hmDelivryOrderController.wstrPageMode.value  == "VIEW"){
+              return;
+            }else{
+              dprint(" VehicleNumb Lookupp");
+              hmDelivryOrderController.fnLookup("CRVEHICLEMASTER");
+            }
+          },
+          child: CommonTextField(
+            lookupY: true,
+            obscureY: false,
+
+            textStyle: const TextStyle(color:txtColor),
+            prefixIcon: Icons.tag,
+            sufixIconColor: Colors.black,
+            prefixIconColor: black,
+            txtController: hmDelivryOrderController.txtVehiclenumber,
+            enableY:false,
+          ),
+        )
       ],
 
     ),);

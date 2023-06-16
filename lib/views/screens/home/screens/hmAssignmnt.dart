@@ -21,27 +21,7 @@ class HmeAssignmnet extends StatefulWidget {
 class _HmeAssignmnetState extends State<HmeAssignmnet> {
   final HmAssignmentController hmAssignmnt = Get.put(HmAssignmentController());
 
-  var orderlist  = [
 
-    {
-      "CODE":"001",
-      "CNAME":"WER",
-      "PRIORITY":"EMERGENCY",
-      "LOCATION":"AL NAHDA",
-      "ITEMS":"CNG 35KG"
-    },
-    {
-      "CODE":"002",
-      "CNAME":"QWE ",
-      "PRIORITY":"NORMAL",
-      "LOCATION":"QUSAIS",
-      "ITEMS":"LPG 25KG"
-    },
-
-
-
-
-  ];
   @override
   void initState() {
     hmAssignmnt.pageController = PageController();
@@ -87,23 +67,38 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: primaryColor),
-                          borderRadius: BorderRadius.circular(30)
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.tag,
-                            color: black,weight: 100,
-                            size: 15,
-                          ),
-                          tc(hmAssignmnt.frDocno.value, txtColor, 12)
-                        ],
+                    Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+                        hmAssignmnt.fnLookup("GCYLINDER_ASSIGNMENT");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: primaryColor),
+                            borderRadius: BorderRadius.circular(30)
+                        ),
+
+                        child: Row(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.tag,
+                                  color: black,
+                                  weight: 100,
+                                  size: 15,
+                                ),
+                                tc(hmAssignmnt.frDocno.value, txtColor, 12)
+                              ],
+                            ),
+                            gapWC(5),
+                            const Icon(Icons.search,size: 14,)
+                          ],
+                        ),
                       ),
                     ),
+
                     Row(
                       children: [
                         const Icon(
@@ -112,16 +107,18 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           size: 15,
                         ),
                         gapWC(3),
-                        tcn(setDate(7, hmAssignmnt.docDate.value).toString().toUpperCase(), txtColor, 12)
+                        tcn(setDate(7, hmAssignmnt.todyDate.value).toString().toUpperCase(), txtColor, 12)
                       ],
                     ),
                   ],
                 ),
                 gapHC(15),
                 Container(
-
-                  padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),   color: Colors.grey.shade200, ),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.grey.shade200,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -129,15 +126,21 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
                           dprint("lookup>>>>>>>location");
+                          hmAssignmnt.fnLookup("AREAMASTER");
                         },
                         child: Container(
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),   color: Colors.grey.shade200, ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.grey.shade200,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
                           child: Row(
                             children: [
-                              const Icon(Icons.location_on,size: 18,color: primaryColor),
+                              const Icon(Icons.location_on,
+                                  size: 18, color: primaryColor),
                               gapWC(3),
-                              tcn("AL NAHDA", black, 13)
+                              tcn(hmAssignmnt.frLocation.value.toString(), txtColor, 13)
                             ],
                           ),
                         ),
@@ -146,16 +149,21 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
                           dprint("lookup>>>>>>>Priority");
+                          hmAssignmnt.fnLookup("GPRIORITYMASTER");
                         },
                         child: Container(
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),   color: Colors.grey.shade200, ),
-                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.grey.shade200,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           child: Row(
-
                             children: [
-                              const Icon(Icons.circle,size: 18,color: Colors.red),
+                              const Icon(Icons.circle,
+                                  size: 18, color: Colors.red),
                               gapWC(4),
-                              tcn("Emergency", black, 13)
+                              tcn( hmAssignmnt.priorityvalue.value.toString(), txtColor, 13)
                             ],
                           ),
                         ),
@@ -181,7 +189,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           Flexible(
                             child: Bounce(
                               onPressed: (){
-                                dprint("lookup>>>>>>>Custname");
+                                hmAssignmnt.fnLookup("CRDELIVERYMANMASTER");
                               },
                               duration: const Duration(milliseconds: 110),
                               child: Container(
@@ -194,16 +202,18 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.account_circle_outlined,
-                                          color: Colors.black,
-                                          size: 18,
-                                        ),
-                                        gapWC(5),
-                                        tcn("SHAJAHAN", Colors.black, 13)
-                                      ],
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.person_outline,
+                                            color: Colors.black,
+                                            size: 18,
+                                          ),
+                                          gapWC(5),
+                                          Flexible(child: tcn(hmAssignmnt.frdriverName.value, Colors.black, 13))
+                                        ],
+                                      ),
                                     ),
 
                                     const Icon(Icons.search,size: 18,)
@@ -216,7 +226,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           Flexible(
                             child: Bounce(
                               onPressed: (){
-                                dprint("lookup>>>>>>>Vehicle");
+                                hmAssignmnt.fnLookup("CRVEHICLEMASTER");
                               },
                               duration: const Duration(milliseconds: 110),
 
@@ -237,7 +247,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                                           size: 18,
                                         ),
                                         gapWC(5),
-                                        tcn("AF64487", Colors.black, 13)
+                                        tcn(hmAssignmnt.frvehiclenumber.value, Colors.black, 13)
                                       ],
                                     ),
 
@@ -259,11 +269,11 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               tcn("Last Assigned", black, 12),
-                              tcn( setDate(7, hmAssignmnt.docDate.value).toString().toUpperCase(), txtColor, 12)
+                              tcn( setDate(7, hmAssignmnt.lastAssignedDate.value).toString().toUpperCase(), txtColor, 12)
 
                             ],
                           ),
-                          tc("23/56", txtColor,22)
+                          tc("${hmAssignmnt.pendingAssignedValue.value}/${hmAssignmnt.totalAssignedValue.value}", txtColor,22)
                         ],
                       ),
                     ],
@@ -486,9 +496,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   //===================================WIDGET
   wFilledItemLIst() {
-    dprint("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrc      +"+orderlist.toString());
+    dprint("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrc      +"+hmAssignmnt.orderlist.toString());
     List<Widget> rtnList = [] ;
-    for (var e in orderlist) {
+    for (var e in hmAssignmnt.orderlist) {
       var code =  e ["CODE"];
       var det =   (e["LOCATION"]??"");
       var type =  (e["PRIORITY"]??"");
@@ -570,7 +580,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   List<Widget>  wBookingDetails() {
     List<Widget> rtnList =[];
-    for(var e  in orderlist){
+    for(var e  in hmAssignmnt.orderlist.value){
       var code = e["CODE"];
       var name = e["CNAME"];
       var priority = e["PRIORITY"];
@@ -650,15 +660,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       tcn('Item', Colors.white, 10)
                     ],
                   )),
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .end,
-                    children: [
-                      tcn('N/R', Colors.white, 10)
-                    ],
-                  )),
+
               Flexible(
                   flex: 1,
                   child: Row(

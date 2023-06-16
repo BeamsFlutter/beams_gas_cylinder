@@ -6,6 +6,7 @@ import '../../../../global/globalValues.dart';
 import '../../../../servieces/api_controller.dart';
 import '../../../components/alertDialog/alertDialog.dart';
 import '../../../components/common/common.dart';
+import '../../../components/lookup/lookup.dart';
 import '../../../styles/colors.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -18,6 +19,8 @@ class HmDelivryOrderController extends GetxController{
   late Future <dynamic> futureform;
   RxInt selectedPage = 0.obs;
   var lstrSelectedPage = "IT".obs;
+  RxString cstmrCode = "".obs;
+  RxString cstmrName = "".obs;
   var pageIndex = 0.obs;
   late PageController pageController;
 
@@ -29,6 +32,7 @@ class HmDelivryOrderController extends GetxController{
   var selectedItemType;
   var selectedRate;
   //************************CONTROLLER
+  final txtController = TextEditingController();
   final txtCustomerCode = TextEditingController();
   var txtContactNo = TextEditingController();
   var txtRemark = TextEditingController();
@@ -694,6 +698,360 @@ class HmDelivryOrderController extends GetxController{
 
     dprint("Updatedlisttt ${lstrOrderList}");
     // fnTotal();
+  }
+
+  fnFillData(data,mode){
+
+  }
+  fnFillCustomerData(data,mode){
+    if(g.fnValCheck(data)){
+      if(mode  ==  "GBUILDINGMASTER"){
+        dprint("1111111111111111111111   >> ${data["BUILDING_CODE"]}");
+
+        txtBuildingCode.text = data["BUILDING_CODE"]??"";
+        txtBuildingName.text = data["DESCP"]??"";
+        g.wstrBuildingCode = data["BUILDING_CODE"]??"";
+        g.wstrBuildingName = data["DESCP"]??"";
+
+
+      }
+      else if(mode  ==  "GAPARTMENTMASTER"){
+        g.wstrApartmentCode  = data["APARTMENT_CODE"]??"";
+        txtApartmentCode.text =data["APARTMENT_CODE"]??"";
+        //   apiGetCustomerDetails();
+      }
+      else if(mode  ==  "GUESTMASTER"){
+        dprint("RRRRRRRRRR ${data}");
+        txtCustomerCode.text  = data["GUEST_CODE"]??"";
+        txtCustomerName.text  = data["GUEST_NAME"]??"";
+        txtContactNo.text  = data["MOBILE"]??"";
+        // frEmail.value  = data["EMAIL"]??"";
+        cstmrCode.value=data["GUEST_CODE"]??"";
+        cstmrName.value= data["GUEST_NAME"]??"";
+        txtContactNo.text  = data["MOBILE"]??"";
+        txtApartmentCode.text = data["APARTMENT_CODE"]??"";
+        txtBuildingCode.text = data["BUILDING_CODE"]??"";
+        g.wstrBuildingCode  = data["BUILDING_CODE"]??"";
+        g.wstrApartmentCode  = data["APARTMENT_CODE"]??"";
+        //    apiGetCustomerInfo();
+      }
+      else if(mode  ==  "CRDELIVERYMANMASTER"){
+        dprint("1111111111111111111111");
+        txtDriver.text = data["DEL_MAN_CODE"]??"";
+        frDocno.value = data["DEL_MAN_CODE"]??"";
+
+      }
+      else if(mode  ==  "CRVEHICLEMASTER"){
+        txtVehiclenumber.text = data["VEHICLE_NO"]??"";
+
+        //   apiGetCustomerDetails();
+      }
+    }
+
+
+  }
+
+  //====================Lookup====================
+
+  fnLookup(mode){
+    dprint(mode);
+
+    if(mode == "GCYLINDER_CALL_LOGIN"){
+
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DOCNO', 'Display': 'Code'},
+        {'Column': 'PARTY_CODE', 'Display': 'PCode'},
+        {'Column': 'PARTY_NAME', 'Display': 'Name'},
+        {'Column': 'MOBILE_NO', 'Display': 'Mobile'},
+        {'Column': 'DOCTYPE', 'Display': 'Doctype'},
+        {'Column': 'YEARCODE', 'Display': 'Yearcode'},
+
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      // if(frBuildingCode.isNotEmpty){
+      //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
+      // }
+      // if(frApartmentCode.isNotEmpty){
+      //   lstrFilter.add({'Column': "APARTMENT_CODE", 'Operator': '=', 'Value': frApartmentCode, 'JoinType': 'AND'});
+      // }
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GCYLINDER_CALL_LOGIN',
+            title: 'Booking Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DOCNO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "CRDELIVERYMANMASTER") {
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
+        {'Column': 'NAME', 'Display': 'Name'},
+        {'Column': 'VEHICLE_NO', 'Display': 'VEHICLE_NO'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      // if(frBuildingCode.isNotEmpty){
+      //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
+      // }
+      // if(frApartmentCode.isNotEmpty){
+      //   lstrFilter.add({'Column': "APARTMENT_CODE", 'Operator': '=', 'Value': frApartmentCode, 'JoinType': 'AND'});
+      // }
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'CRDELIVERYMANMASTER',
+            title: 'Driver Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'GUEST_CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "GCYLINDER_ASSIGNMENT") {
+      if(wstrPageMode.value  == "VIEW"){
+        return;
+      }
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DOCNO', 'Display': 'Code'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[];
+
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GCYLINDER_ASSIGNMENT',
+            title: 'Assignment Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DOCNO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "CRVEHICLEMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'VEHICLE_NO', 'Display': 'Number'},
+        {'Column': "DESCP", 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'CRVEHICLEMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'VEHICLE_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "GPRIORITYMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'CODE'},
+        {'Column': "DESCP", 'Display': 'Priority'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GPRIORITYMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DESCP',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "CRDELIVERYMANMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
+        {'Column': 'NAME', 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'CRDELIVERYMANMASTER',
+            title: 'Driver Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'GUEST_CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "CRVEHICLEMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'VEHICLE_NO', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'CRVEHICLEMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'VEHICLE_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "AREAMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'AREAMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'VEHICLE_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else   if(mode == "GUESTMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'GUEST_CODE', 'Display': 'Code'},
+        {'Column': 'GUEST_NAME', 'Display': 'Name'},
+        {'Column': 'MOBILE', 'Display': 'Mobile'},
+        {'Column': 'EMAIL', 'Display': 'Email'},
+        {'Column': 'BUILDING_CODE', 'Display': 'Building'},
+        {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+
+      // if(frBuildingCode.isNotEmpty){
+      //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
+      // }
+      // if(frApartmentCode.isNotEmpty){
+      //   lstrFilter.add({'Column': "APARTMENT_CODE", 'Operator': '=', 'Value': frApartmentCode, 'JoinType': 'AND'});
+      // }
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GUESTMASTER',
+            title: 'Customer Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'GUEST_CODE',
+            mode: "S",
+            layoutName: "PARTY",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
   }
 
   //**************************************************API
