@@ -775,7 +775,11 @@ class _HmeBookingState extends State<HmeBooking> {
                  }
                },
                child: CommonTextField(
-                 sufixIconColor: Colors.black,
+                 fnClear: (){
+                   hmBookingController.txtdriver.clear();
+                 },
+                 emptySts:hmBookingController.txtdriver.value.text.isEmpty?false:true ,
+                sufixIconColor: Colors.black,
                 lookupY: true,
                 obscureY: false,
                  textStyle: const TextStyle(color: txtColor),

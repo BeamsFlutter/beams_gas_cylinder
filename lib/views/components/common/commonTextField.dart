@@ -14,16 +14,18 @@ class CommonTextField extends StatelessWidget {
   final TextEditingController ? txtController;
   final double ? txtSize;
   final int ? maxline;
-  final bool obscureY;
+  final bool? obscureY;
   final TextStyle ? textStyle;
   final TextAlign ? textAlignment;
   final bool ? enableY;
   final bool? lookupY;
+  final bool? emptySts;
   final TextInputType? keybordType;
   final dynamic inputformate;
   final ValueChanged<String> ? onChanged;
   final ValueChanged<String> ? onSubmit;
-  const CommonTextField({super.key, this.hintText, this.prefixIcon, this.prefixIconColor, this.txtController, this.txtSize, this.onChanged, this.onSubmit, required this.obscureY, this.suffixIcon, this.suffixIconOnclick, this.maxline,  this.lookupY, this.pageMode,  this.enableY, this.textStyle, this.keybordType, this.textAlignment, this.inputformate, this.validate, this.sufixIconColor});
+  final Function? fnClear;
+  const CommonTextField({super.key, this.hintText, this.prefixIcon, this.prefixIconColor, this.txtController, this.txtSize, this.onChanged, this.onSubmit,  this.obscureY, this.suffixIcon, this.suffixIconOnclick, this.maxline,  this.lookupY, this.pageMode,  this.enableY, this.textStyle, this.keybordType, this.textAlignment, this.inputformate, this.validate, this.sufixIconColor,  this.fnClear, this.emptySts});
 
   @override
   Widget build(BuildContext context) {
@@ -47,16 +49,19 @@ class CommonTextField extends StatelessWidget {
            borderSide: const BorderSide(width: 1, color: subColor),
            borderRadius: BorderRadius.circular(30),),
           prefixIcon: Icon(prefixIcon,color: prefixIconColor,),
-          suffixIcon: GestureDetector(
+          suffixIcon:suffixIcon!=null? GestureDetector(
             onTap: suffixIconOnclick,
-              child: Icon(lookupY==true?Icons.search:suffixIcon,color: sufixIconColor,)),
+              child: Icon(lookupY==true?Icons.search:suffixIcon,color: sufixIconColor,)):GestureDetector(
+            onTap: fnClear??fn(),
+            child:  (emptySts??true)?  Icon(Icons.cancel_outlined,size: 15,color: Colors.grey.withOpacity(0.6)): const Icon(Icons.cancel_outlined,size: 15,color: greyLight,),
+          ),
 
 
       
       ),
       controller: txtController,
       inputFormatters: inputformate,
-      obscureText:obscureY,
+      obscureText:obscureY??false,
       maxLines: maxline,
       validator:validate,
       style:textStyle,
@@ -65,5 +70,8 @@ class CommonTextField extends StatelessWidget {
       },
 
     );
+  }
+  fn(){
+
   }
 }
