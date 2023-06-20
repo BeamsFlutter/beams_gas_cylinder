@@ -24,6 +24,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
   void initState() {
     hmDelivryOrderController.pageController = PageController();
     hmDelivryOrderController.wstrPageMode.value = 'VIEW';
+    hmDelivryOrderController.apiProductType();
     // TODO: implement initState
     super.initState();
   }
@@ -382,7 +383,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
         gapHC(5),
         CommonTextField(
           prefixIcon: prefixicon,
-          enableY: enable??false,
+          enableY: hmDelivryOrderController.wstrPageMode.value=="VIEW"?false:true,
           txtController: contrlr,
           prefixIconColor: txtColor,
           obscureY: false,
@@ -533,7 +534,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
 
 
 
-          Container(
+             Container(
             decoration: boxBaseDecoration(subColor, 5),
             //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
             padding: const EdgeInsets.all(10),
@@ -597,25 +598,125 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                 hmDelivryOrderController.txtContactNo, "Contact No", "N",
                 prefixicon: Icons.phone_android_outlined),
             gapHC(10),
-            wRoundedInputField(
-              hmDelivryOrderController.txtBuildingCode,
-              "BuildingCode",
-              "N",
-              prefixicon: Icons.apartment,
+            tc("Building Code", txtColor, 12),
+            gapHC(5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                    child: Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+                        if(hmDelivryOrderController.wstrPageMode.value=="VIEW"){
+                          return;
+                        }
+
+                        hmDelivryOrderController.fnLookup("GBUILDINGMASTER");
+                      },
+                      child: CommonTextField(
+                        txtController: hmDelivryOrderController.txtBuildingCode,
+                        obscureY: false,textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+                        prefixIconColor: txtColor,
+                        enableY: false,
+                        prefixIcon: Icons.apartment,
+                        lookupY: true,
+                        sufixIconColor: txtColor,
+                        suffixIcon: Icons.search,
+                      ),
+                    )),
+                hmDelivryOrderController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
+                hmDelivryOrderController.wstrPageMode.value != 'VIEW'
+                    ? Bounce(
+                  duration: const Duration(milliseconds: 110),
+                  onPressed: () {
+                    wAddBuildAprtmntCode("Add Building", "Building Code", "Building Name", hmDelivryOrderController.txtBuildingCode, hmDelivryOrderController.txtBuildingName, Icons.apartment,
+                            (){
+                              hmDelivryOrderController.apiAddBuilding(hmDelivryOrderController.txtBuildingCode.text,hmDelivryOrderController.txtBuildingName.text,context);
+
+                        });
+                  },
+                  child: Container(
+                    height: 40,
+                    width: size.width * 0.12,
+                    decoration: boxDecoration(primaryColor, 10),
+                    child: const Center(
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
+                    : gapHC(0)
+              ],
             ),
             gapHC(10),
-            wRoundedInputField(
-              hmDelivryOrderController.txtApartmentCode,
-              "Apartment",
-              "N",
-              prefixicon: Icons.apartment,
+            tc("Apartment", txtColor, 12),
+            gapHC(5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                    child: Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+                        if(hmDelivryOrderController.wstrPageMode.value=="VIEW"){
+                          return;
+                        }
+
+                        hmDelivryOrderController.fnLookup("GAPARTMENTMASTER");
+                      },
+                      child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+                        prefixIcon:   Icons.apartment,
+                        enableY:false,
+
+                        suffixIcon: Icons.search,
+                        sufixIconColor: txtColor,
+                        txtController: hmDelivryOrderController.txtApartmentCode,
+                        obscureY: false,prefixIconColor: txtColor,
+                      ),
+                    )),
+                hmDelivryOrderController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
+                hmDelivryOrderController.wstrPageMode.value != 'VIEW'
+                    ? Bounce(
+                  duration: const Duration(milliseconds: 110),
+                  onPressed: () {
+                    wAddBuildAprtmntCode("Add Apartment", "Apartment Code", "Apartment Name", hmDelivryOrderController.txtApartmentCode, hmDelivryOrderController.txtApartmentName, Icons.apartment,
+                            (){
+                              hmDelivryOrderController.apiAddApartment(hmDelivryOrderController.txtApartmentCode.text,hmDelivryOrderController.txtBuildingCode.text,context);
+
+                        });
+                  },
+                  child: Container(
+                    height: 40,
+                    width: size.width * 0.12,
+                    decoration: boxDecoration(primaryColor, 10),
+                    child: const Center(
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),)
+                    : gapHC(0)
+              ],
             ),
             gapHC(10),
-            wRoundedInputField(
-              hmDelivryOrderController.txtAreacode,
-              "Area Code",
-              "N",
-              prefixicon: Icons.apartment,
+            tc("AreaCode", txtColor, 12),
+            gapHC(5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                    child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+                      prefixIcon:   Icons.apartment,prefixIconColor: txtColor,
+                      enableY: false,
+
+                      txtController: hmDelivryOrderController.txtAreaCode,
+                      obscureY: false,
+                    )),
+
+              ],
             ),
             gapHC(10),
             wRoundedInputField(
@@ -669,7 +770,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             sufixIconColor: Colors.black,
             lookupY: true,
             obscureY: false,
-            textStyle: const TextStyle(color: txtColor),
+            textStyle: const TextStyle(color:txtColor,fontSize: 12),
             prefixIcon: Icons.directions_car_filled_outlined,
             prefixIconColor: black,
             txtController: hmDelivryOrderController.txtDriver,
@@ -693,7 +794,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             lookupY: true,
             obscureY: false,
 
-            textStyle: const TextStyle(color:txtColor),
+            textStyle: const TextStyle(color:txtColor,fontSize: 12),
             prefixIcon: Icons.tag,
             sufixIconColor: Colors.black,
             prefixIconColor: black,

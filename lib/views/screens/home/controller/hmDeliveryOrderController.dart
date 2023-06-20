@@ -23,14 +23,14 @@ class HmDelivryOrderController extends GetxController{
   RxString cstmrName = "".obs;
   var pageIndex = 0.obs;
   late PageController pageController;
-
+  RxList lstrDeliveredList =[].obs;
   RxInt rqty = 0.obs;
   RxInt nqty = 0.obs;
   RxInt eqty = 0.obs;
   var selectedproduct="".obs;
-  var selectedItem;
-  var selectedItemType;
-  var selectedRate;
+  var selectedItem=''.obs;
+  var selectedItemType=''.obs;
+  var selectedRate=''.obs;
   //************************CONTROLLER
   final txtController = TextEditingController();
   final txtCustomerCode = TextEditingController();
@@ -44,48 +44,15 @@ class HmDelivryOrderController extends GetxController{
   var txtBuildingName = TextEditingController();
   var txtApartmentCode = TextEditingController();
   var txtApartmentName = TextEditingController();
-  var txtAreacode = TextEditingController();
+  var txtAreaCode = TextEditingController();
   var txtDriver = TextEditingController();
   var txtVehiclenumber= TextEditingController();
 
-  RxList lstrOrderList = [].obs;
-  var lstrProductTypeList = [
-    {
-      "DESCP":"LPG",
-    },
-    {
-      "DESCP":"CNG",
-    },
-    {
-      "DESCP":"OXYGEN",
-    },
-    {
-      "DESCP":"erw",
-    },
-    {
-      "DESCP":"werw",
-    },
-    {
-      "DESCP":"werwer",
-    },   {
-      "DESCP":"ert",
-    },
-    {
-      "DESCP":"yuiyu",
-    },
-    {
-      "DESCP":"pio",
-    },
 
-
-  ].obs;
-
+  var lstrProductTypeList = [].obs;
   var lstrProductItemDetailList =[
-    {  "STKCODE": "FIVE", "STKDESCP": "5L", "NRATE": 20.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":22,"PRICE1":43},
-    {  "STKCODE": "THREE", "STKDESCP": "3L", "NRATE": 30.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":11,"PRICE1":73},
-    {  "STKCODE": "TWO", "STKDESCP": "2L", "NRATE": 10.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":27,"PRICE1":63},
-    {  "STKCODE": "SIX", "STKDESCP": "6L", "NRATE": 40.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":46,"PRICE1":40},
-    {  "STKCODE": "SEVEN", "STKDESCP": "7L", "NRATE": 50.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":21,"PRICE1":23},
+
+
   ].obs;
   //***********************************************************MENU
 
@@ -153,37 +120,37 @@ class HmDelivryOrderController extends GetxController{
     List<Widget> rtnPrdctList = [];
     int i=0;
     for (var e in lstrProductTypeList.value) {
-      var productName = e["DESCP"];
+      var productName = e["CODE"];
 
       rtnPrdctList.add(
-         Obx(() =>  Padding(
-           padding: const EdgeInsets.only(left: 8),
-           child: GestureDetector(
-             onTap: (){
-               selectedproduct.value=productName??"";
+          Obx(() =>  Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: GestureDetector(
+              onTap: (){
+                selectedproduct.value=productName??"";
+                apiProductTypeDetails(selectedproduct.value);
 
-               dprint("aaaaaaaaaaaaac ${i}");
-             },
-             child: Container(
-               decoration:BoxDecoration(
-                 color: selectedproduct.value==productName?subColor: white,
-                 border: Border.all(color: subColor,width: 2),
-                 borderRadius: const BorderRadius.all(Radius.circular(30)),
-               ),
-               padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-               child: Center(
-                 child: tc(productName, selectedproduct.value==productName?white:txtColor, 12),
-               ),
-             ),
-           ),
-         )));
+                dprint("aaaaaaaaaaaaac ${productName}");
+              },
+              child: Container(
+                decoration:BoxDecoration(
+                  color: selectedproduct.value==productName?subColor: white,
+                  border: Border.all(color: subColor,width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                child: Center(
+                  child: tc(productName, selectedproduct.value==productName?white:txtColor, 12),
+                ),
+              ),
+            ),
+          )));
       i++;
     }
     update();
     return rtnPrdctList;
   }
   wOpenBottomSheet(context) {
-    dprint("bottomsheetvalue..........  ${lstrProductTypeList.value}");
     return Get.bottomSheet(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft:Radius.circular(30) ),
@@ -194,7 +161,8 @@ class HmDelivryOrderController extends GetxController{
           builder: (context,setState){
             return Container(
               height: MediaQuery.of(context).size.height*0.7,
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+
 
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,15 +173,37 @@ class HmDelivryOrderController extends GetxController{
 
                       children: [
                         gapHC(10),
-                        tc("Product Type", txtColor, 15),
-                        Container(
-                          width: 80,
-                          height: 5,
-                          decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                tc("Product Type", txtColor, 15),
+                                Container(
+                                  width: 80,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: BorderRadius.circular(10)
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Bounce(
+                              duration: const Duration(milliseconds: 110),
+                              onPressed: (){
+                                Get.back();
+                              },
+                              child: Container(
+                                  padding: EdgeInsets.all(4),
+
+                                  child: Icon(Icons.close)),
+                            ),
+                          ],
                         ),
+
+
                         gapHC(10),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -225,8 +215,8 @@ class HmDelivryOrderController extends GetxController{
                         gapHC(10),
                         Expanded(child:StatefulBuilder(
                             builder: (BuildContext context, StateSetter setstate) {
-                              // dprint("CylinderType :: ${selectedcylinder.value}");
-                              return Column(
+
+                              return Obx(() => Column(
                                 children: [
                                   gapHC(3),
 
@@ -234,40 +224,29 @@ class HmDelivryOrderController extends GetxController{
                                     child: ListView.builder(
                                         itemCount: lstrProductItemDetailList.value.length,
                                         itemBuilder: (context, index) {
-                                          dprint("indexxx  ${index}  Listlength ${lstrProductItemDetailList.value.length}");
+
+
                                           //    {  "STKCODE": "FIVE", "STKDESCP": "5L", "NRATE": 20.0, "RRATE": 10.0,"TYPE":"R","QTY":1},
                                           var itemName = (lstrProductItemDetailList[index]["STKDESCP"] ?? "").toString();
                                           var itemCode = (lstrProductItemDetailList[index]["STKCODE"] ?? "").toString();
 
                                           var nrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE1"].toString());
                                           var rrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE2"].toString());
-                                          var erate = g.mfnDbl(50.0);
+                                          var erate = g.mfnDbl("200");
 
-                                          var item = lstrOrderList.where((element) => element["STKCODE"] == itemCode).toList();
-                                          var itemR = item
-                                              .where((element) => element["TYPE"] == "R")
-                                              .toList();
-                                          var itemN = item
-                                              .where((element) => element["TYPE"] == "N")
-                                              .toList();
-                                          var itemE = item
-                                              .where((element) => element["TYPE"] == "E")
-                                              .toList();
-                                          var vat = g.mfnDbl(
-                                              lstrProductItemDetailList[index]["VAT"]
-                                                  .toString());
-                                          dprint("vaaattttttttttt  ${vat}");
+                                          var item = lstrDeliveredList.value.where((element) => element["STKCODE"] == itemCode).toList();
+                                          var itemR = item.where((element) => element["TYPE"] == "R").toList();
+                                          var itemN = item.where((element) => element["TYPE"] == "N").toList();
+                                          var itemE = item.where((element) => element["TYPE"] == "E").toList();
+                                          // dprint("itemRrrr ${itemR}");
                                           rqty.value = itemR.length > 0
-                                              ? g
-                                              .mfnDbltoInt(itemR[0]["QTY"].toString())
+                                              ? g.mfnDbltoInt(itemR[0]["QTY"])
                                               : 0;
                                           nqty.value = itemN.length > 0
-                                              ? g
-                                              .mfnDbltoInt(itemN[0]["QTY"].toString())
+                                              ?  g.mfnDbltoInt(itemN[0]["QTY"])
                                               : 0;
                                           eqty.value = itemE.length > 0
-                                              ? g
-                                              .mfnDbltoInt(itemE[0]["QTY"].toString())
+                                              ?  g.mfnDbltoInt(itemE[0]["QTY"])
                                               : 0;
 
                                           return Container(
@@ -306,8 +285,8 @@ class HmDelivryOrderController extends GetxController{
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setstate(() {
-                                                            selectedItem = itemCode;
-                                                            selectedItemType = "N";
+                                                            selectedItem.value = itemCode;
+                                                            selectedItemType.value = "N";
                                                           });
                                                         },
                                                         child: Container(
@@ -320,9 +299,9 @@ class HmDelivryOrderController extends GetxController{
                                                               BorderRadius.circular(
                                                                   10),
                                                               border: Border.all(
-                                                                color: ((selectedItem ==
+                                                                color: ((selectedItem.value ==
                                                                     itemCode &&
-                                                                    selectedItemType ==
+                                                                    selectedItemType.value ==
                                                                         "N")
                                                                     ? subColor
                                                                     : AppTheme
@@ -334,13 +313,13 @@ class HmDelivryOrderController extends GetxController{
                                                               tc("New", txtColor, 10),
                                                               gapHC(3),
                                                               tc("${nrate} AED", txtColor,
-                                                                  10),
+                                                                  10)
                                                             ],
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                    gapWC(10),
+
                                                     badges.Badge(
                                                       badgeContent: tcn(
                                                           rqty.value.toString() ?? "",
@@ -358,8 +337,8 @@ class HmDelivryOrderController extends GetxController{
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setstate(() {
-                                                            selectedItem = itemCode;
-                                                            selectedItemType = "R";
+                                                            selectedItem.value = itemCode;
+                                                            selectedItemType.value = "R";
                                                           });
                                                         },
                                                         child: Container(
@@ -372,9 +351,9 @@ class HmDelivryOrderController extends GetxController{
                                                               BorderRadius.circular(
                                                                   10),
                                                               border: Border.all(
-                                                                color: ((selectedItem ==
+                                                                color: ((selectedItem.value ==
                                                                     itemCode &&
-                                                                    selectedItemType ==
+                                                                    selectedItemType.value ==
                                                                         "R")
                                                                     ? subColor
                                                                     : AppTheme
@@ -392,7 +371,7 @@ class HmDelivryOrderController extends GetxController{
                                                         ),
                                                       ),
                                                     ),
-                                                    gapWC(10),
+
                                                     badges.Badge(
                                                       badgeContent: tcn(
                                                           eqty.value.toString() ?? "",
@@ -410,8 +389,8 @@ class HmDelivryOrderController extends GetxController{
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setstate(() {
-                                                            selectedItem = itemCode;
-                                                            selectedItemType = "E";
+                                                            selectedItem.value = itemCode;
+                                                            selectedItemType.value = "E";
                                                           });
                                                         },
                                                         child: Container(
@@ -424,7 +403,7 @@ class HmDelivryOrderController extends GetxController{
                                                               BorderRadius.circular(
                                                                   10),
                                                               border: Border.all(
-                                                                color: ((selectedItem == itemCode && selectedItemType == "E")
+                                                                color: ((selectedItem.value == itemCode && selectedItemType.value == "E")
                                                                     ? subColor
                                                                     : AppTheme
                                                                     .background),
@@ -448,21 +427,17 @@ class HmDelivryOrderController extends GetxController{
                                                   mainAxisAlignment:
                                                   MainAxisAlignment.end,
                                                   children: [
-                                                    rqty.value != 0 && selectedItemType == "R" || nqty.value != 0 && selectedItemType == "N"||eqty.value != 0 && selectedItemType == "E"
+                                                    rqty.value != 0 && selectedItemType.value == "R" || nqty.value != 0 && selectedItemType.value == "N"||eqty.value != 0 && selectedItemType.value == "E"
                                                         ? Bounce(
                                                       onPressed: () {
                                                         setstate(() {
-                                                          if (selectedItem ==
+                                                          if (selectedItem.value ==
                                                               null ||
-                                                              selectedItem !=
+                                                              selectedItem.value !=
                                                                   itemCode) {
                                                             wShowitemSelectedornot();
                                                           } else {
-                                                            fnChngeQty(
-                                                                itemCode,
-                                                                selectedItemType,
-                                                                "D",
-                                                                vat);
+                                                            fnChngeQty(itemCode, selectedItemType.value, "D",);
                                                           }
                                                         });
                                                       },
@@ -486,15 +461,11 @@ class HmDelivryOrderController extends GetxController{
                                                     Bounce(
                                                       onPressed: () {
                                                         setstate(() {
-                                                          if (selectedItem == null ||
-                                                              selectedItem != itemCode) {
+                                                          if (selectedItem.value == null ||
+                                                              selectedItem.value != itemCode) {
                                                             wShowitemSelectedornot();
                                                           } else {
-                                                            fnChngeQty(
-                                                                itemCode,
-                                                                selectedItemType,
-                                                                "A",
-                                                                vat);
+                                                            fnChngeQty(itemCode, selectedItemType.value,"A");
                                                           }
                                                         });
                                                       },
@@ -519,7 +490,7 @@ class HmDelivryOrderController extends GetxController{
                                         }),
                                   )
                                 ],
-                              );
+                              ));
                             }))
 
 
@@ -555,13 +526,12 @@ class HmDelivryOrderController extends GetxController{
       List<Widget> rtnList =[];
       var ftotal  = 0.0;
       var ftaxamount  = 0.0;
-      //   {  "STKCODE": "FIVE", "STKDESCP": "5L", "RATE": 10.0,"TYPE":"R"},
-      dprint("Ordersdfrrrlistt >> ${lstrOrderList}");
+
 
 
       // Get.find<SalesController>().txtTotalAmt.value.text="" ;
-      for(var e  in lstrOrderList.value){
-        dprint("LstrOrderList>>>>>>>>>>>>>   ${e}");
+      for(var e  in lstrDeliveredList.value){
+
 
         var itemName  = (e["STKDESCP"]??"").toString();
         var rate  = g.mfnDbl(e["RATE"].toString());
@@ -590,8 +560,10 @@ class HmDelivryOrderController extends GetxController{
                   flex: 3,
                   child: Row(
                     children: [
-                      tcn(itemName.toString(),
-                          Colors.black, 10)
+                      Expanded(
+                        child: tcn(itemName.toString(),
+                            Colors.black, 10),
+                      )
                     ],
                   )),
               Flexible(
@@ -642,62 +614,46 @@ class HmDelivryOrderController extends GetxController{
     }
 
 
-  fnChngeQty(itemCode, type, mode, vat) {
+  fnChngeQty(itemCode,type,mode) {
     var taxAmount = ''.obs;
+    var itemMenu = lstrProductItemDetailList.value.where((element) => element["STKCODE"] == itemCode).toList();
 
-    var itemMenu = lstrProductItemDetailList.value
-        .where((element) => element["STKCODE"] == itemCode)
-        .toList();
+    if(mode == "A"){
+      if(lstrDeliveredList.where((e) => e["STKCODE"] == itemCode  && e["TYPE"]==type).isEmpty){
+        var datas = Map<String, Object>.from({
+          "STKCODE": itemCode,
+          "STKDESCP": itemMenu[0]["STKDESCP"],
+          "QTY": 1,
+          "HEADER_DISC": 0.0,
+          "DISC_AMT": 0.0,
+          "AMT": 0.0,
+           "TYPE": type,
+          "RATE": ((type == "N" )? itemMenu[0]["PRICE1"]:(type == "R" )? itemMenu[0]["PRICE2"] : 200.0),
+          "TAX_PER":0.0,
+          "TAXABLE_AMT": 0.0,
+          "TOTAL_TAX_AMOUNT": 0.0,
+          "NET_AMOUNT": 0.0,
+        });
+        lstrDeliveredList.add(datas);
+      }
 
-    dprint("Item>>>>>> ${itemMenu}");
-    dprint("Vat>>>>>> ${vat}");
-    dprint("Mode>>>>> ${mode}");
 
-    var i = 0;
-    var exist = 0;
-    for (var item in lstrOrderList.value) {
-      dprint("itttt>>>> ${item}");
-      if (item["STKCODE"] == itemCode && item["TYPE"] == type) {
-        exist = 1;
-        if (mode == "A") {
-          lstrOrderList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) + 1;
-          lstrOrderList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
-        }
-        if (mode == "D" && item["QTY"] != 0) {
-          lstrOrderList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) - 1;
-          lstrOrderList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
+      else{
+        var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode && element["TYPE"]==type).toList();
+        if(item.isNotEmpty){
+          item[0]["QTY"] = g.mfnDbltoInt(item[0]["QTY"]) + 1;
         }
       }
-      i++;
-      dprint("taxxxxxxxxxxxam  ${taxAmount.value.toString()}");
+    }else{
+      var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode).toList();
+      if(item.isNotEmpty){
+        item[0]["QTY"] = item[0]["QTY"] == 0?0: g.mfnDbltoInt(item[0]["QTY"]) - 1;
+      }
     }
-    // lstrOrderList.removeWhere((element) => commonController.mfnInt(element["QTY"]) <= 0);
-    if (exist == 0) {
-      var datas = Map<String, Object>.from({
-        "STKCODE": itemCode,
-        "STKDESCP": itemMenu[0]["STKDESCP"],
-        // "RATE": (type == "N" ? itemMenu[0]["PRICE1"] : itemMenu[0]["PRICE2"]),
-        "RATE": (type == "N") ? itemMenu[0]["PRICE1"]: (type == "R")? itemMenu[0]["PRICE2"]:g.mfnDbl(50.0),
-        "QTY": 1,
-        "TYPE": type,
-        "TAX_PER": vat,
-        "HEADER_DISC": 0.0,
-        // "GR_AMT": (type == "N" ? itemMenu[0]["PRICE1"] : itemMenu[0]["PRICE2"]) * 1,
-        "GR_AMT": (type == "N") ? itemMenu[0]["PRICE1"]??0 *1: (type == "R")? itemMenu[0]["PRICE2"]??0 *1:g.mfnDbl(50.0)*1,
-        "DISC_AMT": 0.0,
-        "AMT": 0.0,
-        "TAXABLE_AMT": 0.0,
-        "TOTAL_TAX_AMOUNT": 0.0,
-        "NET_AMOUNT": 0.0,
-      });
-      dprint("dattttSalesssss${datas}");
+    lstrDeliveredList.removeWhere((element) => element["QTY"] <= 0);
 
-      lstrOrderList.add(datas);
-    }
-    lstrOrderList.removeWhere((element) => element["QTY"] <= 0);
 
-    dprint("Updatedlisttt ${lstrOrderList}");
-    // fnTotal();
+
   }
 
   fnFillData(data,mode){
@@ -712,6 +668,7 @@ class HmDelivryOrderController extends GetxController{
         txtBuildingName.text = data["DESCP"]??"";
         g.wstrBuildingCode = data["BUILDING_CODE"]??"";
         g.wstrBuildingName = data["DESCP"]??"";
+        txtAreaCode.text = data["AREA"]??"";
 
 
       }
@@ -1052,6 +1009,67 @@ class HmDelivryOrderController extends GetxController{
           )
       );
     }
+    else if(mode == "GBUILDINGMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'BUILDING_CODE', 'Display': 'Code'},
+        {'Column': 'DESCP', 'Display': 'Name'},
+        {'Column': 'AREA', 'Display': 'Area'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GBUILDINGMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'BUILDING_CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "GAPARTMENTMASTER" ){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'APARTMENT_CODE', 'Display': 'Code'},
+        // {'Column': 'BUILDING_CODE', 'Display': 'Building'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+      if(txtBuildingCode.text.isNotEmpty){
+        lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': txtBuildingCode.text, 'JoinType': 'AND'});
+      }
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GAPARTMENTMASTER',
+            title: 'Apartment',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'APARTMENT_CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
   }
 
   //**************************************************API
@@ -1068,5 +1086,92 @@ class HmDelivryOrderController extends GetxController{
 
   }
 
-  void apiProductTypeDetails(product, void Function() callback) {}
+  apiAddBuilding(code,name,context){
+    futureform = ApiCall().addBuilding(code,name);
+    futureform.then((value) => apiAddBuildinggRes(value,context));
+  }
+  apiAddBuildinggRes(value,context){
+    dprint("ddvaaalaueeeeeeeeeee ${value}");
+    if(g.fnValCheck(value)){
+      var sts = value[0]["STATUS"];
+      var msg = value[0]["MSG"];
+      var buildingCode = value[0]["CODE"];
+      if(sts=="1"){
+        dprint(msg);
+        txtBuildingCode.text = buildingCode;
+        Get.back();
+      }else{
+        errorMsg(context, msg);
+      }
+
+
+    }
+
+  }
+
+  apiAddApartment(aprtmntcode,buildingcode,context){
+    futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
+    futureform.then((value) => apiAddApartmentRes(value,context));
+  }
+  apiAddApartmentRes(value,context){
+    dprint("apaaaaaaaaart ${value}");
+    if(g.fnValCheck(value)){
+      var sts = value[0]["STATUS"];
+      var msg = value[0]["MSG"];
+      var buildingCode = value[0]["CODE"];
+      if(sts=="1"){
+        dprint(msg);
+        txtApartmentCode.text = buildingCode;
+        Get.back();
+      }else{
+        errorMsg(context, msg);
+      }
+
+
+    }
+
+  }
+
+  apiProductType() {
+    var lstrFilter = [];
+    var columnList = 'CODE|DESCP|';
+    futureform = ApiCall().LookupSearch("PRODUCT_TYPE", columnList, 0, 100, lstrFilter);
+    futureform.then((value) => apiGetProductTypeRes(value));
+  }
+  apiGetProductTypeRes(value) {
+    if (g.fnValCheck(value)) {
+      dprint("xxxxxxxx  ${value}");
+      lstrProductTypeList.value = value;
+      update();
+    }
+  }
+
+  apiProductTypeDetails(product_type) {
+    dprint("product_type..... ${product_type}");
+    var lstrFilter = [
+      {
+        'Column': "COMPANY",
+        'Operator': '=',
+        'Value': g.wstrCompany,
+        'JoinType': 'AND'
+      },
+      {
+        'Column': "PRODUCT_TYPE",
+        'Operator': '=',
+        'Value': product_type,
+        'JoinType': 'AND'
+      },
+    ];
+
+    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|';
+    futureform = ApiCall().LookupSearch("STOCKMASTER", columnList, 0, 100, lstrFilter);
+    futureform.then((value) => apiProductTypeDetailsRes(value));
+  }
+  apiProductTypeDetailsRes(value) {
+    if (g.fnValCheck(value)) {
+      dprint("Producttypeppp43243ppppp  ${value}");
+     lstrProductItemDetailList.value = value;
+      update();
+    }
+  }
 }

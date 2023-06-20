@@ -14,6 +14,7 @@ class ApiCall  with BaseController{
 
   var g =Global();
   //============================================GLOBAL CHECK
+
   Future<dynamic> gapiCheckRegister(deviceId) async{
 
     var request = jsonEncode(<dynamic, dynamic>{
@@ -232,7 +233,7 @@ class ApiCall  with BaseController{
 
     });
     dprint('api/GetBooking');
-    // dprint(request);
+     dprint(request);
     var response = await ApiManager().post('api/GetBooking',request).catchError((error){
       if (error is BadRequestException) {
       } else {
@@ -258,7 +259,7 @@ class ApiCall  with BaseController{
 
     });
     dprint('api/GetAssignment');
-    // dprint(request);
+    dprint(request);
     var response = await ApiManager().post('api/GetAssignment',request).catchError((error){
       if (error is BadRequestException) {
       } else {
@@ -272,14 +273,15 @@ class ApiCall  with BaseController{
 
   }
   Future saveAssignment(mode,tableassignmnt,tableassignmntDetails)async{
+
     var request = jsonEncode(<dynamic, dynamic>{
-      ApiParams.mode:mode,
+      ApiParams.mode:mode=="EDIT"?"REASSIGN":"ADD",
       "TABLE_ASSIGNMENT":tableassignmnt,
       "TABLE_ASSIGNMENTDET":tableassignmntDetails,
 
     });
     dprint('api/SaveAssignment');
-    // dprint(request);
+     dprint(request);
     var response = await ApiManager().post('api/SaveAssignment',request).catchError((error){
       if (error is BadRequestException) {
       } else {

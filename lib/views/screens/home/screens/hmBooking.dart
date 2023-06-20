@@ -167,7 +167,7 @@ class _HmeBookingState extends State<HmeBooking> {
                           ),
                         ),
                       ),
-                      Container(
+                    hmBookingController.wstrPageMode.value=="VIEW"?  Container(
                         padding:
                             const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                         decoration: BoxDecoration(
@@ -181,7 +181,7 @@ class _HmeBookingState extends State<HmeBooking> {
                             "",  hmBookingController.frAssignmentStatus.value.toString()=="P"?txtColor:
                         hmBookingController.frAssignmentStatus.value.toString()=="A"?white:
                         null, 12),
-                      )
+                      ):gapHC(0)
                     ],
                   ),
                 ),
@@ -521,6 +521,10 @@ class _HmeBookingState extends State<HmeBooking> {
                     child: Bounce(
                       duration: const Duration(milliseconds: 110),
                       onPressed: () {
+                        if(hmBookingController.wstrPageMode.value=="VIEW"){
+                          return;
+                        }
+
                         hmBookingController.fnLookup("GBUILDINGMASTER");
                       },
                       child: CommonTextField(
@@ -570,6 +574,10 @@ class _HmeBookingState extends State<HmeBooking> {
                     child: Bounce(
                       duration: const Duration(milliseconds: 110),
                       onPressed: () {
+                        if(hmBookingController.wstrPageMode.value=="VIEW"){
+                          return;
+                        }
+
                         hmBookingController.fnLookup("GAPARTMENTMASTER");
                       },
                       child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
@@ -616,7 +624,7 @@ class _HmeBookingState extends State<HmeBooking> {
                 Expanded(
                     child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
                       prefixIcon:   Icons.apartment,prefixIconColor: txtColor,
-                      enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
+                      enableY: false,
 
                   txtController: hmBookingController.txtAreaCode,
                   obscureY: false,

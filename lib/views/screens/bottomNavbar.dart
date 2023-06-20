@@ -394,7 +394,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     }),
                     gapWC(10),
                     wMenuCard("Assignment", Icons.assignment, 55.0,() {
-                     Get.to(const HmeAssignmnet());
+                     Get.to(()=>HmeAssignmnet());
                     },)
                   ],
                 ),

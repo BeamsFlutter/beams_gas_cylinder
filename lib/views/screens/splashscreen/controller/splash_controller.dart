@@ -204,6 +204,7 @@ class SplashController extends GetxController{
     futureGlobal.then((value) => gapiCheckDeviceRes(value,context));
   }
 
+
   gapiCheckDeviceRes(value,context){
     //[{STATUS: 0, MESSAGE: DEVICE NOT REGISTERED}]
     dprint("dddddddddd  ${value.toString()}");
@@ -213,10 +214,13 @@ class SplashController extends GetxController{
         var msg =  (value[0]["MESSAGE"]??"").toString();
 
         if(sts == "1"){
+
           fnRegisterDone(value);
         }else{
+
           fnRegisterScreen(context);
         }
+
 
       }else{
         fnRegisterScreen(context);

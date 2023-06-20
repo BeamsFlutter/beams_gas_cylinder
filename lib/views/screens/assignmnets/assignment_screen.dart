@@ -1,5 +1,6 @@
 import 'package:beams_gas_cylinder/views/screens/assignmnets/controller/assignmnet_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
 
 import '../../components/common/common.dart';
@@ -142,77 +143,193 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
   }
 
   pendingAssignmnt() {
-    return Center(
-      child: tc("Pending", txtColor, 12),
+    return  Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            tc("Emergency", txtColor, 12),
+            gapHC(3),
+            Column(
+
+                children: wPendingAssignedList()
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   allAssignmnt() {
-    return Center(
-    child: tc("ALLL", txtColor, 12),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          tc("Emergency", txtColor, 12),
+          gapHC(3),
+          Column(
+              children: wAllAssignedList()
+          ),
+        ],
+      ),
     );
   }
-}
 
-todayAssignmnt() {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: SingleChildScrollView(
-      child: Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-       tc("Emergency", txtColor, 12),
-       gapHC(3),
-       Column(
-         children: [
-           Container(
-             height: 60,
-             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
-           gapHC(3),
-           Container(
-             height: 60,
-             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
+  todayAssignmnt() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            tc("Emergency", txtColor, 12),
+            gapHC(3),
+            Column(
+              children: wEmergencyAssignedList()
+            ),    gapHC(10),
+
+            tc("Others", txtColor, 12),
+            gapHC(3),
+            Column(children: wOthersAssignedList()
+
+            )
 
 
-         ],
-       ),    gapHC(10),
-
-        tc("Others", txtColor, 12),
-         gapHC(3),
-         Column(children: [
-           Container(
-         height: 60,
-         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
-           gapHC(3),
-           Container(
-         height: 60,
-         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
-           gapHC(3),
-           Container(
-         height: 60,
-         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
-           gapHC(3),
-           Container(
-         height: 60,
-         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
-           gapHC(3),
-           Container(
-             height: 60,
-             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
-           ),
-         ],
-
-         )
-
-
- ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
+
+
+  List<Widget> wEmergencyAssignedList() {
+    var emergncyList = assignmentController.emergencyAssignedList.value;
+    List<Widget> rtnList = [] ;
+    for(var e in emergncyList){
+      var name = e["PartyName"];
+      var buildcode = e["BuildCode"];
+      var mobile = e["Mobile"];
+      var apartment = e["Apartment"];
+      var priority = e["Priority"];
+      rtnList.add(wAssignCard(name, priority, buildcode, apartment, mobile));
+    }
+    return rtnList;
+  }
+  List<Widget> wOthersAssignedList() {
+    var otherList = assignmentController.otherAssignedList.value;
+    List<Widget> rtnList = [] ;
+    for(var e in otherList){
+      var name = e["PartyName"];
+      var buildcode = e["BuildCode"];
+      var priority = e["Priority"];
+      var mobile = e["Mobile"];
+      var apartment = e["Apartment"];
+      rtnList.add(wAssignCard(name, priority, buildcode, apartment, mobile));
+    }
+    return rtnList;
+  }
+
+  List<Widget> wPendingAssignedList() {
+    var emergncyList = assignmentController.pendingAssignedList.value;
+    List<Widget> rtnList = [] ;
+    for(var e in emergncyList){
+      var name = e["PartyName"];
+      var buildcode = e["BuildCode"];
+      var mobile = e["Mobile"];
+      var apartment = e["Apartment"];
+      var priority = e["Priority"];
+      rtnList.add(wAssignCard(name, priority, buildcode, apartment, mobile));
+    }
+    return rtnList;
+  }
+  List<Widget> wAllAssignedList() {
+    var otherList = assignmentController.allAssignedList.value;
+    List<Widget> rtnList = [] ;
+    for(var e in otherList){
+      var name = e["PartyName"];
+      var buildcode = e["BuildCode"];
+      var priority = e["Priority"];
+      var mobile = e["Mobile"];
+      var apartment = e["Apartment"];
+      rtnList.add(wAssignCard(name, priority, buildcode, apartment, mobile));
+    }
+    return rtnList;
+  }
+
+
+  wAssignCard(name,priority,buildcode,apartment,mobile){
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        width: double.infinity,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: bgColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                tc(name, txtColor, 12),
+                tc(priority, txtColor, 12),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                tcn(buildcode, txtColor, 12),
+                tcn(apartment, txtColor, 12),
+              ],
+            ),
+            tcn(mobile, txtColor, 12),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Bounce(
+                  onPressed: (){
+                    dprint("Location");
+                  },
+                  duration: const Duration(
+                      milliseconds: 110),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 4,horizontal: 10),
+                    decoration: boxDecorationS(subColor, 30),
+                    child:       Row(
+                      children: [
+                        tcn("Location", white, 12),
+                        Icon(Icons.location_on,color: white,size: 12),
+                      ],
+                    ),),
+                ),
+                gapWC(10),
+
+                Bounce(
+                  onPressed: (){
+                    dprint("OPENN");
+                  },
+                  duration: const Duration(
+                      milliseconds: 110),
+                  child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 4,horizontal: 10),
+                      decoration: boxDecorationS(Colors.greenAccent, 30),
+                      child: tcn("Open", txtColor, 12)),
+                ),
+              ],
+            ),
+
+
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }
+
+
+
+

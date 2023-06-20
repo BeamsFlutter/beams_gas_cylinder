@@ -55,7 +55,7 @@ class _MessageBoxState extends State<MessageBox> {
               child:  Icon(widget.mode == "S"? Icons.done_all_rounded:widget.mode == "E"? Icons.error: widget.mode == "W"? Icons.warning_amber_outlined : widget.mode == "I"? Icons.info_outline : widget.mode == "C"? widget.icon :Icons.message,color:widget.mode == "W"?  Colors.black: Colors.white,),
             ),
             gapHC(10),
-            tcn(widget.msg.toString(), txtColor, 16)
+            Expanded(child: tcn(widget.msg.toString(), txtColor, 16))
           ],
         )
 

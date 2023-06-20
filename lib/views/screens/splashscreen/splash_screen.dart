@@ -4,6 +4,7 @@ import 'package:beams_gas_cylinder/views/screens/splashscreen/controller/splash_
 import 'package:beams_gas_cylinder/views/styles/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import '../../components/common/common.dart';
 import '../../components/common/commonButton.dart';
@@ -20,9 +21,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
   final SplashController splashController = Get.put(SplashController());
-
-
-
 
   @override
   void initState() {
@@ -54,10 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
                ],
            ),
             ),
-            CommonButton(btnName: "Start", btnColor: white,iconSize: 17,iconYN: false,txtColor: Colors.grey.shade700,
+           CommonButton(btnName: "Start", btnColor: white,iconSize: 17,iconYN: false,txtColor: Colors.grey.shade700,
                 onTap: (){
                   splashController.fnGetPageData(context);
             }),
+
             gapHC(30),
             Center(
               child: Column(

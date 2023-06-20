@@ -179,7 +179,7 @@ class HmSalesController extends GetxController{
     return rtnPrdctList;
   }
   wOpenBottomSheet(context) {
-    dprint("bottomsheetvalue..........  ${lstrProductTypeList.value}");
+
     return Get.bottomSheet(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft:Radius.circular(30) ),

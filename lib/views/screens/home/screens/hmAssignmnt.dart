@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../../../components/bottomNavigationBar/bottom_navigator_item.dart';
 import '../../../components/common/common.dart';
+import '../../../components/common/commonTextField.dart';
 import '../../../components/common/tabButton.dart';
 import '../../../styles/colors.dart';
 import '../controller/hmAssignmntController.dart';
@@ -26,7 +27,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
   void initState() {
     hmAssignmnt.pageController = PageController();
     hmAssignmnt.wstrPageMode.value = 'VIEW';
-    // assignmentController.apiViewAssignment('', "LAST");
+    hmAssignmnt.apiViewAssignment('',"LAST");
     // TODO: implement initState
     super.initState();
   }
@@ -107,7 +108,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           size: 15,
                         ),
                         gapWC(3),
-                        tcn(setDate(7, hmAssignmnt.todyDate.value).toString().toUpperCase(), txtColor, 12)
+                        tcn(hmAssignmnt.txtdocDate.text, txtColor, 12)
                       ],
                     ),
                   ],
@@ -122,33 +123,58 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Bounce(
-                        duration: const Duration(milliseconds: 110),
-                        onPressed: () {
-                          dprint("lookup>>>>>>>location");
-                          hmAssignmnt.fnLookup("AREAMASTER");
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: Colors.grey.shade200,
+                      Row(
+                        children: [
+                          Bounce(
+                            duration: const Duration(milliseconds: 110),
+                            onPressed: () {
+                              dprint("lookup>>>>>>>location");
+                              if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                                return;
+                              }
+                              hmAssignmnt.fnLookup("AREAMASTER");
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.grey.shade200,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              child: Row(
+
+
+                                children: [
+                                  const Icon(Icons.location_on,
+                                      size: 18, color: primaryColor),
+                                  gapWC(3),
+                                  tcn(hmAssignmnt.frLocation.value.toString(), txtColor, 13),
+                                  gapWC(13),
+
+                                ],
+                              ),
+                            ),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.location_on,
-                                  size: 18, color: primaryColor),
-                              gapWC(3),
-                              tcn(hmAssignmnt.frLocation.value.toString(), txtColor, 13)
-                            ],
-                          ),
-                        ),
+                       hmAssignmnt.wstrPageMode.value!="VIEW" && hmAssignmnt.frLocation.value.isNotEmpty?   Bounce(
+                            duration: const Duration(milliseconds: 110),
+                            onPressed: (){
+                              dprint("&&&&&&&");
+                              hmAssignmnt.frLocation.value="";
+
+                            },
+                            child: Container(decoration: boxDecoration(primaryColor, 30),
+                                padding: EdgeInsets.all(2),
+                                child: Icon(Icons.clear,size: 14,color: white,)),
+                          ):gapHC(0)
+                        ],
                       ),
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
                           dprint("lookup>>>>>>>Priority");
+                          if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                            return;
+                          }
                           hmAssignmnt.fnLookup("GPRIORITYMASTER");
                         },
                         child: Container(
@@ -189,6 +215,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           Flexible(
                             child: Bounce(
                               onPressed: (){
+                                if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                                  return;
+                                }
                                 hmAssignmnt.fnLookup("CRDELIVERYMANMASTER");
                               },
                               duration: const Duration(milliseconds: 110),
@@ -226,6 +255,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           Flexible(
                             child: Bounce(
                               onPressed: (){
+                                if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                                  return;
+                                }
                                 hmAssignmnt.fnLookup("CRVEHICLEMASTER");
                               },
                               duration: const Duration(milliseconds: 110),
@@ -260,22 +292,46 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                         ],
                       ),
                       gapHC(10),
+                      tc('Delivery Date', black, 12),
+                      gapHC(5),
+                      Bounce(
+                        duration: const Duration(milliseconds: 110),
+                        onPressed: () {
+                          if(hmAssignmnt.wstrPageMode=="VIEW"){
+                            return;
+                          }
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              tcn("Last Assigned", black, 12),
-                              tcn( setDate(7, hmAssignmnt.lastAssignedDate.value).toString().toUpperCase(), txtColor, 12)
+                          hmAssignmnt.wSelectDate(context);
+                          gapHC(5);
+                        },
+                        child:  CommonTextField(
+                          obscureY: false,
+                          textStyle: const TextStyle(color: txtColor),
+                          txtController: hmAssignmnt.txtdelivryDate,
+                          prefixIcon: Icons.calendar_month,
+                          prefixIconColor: black,
+                          sufixIconColor: Colors.black,
+                          enableY:false,
+                          suffixIcon: Icons.done,
 
-                            ],
-                          ),
-                          tc("${hmAssignmnt.pendingAssignedValue.value}/${hmAssignmnt.totalAssignedValue.value}", txtColor,22)
-                        ],
+                        ),
                       ),
+
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       mainAxisAlignment: MainAxisAlignment.start,
+                      //       children: [
+                      //         tcn("Last Assigned", black, 12),
+                      //         tcn( setDate(7, hmAssignmnt.lastAssignedDate.value).toString().toUpperCase(), txtColor, 12)
+                      //
+                      //       ],
+                      //     ),
+                      //     tc("${hmAssignmnt.pendingAssignedValue.value}/${hmAssignmnt.totalAssignedValue.value}", txtColor,22)
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),
@@ -380,7 +436,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                 onPressed: () {
                   // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
                   // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
-                  hmAssignmnt.fnSave;
+                  hmAssignmnt.fnSave(context);
                 },
                 duration: const Duration(milliseconds: 110),
                 child: Container(
@@ -435,181 +491,224 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   //////////////////////////    WIDGET
   chooseBookingScreen(Size size) {
-    return Container(
-      margin: const EdgeInsets.only(left: 10, right: 10,top: 5),
 
-      width: size.width,
-      //height: size.height * 0.2,
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return SingleChildScrollView(
+      child: Obx(() => Container(
+        margin: const EdgeInsets.only(left: 10, right: 10,top: 5),
 
-          Row(
-            children: [
-              Expanded(
-                child: Bounce(
-                  duration: const Duration(milliseconds: 110),
-                  onPressed: () {
-                    if(hmAssignmnt.wstrPageMode=="VIEW"){
-                      return;
-                    }else{
-                      dprint("Search bookingggggggggg");
-                    }
-                  },
-                  child: Container (
-                      width: size.width,
-                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),   color: Colors.grey.shade200, ),
-                      child:Container(
+        width: size.width,
+        //height: size.height * 0.2,
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
-                        child:  const Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(Icons.search),
-                          ],
-                        ),
-                      )
+           hmAssignmnt.wstrPageMode.value!="VIEW"? Row(
+              children: [
+                Expanded(
+                  child: Bounce(
+                    duration: const Duration(milliseconds: 110),
+                    onPressed: () {
+                      if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                        return;
+                      }
+                      hmAssignmnt.fnLookup("GCYLINDER_BOOKING");
+                    },
+                    child: Container (
+                        width: size.width,
+                        padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),   color: Colors.grey.shade200, ),
+                        child:Container(
 
+                          child:  Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              tcn(hmAssignmnt.bookingNumber.value, txtColor, 12),
+                              Icon(Icons.search),
+                            ],
+                          ),
+                        )
+
+                    ),
                   ),
                 ),
-              ),
-             hmAssignmnt.wstrPageMode.value=="VIEW"?gapHC(0):Checkbox(checkColor: primaryColor,
-                value: hmAssignmnt.checkAll.value,
-                onChanged: (bool ? checkvalu) {
-                  hmAssignmnt.checkAll.value = checkvalu!;
-                },
-
-              )
-            ],
-          ),
-          gapHC(5),
-          Column(
-            children: wBookingDetails(),
-          )
-        ],
-      ),
+                // hmAssignmnt.wstrPageMode.value=="VIEW"?gapHC(0):Checkbox(checkColor: primaryColor,
+                //    value: hmAssignmnt.checkAll.value,
+                //    onChanged: (bool ? checkvalu) {
+                //      hmAssignmnt.checkAll.value = checkvalu!;
+                //    },
+                //
+                //  )
+              ],
+            ):gapHC(0),
+            gapHC(5),
+            Column(
+              children: wBookingDetails(),
+            )
+          ],
+        ),
+      ),)
     );
 
   }
+  itemDetailScreen() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            decoration: boxBaseDecoration(subColor, 5),
+            //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        tcn('Booking NO', Colors.white, 10)
+                      ],
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .start,
+                      children: [
+                        tcn('Item', Colors.white, 10)
+                      ],
+                    )),
+                // Flexible(
+                //     flex: 1,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment
+                //           .end,
+                //       children: [
+                //         tcn('Qty', Colors.white, 10)
+                //       ],
+                //     )),
 
+
+              ],
+            ),
+
+          ),
+          Column(
+            children: wItemDetails(),
+          )
+        ],
+
+      ),
+    );
+  }
 
   //===================================WIDGET
-  wFilledItemLIst() {
-    dprint("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrc      +"+hmAssignmnt.orderlist.toString());
+  List<Widget> wItemDetails() {
+    var bookedlist = hmAssignmnt.lstrBookedItemList.value;
     List<Widget> rtnList = [] ;
-    for (var e in hmAssignmnt.orderlist) {
-      var code =  e ["CODE"];
-      var det =   (e["LOCATION"]??"");
-      var type =  (e["PRIORITY"]??"");
-      var name = (e["CNAME"]);
-      var item = (e["ITEMS"]);
-      rtnList.add(
-          Padding(
-            padding: const EdgeInsets.only(top: 10,right: 10,left: 10),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: boxDecoration(Colors.white, 10),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: boxDecoration(Colors.white70, 3),
-                    padding: const EdgeInsets.all(5),
-                    child: const Center(
-                      child: Icon(Icons.check),
-                    ),
-                  ),
-                  gapWC(15),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
 
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.library_add),
-                                tc(code.toString(), Colors.black, 12),
-                              ],
-                            ),
-                            gapHC(5),
-                            Row(
-                              children: [
-                                const Icon(Icons.priority_high),
-                                tcn(type, Colors.black, 12),
-                              ],
-                            ),
+    for (var e in bookedlist) {
+      dprint("bookedlist........... ${e.toString()}.");
+      var itemName = (e["STKDESCP"] ?? "").toString();
+      var bookingNumb = (e["BOOKINGNUMB"] ?? "").toString();
+      var qty = hmAssignmnt.g.mfnDbl(e["QTY"].toString());
 
-                          ],
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        ),
+      // dprint("Qty>>> ${qty}");
+      // dprint("bookingNumb>>> ${bookingNumb}");
+      // hmAssignmnt.bookingNumber.value =bookingNumb;
 
-                        Row(
-                          children: [
-                            const Icon(Icons.person),
-                            tcn(name.toString(), Colors.black, 12),
-                          ],
-                        ),
-                        gapHC(5),
-                        Row(
-                          children: [
-                            const Icon(Icons.place),
-                            tcn(det.toString(), Colors.black, 12),
-                          ],
-                        ),
-                        gapHC(5),
-                        Row(
-                          children: [
-                            const Icon(Icons.list),
-                            tcn(item.toString(),Colors.black,12),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-      );
+      rtnList.add(Padding(
+        padding: const EdgeInsets.only(bottom: 3),
+        child: Container(
+          decoration: boxBaseDecoration(bGreyLight, 0),
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      tcn(bookingNumb.toString(), Colors.black, 10),
+                    ],
+                  )),
+              Expanded(
+                  child: tcn(itemName.toString(), Colors.black, 10)),
+              // Flexible(
+              //     flex: 1,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.end,
+              //       children: [
+              //         tcn(qty.toString(), Colors.black, 10),
+              //       ],
+              //     )),
+
+            ],
+          ),
+        ),
+      ));
+
+
     }
     return rtnList;
-
-
   }
 
   List<Widget>  wBookingDetails() {
     List<Widget> rtnList =[];
-    for(var e  in hmAssignmnt.orderlist.value){
-      var code = e["CODE"];
-      var name = e["CNAME"];
-      var priority = e["PRIORITY"];
-      var location = e["LOCATION"];
-      var items = e["ITEMS"];
+    for(var e  in hmAssignmnt.lstrBookedHeaderList.value){
+      dprint("lstrBookedHeaderListitems>>>>>>>>>>>  ${e}");
+
+      var partyname = (e["PARTY_NAME"] ?? "").toString();
+      var phonunumber = (e["MOBILE_NO"] ?? "").toString();
+      var boookingNumb = (e["BOOKINGNUMB"] ?? "").toString();
+      var buildingCode =(e["BLDG_NO"] ?? "").toString();
+      var areaCode = (e["AREA_CODE"] ?? "").toString();
+      var apartmnt = (e["APARTMENT_NO"] ?? "").toString();
+
       rtnList.add(
           Container(
-            height: 70,
+            width: double.infinity,
             margin: const EdgeInsets.symmetric(vertical: 2),
             decoration: boxBaseDecoration(bgColor.withOpacity(0.9), 8),
-            child: Row(
-              children: [
-                hmAssignmnt.wstrPageMode.value=="VIEW"?gapHC(0): Checkbox(value: hmAssignmnt.checkAll.value, activeColor: primaryColor,onChanged: (bool ? checkvalu) {
-                  hmAssignmnt.checkAll.value = checkvalu!;
-                },),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      tcn(code, txtColor, 12),
-                      tcn(name, txtColor, 12),
-                      tcn(location, txtColor, 12),
-                    ],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        tcn(boookingNumb.toString(), txtColor, 12),
+                        tcn(partyname.toString(), txtColor, 12),
+                        tcn(phonunumber.toString(), txtColor, 12),
+                        tcn(buildingCode.toString(), txtColor, 12),
+                        tcn(apartmnt.toString(), txtColor, 12),
+                        tcn(areaCode.toString(), txtColor, 12),
+
+                      ],
+                    ),
                   ),
-                )
-              ],
-            ),
+                hmAssignmnt.wstrPageMode=="VIEW"? gapHC(0) :Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: (){
+                        dprint("Dadadada");
+                        dprint(hmAssignmnt.lstrBookedHeaderList.value);
+                        dprint("------------------------");
+                        dprint(hmAssignmnt.lstrBookedItemList.value);
+                        hmAssignmnt.bookingNumber.value="";
+
+                        hmAssignmnt.lstrBookedHeaderList.removeWhere((element) => element["BOOKINGNUMB"] == boookingNumb);
+                        hmAssignmnt.lstrBookedItemList.value.removeWhere((element) => element["BOOKINGNUMB"] == boookingNumb);
+
+                        //hmAssignmnt.lstrBookedHeaderList.value.removeWhere((element) => element["BOOKINGNUMB"]==hmAssignmnt.lstrBookedItemList.value.where((item) => item["DOCNO"]));
+
+                     },
+
+                      child: Icon(Icons.close))
+                ],
+              ),
+            )
           )
       );
 
@@ -642,60 +741,6 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
     }
 
 
-  }
-
-  itemDetailScreen() {
-    return Column(
-      children: [
-        Container(
-          decoration: boxBaseDecoration(subColor, 5),
-          //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              Flexible(
-                  flex: 3,
-                  child: Row(
-                    children: [
-                      tcn('Item', Colors.white, 10)
-                    ],
-                  )),
-
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .end,
-                    children: [
-                      tcn('Price', Colors.white, 10)
-                    ],
-                  )),
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .end,
-                    children: [
-                      tcn('Qty', Colors.white, 10)
-                    ],
-                  )),
-              Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .end,
-                    children: [
-                      tcn('Total', Colors.white, 10)
-                    ],
-                  )),
-
-            ],
-          ),
-
-        ),
-      ],
-
-    );
   }
 }
 

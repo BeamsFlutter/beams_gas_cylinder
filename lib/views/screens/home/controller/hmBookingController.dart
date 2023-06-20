@@ -26,7 +26,7 @@ class HmBookingController extends GetxController{
   RxString frLocation="".obs;
   RxString frAssignmentStatus="".obs;
   RxList priorityList = [].obs;
-  RxString priorityvalue=''.obs;
+  RxString priorityvalue='NORMAL'.obs;
   RxInt selectedPage = 0.obs;
   var lstrSelectedPage = "CD".obs;
   final customerformKey = GlobalKey<FormState>().obs;
@@ -148,6 +148,8 @@ class HmBookingController extends GetxController{
     frLocation.value ="";
     frDocno.value="";
     frDocType.value="";
+    txtAreaCode.text ="";
+
 
 
   }
@@ -292,6 +294,9 @@ class HmBookingController extends GetxController{
         {'Column': 'EMAIL', 'Display': 'Email'},
         {'Column': 'BUILDING_CODE', 'Display': 'Building'},
         {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
+        {'Column': 'ADD1', 'Display': 'Address'},
+        // {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
+        // {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -501,12 +506,16 @@ cstmrCode.value="";
         //   apiGetCustomerDetails();
       }
       else if(mode  ==  "GUESTMASTER"){
+        dprint("GUSTMSSTER DATTTS ${data}");
         txtCustomerCode.text  = data["GUEST_CODE"]??"";
         txtCustomerName.text  = data["GUEST_NAME"]??"";
-        txtContactNo.text  = data["MOBILE"]??"";
         // frEmail.value  = data["EMAIL"]??"";
         txtContactNo.text  = data["MOBILE"]??"";
         txtApartmentCode.text = data["APARTMENT_CODE"]??"";
+        // txtAreaCode.text=data["APARTMENT_CODE"]??"";
+        // txtRemark.text=data["APARTMENT_CODE"]??"";
+        txtAddress.text=data["ADD1"]??"";
+        // txtLandmark.text=data["APARTMENT_CODE"]??"";
         txtBuildingCode.text = data["BUILDING_CODE"]??"";
         g.wstrBuildingCode  = data["BUILDING_CODE"]??"";
         g.wstrApartmentCode  = data["APARTMENT_CODE"]??"";
@@ -525,15 +534,16 @@ cstmrCode.value="";
     }
 
   }
+
   fnFillData(data,mode){
     //Fill
     if(g.fnValCheck(data)){
-      if(mode== "GCYLINDER_CALL_LOGIN"){
+
+      if(mode== "GCYLINDER_BOOKING"){
         dprint("Booking dataaaaaaaaaaa ${data}");
         frDocno.value = data["DOCNO"];
-        apiViewBooking(frDocno.value, "");
+        apiViewBooking(frDocno.value,"");
         update();
-
       }
 
     }
@@ -710,15 +720,35 @@ cstmrCode.value="";
 
                       children: [
                         gapHC(10),
-                        tc("Product Type", txtColor, 15),
-                        Container(
-                          width: 80,
-                          height: 5,
-                          decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                             Column(crossAxisAlignment: CrossAxisAlignment.start,
+                               children: [
+                                 tc("Product Type", txtColor, 15),
+                                 Container(
+                                   width: 80,
+                                   height: 5,
+                                   decoration: BoxDecoration(
+                                       color: primaryColor,
+                                       borderRadius: BorderRadius.circular(10)
+                                   ),
+                                 ),
+                               ],
+                             ),
+                             Bounce(
+                                 duration: const Duration(milliseconds: 110),
+                               onPressed: (){
+                                   Get.back();
+                               },
+                               child: Container(
+                                 padding: EdgeInsets.all(4),
+
+                                   child: Icon(Icons.close)),
+                             ),
+                          ],
                         ),
+
                         gapHC(10),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -1019,10 +1049,13 @@ cstmrCode.value="";
         frDocno.value = value[0]["CODE"];
         var doctype = value[0]["DOCTYPE"];
         wstrPageMode.value ="VIEW";
+        apiViewBooking(frDocno.value, "LAST");
+        successMsg(context, msg);
 
         // CustomToast.showToast(msg.toString(), ToastType.success, ToastPositionType.end);
+      }else{
+        errorMsg(context, msg);
       }
-      successMsg(context, msg);
     }
   }
 }
