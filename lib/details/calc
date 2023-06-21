@@ -1,0 +1,82 @@
+
+
+
+for(var e in lstrSalesList){
+        var qty = g.mfnDbl(e["QTY2"]);
+        var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var rate2 = g.mfnDbl(e["RATEFC2"]);
+        var soldrate = g.mfnDbl(e["SOLD_RATEFC"]);
+        var disc  = g.mfnDbl(e["DISC_AMTFC"]);
+        var cf = g.mfnDbl(e["UNITCF"])  == 0.0 ? 1.0 :g.mfnDbl(e["UNITCF"]);
+
+        var soldQty = qty - rtnQty;
+        var gasAmount  =  qty * rate2 ;
+        var soldAmount =  soldQty * soldrate;
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt -  disc;
+        var amt1 = amt * cf;
+        var rate21 = rate2 * cf;
+
+        var taxAmtV = (amt)*e["VAT_PERC"];
+        var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
+
+        //totalCalc For Header
+        totalGrAmt = totalGrAmt + gramt;
+        totalTaxAmt = totalTaxAmt + taxAmt;
+        var net = amt+taxAmt;
+        netAmount = netAmount + net;
+
+        srno= srno+1;
+        TABLE_DODET.add({
+          "COMPANY": g.wstrCompany ,
+          "YEARCODE": g.wstrYearcode ,
+          "DOCNO": lstrDocno ,
+          "DOCTYPE": lstrDoctype ,
+          "SRNO": srno ,
+          "CYLINDER_CAT": e["CYLINDER_CAT"] ,
+          "STKCODE": e["STKCODE"] ,
+          "STKDESCP": e["STKDESCP"] ,
+          "LOC": txtLocation.text ,
+          "QTY1": e["QTY1"] ,
+          "QTY2": e["QTY2"] ,
+          "UNIT1": e["UNIT1"] ,
+          "UNIT2": e["UNIT2"] ,
+          "UNITCF": e["UNITCF"] ,
+          "SOLD_QTY": soldQty ,
+          "SOLD_RATE": soldrate * lstrCurrencyRate ,
+          "SOLD_RATEFC": soldrate ,
+          "SOLD_AMT": soldAmount*lstrCurrencyRate ,
+          "SOLD_AMTFC": soldAmount ,
+          "RETURN_QTY": e["RETURN_QTY"] ,
+          "HEADER_DISC_AMT": headerDiscount*lstrCurrencyRate,
+          "HEADER_DISC_AMTFC": headerDiscount,
+          "RATE": price1 * lstrCurrencyRate,
+          "RATEFC": price1 ,
+          "AMT": amt1 *lstrCurrencyRate  ,
+          "AMTFC": amt1  ,
+          "RATE": price * lstrCurrencyRate ,
+          "RATEFC2": price ,
+          "AMT2": amt * lstrCurrencyRate ,
+          "AMT2FC": amt ,
+          "NETAMTFC": e["NETAMTFC"] ,
+          "NETAMT": e["NETAMT"] ,
+          "CLEARED_QTY": e["CLEARED_QTY"]??0 ,
+          "BUILDING_CODE": '' ,
+          "PROPERTY_CODE": '' ,
+          "DELIVERY_DATE": '' ,
+          "ACTUAL_DELIVERY_DATE": '' ,
+          "GRAMT": gramt * lstrCurrencyRate ,
+          "GRAMTFC": gramt ,
+          "CYLINDER_CODE":e["CYLINDER_CODE"],
+          "PRVDOCTABLE" : e["PRVDOCTABLE"],
+          "PRVYEARCODE" : e["PRVYEARCODE"],
+          "PRVDOCNO" : e["PRVDOCNO"],
+          "PRVDOCTYPE" : e["PRVDOCTYPE"],
+          "PRVDOCSRNO" :  e["PRVDOCTYPE"]??0,
+          "PRVDOCQTY" : e["PRVDOCQTY"]??0.0,
+          "PRVDOCPENDINGQTY" :e["PRVDOCPENDINGQTY"]??0.0,
+          "PRVDOCCLRQTY" : e["PRVDOCCLRQTY"]??0.0,
+          "DISC_AMT":e["DISC_AMTFC"]*lstrCurrencyRate,
+          "DISC_AMTFC":e["DISC_AMTFC"],
+
+        });
