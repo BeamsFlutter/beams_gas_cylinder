@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
@@ -13,7 +14,7 @@ import 'package:badges/badges.dart' as badges;
 class HmSalesController extends GetxController{
 
   Rx<DateTime> docDate = DateTime.now().obs;
-  RxString frDocno="BS25534".obs;
+  RxString frDocno="".obs;
   var g  = Global();
   var wstrPageMode = "VIEW".obs;
   late Future <dynamic> futureform;
@@ -28,9 +29,9 @@ class HmSalesController extends GetxController{
   RxInt nqty = 0.obs;
   RxInt eqty = 0.obs;
   var selectedproduct="".obs;
-  var selectedItem;
-  var selectedItemType;
-  var selectedRate;
+  var selectedItem=''.obs;
+  var selectedItemType=''.obs;
+  var selectedRate=''.obs;
   //************************CONTROLLER
   final txtCustomerCode = TextEditingController();
   var txtContactNo = TextEditingController();
@@ -83,30 +84,30 @@ class HmSalesController extends GetxController{
   fnCancel() {
     fnClear();
     wstrPageMode.value = "VIEW";
-    apiViewDeliveryOrder('', 'LAST');
+    apiViewSales('', 'LAST');
   }
 
   fnPage(mode) {
 
     switch (mode) {
       case 'FIRST':
-        apiViewDeliveryOrder('', mode);
+        apiViewSales('', mode);
         break;
       case 'LAST':
-        apiViewDeliveryOrder('', mode);
+        apiViewSales('', mode);
         break;
       case 'NEXT':
-        apiViewDeliveryOrder(frDocno.value, mode);
+        apiViewSales(frDocno.value, mode);
         break;
       case 'PREVIOUS':
-        apiViewDeliveryOrder(frDocno.value, mode);
+        apiViewSales(frDocno.value, mode);
         break;
     }
   }
 
   fnClear(){}
 
-  fnFill(value){}
+  fnFill(data){}
 
   fnSave(context){}
 
@@ -168,10 +169,6 @@ class HmSalesController extends GetxController{
       );
     }
     else if(mode == "CRDELIVERYMANMASTER") {
-      if( wstrPageMode.value != 'VIEW'){
-        return;
-      }
-
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
         {'Column': 'NAME', 'Display': 'Name'},
@@ -552,9 +549,9 @@ class HmSalesController extends GetxController{
         //    apiGetCustomerInfo();
       }
       else if (mode == "CRDELIVERYMANMASTER") {
-        dprint("RRRRRRRRRR ${data}");
+        dprint("fdfd ${data}");
         txtDriver.text = data["NAME"];
-
+        txtVehiclenumber.text = data["VEHICLE_NO"]??txtVehiclenumber.text;
         //    apiGetCustomerInfo();
       }
       else if (mode == "CRVEHICLEMASTER") {
@@ -566,11 +563,14 @@ class HmSalesController extends GetxController{
     }
   }
 
+
+
+  //**************************************************WIDGETS
   wProductItem() {
     List<Widget> rtnPrdctList = [];
     int i=0;
     for (var e in lstrProductTypeList.value) {
-      var productName = e["DESCP"];
+      var productName = e["CODE"];
 
       rtnPrdctList.add(
           Obx(() =>  Padding(
@@ -578,8 +578,9 @@ class HmSalesController extends GetxController{
             child: GestureDetector(
               onTap: (){
                 selectedproduct.value=productName??"";
+                apiProductTypeDetails(selectedproduct.value);
 
-                dprint("aaaaaaaaaaaaac ${i}");
+                dprint("aaaaaaaaaaaaac ${productName}");
               },
               child: Container(
                 decoration:BoxDecoration(
@@ -600,7 +601,6 @@ class HmSalesController extends GetxController{
     return rtnPrdctList;
   }
   wOpenBottomSheet(context) {
-
     return Get.bottomSheet(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft:Radius.circular(30) ),
@@ -611,7 +611,8 @@ class HmSalesController extends GetxController{
           builder: (context,setState){
             return Container(
               height: MediaQuery.of(context).size.height*0.7,
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+
 
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -622,15 +623,37 @@ class HmSalesController extends GetxController{
 
                       children: [
                         gapHC(10),
-                        tc("Product Type", txtColor, 15),
-                        Container(
-                          width: 80,
-                          height: 5,
-                          decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                tc("Product Type", txtColor, 15),
+                                Container(
+                                  width: 80,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: BorderRadius.circular(10)
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Bounce(
+                              duration: const Duration(milliseconds: 110),
+                              onPressed: (){
+                                Get.back();
+                              },
+                              child: Container(
+                                  padding: const EdgeInsets.all(4),
+
+                                  child: const Icon(Icons.close)),
+                            ),
+                          ],
                         ),
+
+
                         gapHC(10),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -642,8 +665,8 @@ class HmSalesController extends GetxController{
                         gapHC(10),
                         Expanded(child:StatefulBuilder(
                             builder: (BuildContext context, StateSetter setstate) {
-                              // dprint("CylinderType :: ${selectedcylinder.value}");
-                              return Column(
+
+                              return Obx(() => Column(
                                 children: [
                                   gapHC(3),
 
@@ -651,40 +674,29 @@ class HmSalesController extends GetxController{
                                     child: ListView.builder(
                                         itemCount: lstrProductItemDetailList.value.length,
                                         itemBuilder: (context, index) {
-                                          dprint("indexxx  ${index}  Listlength ${lstrProductItemDetailList.value.length}");
+
+
                                           //    {  "STKCODE": "FIVE", "STKDESCP": "5L", "NRATE": 20.0, "RRATE": 10.0,"TYPE":"R","QTY":1},
                                           var itemName = (lstrProductItemDetailList[index]["STKDESCP"] ?? "").toString();
                                           var itemCode = (lstrProductItemDetailList[index]["STKCODE"] ?? "").toString();
 
                                           var nrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE1"].toString());
                                           var rrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE2"].toString());
-                                          var erate = g.mfnDbl(50.0);
+                                          var erate = g.mfnDbl("200");
 
-                                          var item = lstrSalesList.where((element) => element["STKCODE"] == itemCode).toList();
-                                          var itemR = item
-                                              .where((element) => element["TYPE"] == "R")
-                                              .toList();
-                                          var itemN = item
-                                              .where((element) => element["TYPE"] == "N")
-                                              .toList();
-                                          var itemE = item
-                                              .where((element) => element["TYPE"] == "E")
-                                              .toList();
-                                          var vat = g.mfnDbl(
-                                              lstrProductItemDetailList[index]["VAT"]
-                                                  .toString());
-                                          dprint("vaaattttttttttt  ${vat}");
+                                          var item = lstrSalesList.value.where((element) => element["STKCODE"] == itemCode).toList();
+                                          var itemR = item.where((element) => element["TYPE"] == "R").toList();
+                                          var itemN = item.where((element) => element["TYPE"] == "N").toList();
+                                          var itemE = item.where((element) => element["TYPE"] == "E").toList();
+                                          // dprint("itemRrrr ${itemR}");
                                           rqty.value = itemR.length > 0
-                                              ? g
-                                              .mfnDbltoInt(itemR[0]["QTY"].toString())
+                                              ? g.mfnDbltoInt(itemR[0]["QTY"])
                                               : 0;
                                           nqty.value = itemN.length > 0
-                                              ? g
-                                              .mfnDbltoInt(itemN[0]["QTY"].toString())
+                                              ?  g.mfnDbltoInt(itemN[0]["QTY"])
                                               : 0;
                                           eqty.value = itemE.length > 0
-                                              ? g
-                                              .mfnDbltoInt(itemE[0]["QTY"].toString())
+                                              ?  g.mfnDbltoInt(itemE[0]["QTY"])
                                               : 0;
 
                                           return Container(
@@ -723,8 +735,8 @@ class HmSalesController extends GetxController{
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setstate(() {
-                                                            selectedItem = itemCode;
-                                                            selectedItemType = "N";
+                                                            selectedItem.value = itemCode;
+                                                            selectedItemType.value = "N";
                                                           });
                                                         },
                                                         child: Container(
@@ -737,9 +749,9 @@ class HmSalesController extends GetxController{
                                                               BorderRadius.circular(
                                                                   10),
                                                               border: Border.all(
-                                                                color: ((selectedItem ==
+                                                                color: ((selectedItem.value ==
                                                                     itemCode &&
-                                                                    selectedItemType ==
+                                                                    selectedItemType.value ==
                                                                         "N")
                                                                     ? subColor
                                                                     : AppTheme
@@ -751,13 +763,13 @@ class HmSalesController extends GetxController{
                                                               tc("New", txtColor, 10),
                                                               gapHC(3),
                                                               tc("${nrate} AED", txtColor,
-                                                                  10),
+                                                                  10)
                                                             ],
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                    gapWC(10),
+
                                                     badges.Badge(
                                                       badgeContent: tcn(
                                                           rqty.value.toString() ?? "",
@@ -775,8 +787,8 @@ class HmSalesController extends GetxController{
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setstate(() {
-                                                            selectedItem = itemCode;
-                                                            selectedItemType = "R";
+                                                            selectedItem.value = itemCode;
+                                                            selectedItemType.value = "R";
                                                           });
                                                         },
                                                         child: Container(
@@ -789,9 +801,9 @@ class HmSalesController extends GetxController{
                                                               BorderRadius.circular(
                                                                   10),
                                                               border: Border.all(
-                                                                color: ((selectedItem ==
+                                                                color: ((selectedItem.value ==
                                                                     itemCode &&
-                                                                    selectedItemType ==
+                                                                    selectedItemType.value ==
                                                                         "R")
                                                                     ? subColor
                                                                     : AppTheme
@@ -809,7 +821,7 @@ class HmSalesController extends GetxController{
                                                         ),
                                                       ),
                                                     ),
-                                                    gapWC(10),
+
                                                     badges.Badge(
                                                       badgeContent: tcn(
                                                           eqty.value.toString() ?? "",
@@ -827,8 +839,8 @@ class HmSalesController extends GetxController{
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setstate(() {
-                                                            selectedItem = itemCode;
-                                                            selectedItemType = "E";
+                                                            selectedItem.value = itemCode;
+                                                            selectedItemType.value = "E";
                                                           });
                                                         },
                                                         child: Container(
@@ -841,7 +853,7 @@ class HmSalesController extends GetxController{
                                                               BorderRadius.circular(
                                                                   10),
                                                               border: Border.all(
-                                                                color: ((selectedItem == itemCode && selectedItemType == "E")
+                                                                color: ((selectedItem.value == itemCode && selectedItemType.value == "E")
                                                                     ? subColor
                                                                     : AppTheme
                                                                     .background),
@@ -865,21 +877,17 @@ class HmSalesController extends GetxController{
                                                   mainAxisAlignment:
                                                   MainAxisAlignment.end,
                                                   children: [
-                                                    rqty.value != 0 && selectedItemType == "R" || nqty.value != 0 && selectedItemType == "N"||eqty.value != 0 && selectedItemType == "E"
+                                                    rqty.value != 0 && selectedItemType.value == "R" || nqty.value != 0 && selectedItemType.value == "N"||eqty.value != 0 && selectedItemType.value == "E"
                                                         ? Bounce(
                                                       onPressed: () {
                                                         setstate(() {
-                                                          if (selectedItem ==
+                                                          if (selectedItem.value ==
                                                               null ||
-                                                              selectedItem !=
+                                                              selectedItem.value !=
                                                                   itemCode) {
                                                             wShowitemSelectedornot();
                                                           } else {
-                                                            fnChngeQty(
-                                                                itemCode,
-                                                                selectedItemType,
-                                                                "D",
-                                                                vat);
+                                                            fnChngeQty(itemCode, selectedItemType.value, "D",nrate,erate,rrate);
                                                           }
                                                         });
                                                       },
@@ -903,15 +911,11 @@ class HmSalesController extends GetxController{
                                                     Bounce(
                                                       onPressed: () {
                                                         setstate(() {
-                                                          if (selectedItem == null ||
-                                                              selectedItem != itemCode) {
+                                                          if (selectedItem.value == null ||
+                                                              selectedItem.value != itemCode) {
                                                             wShowitemSelectedornot();
                                                           } else {
-                                                            fnChngeQty(
-                                                                itemCode,
-                                                                selectedItemType,
-                                                                "A",
-                                                                vat);
+                                                            fnChngeQty(itemCode, selectedItemType.value,"A",nrate,erate,rrate);
                                                           }
                                                         });
                                                       },
@@ -936,7 +940,7 @@ class HmSalesController extends GetxController{
                                         }),
                                   )
                                 ],
-                              );
+                              ));
                             }))
 
 
@@ -954,12 +958,17 @@ class HmSalesController extends GetxController{
 
         )
 
-    );
+    ).whenComplete((){
+      // fnPaymntCalc();
+
+
+    });
 
 
 
     // apiProductTypeDetails(product["CODE"], callback);
   }
+
   SnackbarController wShowitemSelectedornot() {
     return Get.showSnackbar(
       const GetSnackBar(
@@ -968,19 +977,21 @@ class HmSalesController extends GetxController{
       ),
     );
   }
-  List<Widget> wDeliverItemList(context){
+
+  List<Widget> wSalesItemList(context){
     List<Widget> rtnList =[];
     var ftotal  = 0.0;
     var ftaxamount  = 0.0;
-    //   {  "STKCODE": "FIVE", "STKDESCP": "5L", "RATE": 10.0,"TYPE":"R"},
-    dprint("lstrSalesList >> ${lstrSalesList}");
+
 
 
     // Get.find<SalesController>().txtTotalAmt.value.text="" ;
     for(var e  in lstrSalesList.value){
-      dprint("LstrOrderList>>>>>>>>>>>>>   ${e}");
+      dprint(">>>>>>MMMMMMMMM ${e}");
+
 
       var itemName  = (e["STKDESCP"]??"").toString();
+      var itemCode  = (e["STKCODE"]??"").toString();
       var rate  = g.mfnDbl(e["RATE"].toString());
       var type  = (e["TYPE"]??"").toString();
       var qty  = g.mfnDbl(e["QTY"].toString());
@@ -997,60 +1008,98 @@ class HmSalesController extends GetxController{
 
 
 
-      rtnList.add( Container(
-        decoration: boxBaseDecoration(
-            bGreyLight, 0),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            Flexible(
-                flex: 3,
-                child: Row(
-                  children: [
-                    tcn(itemName.toString(),
-                        Colors.black, 10)
-                  ],
-                )),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .end,
-                  children: [
-                    tcn(type.toString(), Colors.black, 10)
-                  ],
-                )),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .end,
-                  children: [
-                    tcn(rate.toString(), Colors.black, 10)
-                  ],
-                )),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .end,
-                  children: [
-                    tcn(qty.toString(),
-                        Colors.black, 10)
-                  ],
-                )),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .end,
-                  children: [
-                    tcn(total.toString(), Colors.black, 10)
-                  ],
-                )),
-          ],
-        ),
+      rtnList.add( Padding(
+        padding: const EdgeInsets.only(left: 5,bottom: 2),
+        child: badges.Badge(
+          badgeContent: tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"",white, 8),
+          showBadge: true,
+          position: BadgePosition.topStart(top: 5,start: 2),
+          stackFit: StackFit.passthrough,
+          badgeStyle: badges.BadgeStyle(
+            badgeColor: (type=="E")?Colors.redAccent:(type=="N")?Colors.green:(type=="R")?Colors.blueAccent:Colors.redAccent,
 
+            padding: EdgeInsets.symmetric(horizontal: 16,),
+            shape: badges.BadgeShape.square,
+            borderRadius: BorderRadius.only(bottomRight: Radius.circular(10),
+                topRight: Radius.circular(10)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 3),
+            child: InkWell(
+              onLongPress: (){
+                wDeletItemSelect(context,itemCode,type);
+                dprint(">>>>>looooooooo>>>>>> ${itemCode}");
+              },
+
+
+              onTap: (){
+                dprint(">>>>>fff>>>>>> ${itemCode}");
+                wItemSelect(context,itemCode,type,qty);
+              },
+              child: Container(
+                decoration: boxBaseDecoration(
+                    bGreyLight, 0),
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Flexible(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: tcn(itemName.toString(),
+                                    Colors.black, 10),
+                              )
+                            ],
+                          ),
+                        )),
+                    // Flexible(
+                    //     flex: 1,
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment
+                    //           .end,
+                    //       children: [
+                    //         tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"", Colors.black, 10),
+                    //         gapWC(10)
+                    //       ],
+                    //     )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(rate.toString(), Colors.black, 10)
+                          ],
+                        )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(qty.toString(),
+                                Colors.black, 10)
+                          ],
+                        )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(total.toString(), Colors.black, 10)
+                          ],
+                        )),
+                  ],
+                ),
+
+              ),
+            ),
+          ),
+        ),
       ));
 
     }
@@ -1058,125 +1107,565 @@ class HmSalesController extends GetxController{
     return rtnList;
   }
 
+  wItemSelect(context,itemCodee,type,itemqty){
 
-  fnChngeQty(itemCode, type, mode, vat) {
+    selectedItemType.value = type;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 45),
+          child: StatefulBuilder(
+            builder:(context,setstate){
+
+              var item = lstrSalesList.where((el) => el["STKCODE"]==itemCodee).toList()??[];
+              if(item.isEmpty){
+                Get.back();
+                return Container();
+              }
+              var itemName  = (item[0]["STKDESCP"]??"").toString();
+              var itemCode  = (item[0]["STKCODE"]??"").toString();
+              var rate  = g.mfnDbl(item[0]["RATE"].toString());
+              var type  = (item[0]["TYPE"]??"").toString();
+              var qty  = itemqty;
+              //  var qty  = g.mfnDbl(item[0]["QTY"].toString());
+              var total = qty*rate;
+              var taxAmount =g.mfnDbl(item[0]["TAX_AMT"].toString());
+              var amt =total;
+
+              var nrate=(item[0]["NRATE"]??"").toString();
+              var erate=(item[0]["ERATE"]??"").toString();
+              var rrate=(item[0]["RRATE"]??"").toString();;
+              var itemR = item.where((element) => element["TYPE"] == "R").toList();
+              var itemN = item.where((element) => element["TYPE"] == "N").toList();
+              var itemE = item.where((element) => element["TYPE"] == "E").toList();
+              // dprint("itemRrrr ${itemR}");
+              rqty.value = itemR.length > 0
+                  ? g.mfnDbltoInt(itemR[0]["QTY"])
+                  : 0;
+              nqty.value = itemN.length > 0
+                  ?  g.mfnDbltoInt(itemN[0]["QTY"])
+                  : 0;
+              eqty.value = itemE.length > 0
+                  ?  g.mfnDbltoInt(itemE[0]["QTY"])
+                  : 0;
+              dprint("RQTY>>>>> ${rqty.value}");
+              dprint("EQTY>>>>> ${eqty.value}");
+              dprint("NQTY>>>>> ${nqty.value}");
+
+              return AlertDialog(contentPadding: EdgeInsets.zero,
+                  // title: Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //
+                  //     children: [
+                  //
+                  //       gapWC(5),
+                  //       Bounce(
+                  //           duration: const Duration(
+                  //               milliseconds: 110),
+                  //           onPressed: (){
+                  //             Get.back();
+                  //           },
+                  //           child: Icon(Icons.close))
+                  //     ] ),
+                  shape:  const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  scrollable: true,
+                  content: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                    child: Obx(() =>  Column(
+
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: boxBaseDecoration(white, 20),
+                            child: Bounce(child: const Icon(Icons.close),     duration: const Duration(
+                                milliseconds: 110), onPressed: (){
+                              Get.back();
+
+                            }),
+                          ),
+                        ),
+                        tc(itemName, txtColor, 12),
+                        gapHC(8),
+                        const Divider(),
+                        Column(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceAround,
+                          children: [
+                            badges.Badge(
+                              badgeContent: tcn(
+                                  nqty.value.toString() ?? "",
+                                  white,
+                                  10),
+                              showBadge: nqty.value == 0.0
+                                  ? false
+                                  : true,
+                              badgeStyle: badges.BadgeStyle(
+                                shape: badges.BadgeShape.circle,
+                                padding: const EdgeInsets.all(7),
+                                borderRadius:
+                                BorderRadius.circular(1),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setstate(() {
+                                    selectedItem.value = itemCode;
+                                    selectedItemType.value = "N";
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 3),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                          10),
+                                      border: Border.all(
+                                        color: ((selectedItem.value ==
+                                            itemCode &&
+                                            selectedItemType.value ==
+                                                "N")
+                                            ? subColor
+                                            : AppTheme
+                                            .background),
+                                        width: 2,
+                                      )),
+                                  child: Column(
+                                    children: [
+                                      tc("New", txtColor, 10),
+                                      gapHC(3),
+                                      tc("${nrate} AED", txtColor,
+                                          10)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            gapHC(5),
+                            badges.Badge(
+                              badgeContent: tcn(
+                                  rqty.value.toString() ?? "",
+                                  white,
+                                  10),
+                              showBadge: rqty.value == 0.0
+                                  ? false
+                                  : true,
+                              badgeStyle: badges.BadgeStyle(
+                                shape: badges.BadgeShape.circle,
+                                padding: const EdgeInsets.all(7),
+                                borderRadius:
+                                BorderRadius.circular(1),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setstate(() {
+                                    selectedItem.value = itemCode;
+                                    selectedItemType.value = "R";
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 3),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                          10),
+                                      border: Border.all(
+                                        color: ((selectedItem.value ==
+                                            itemCode &&
+                                            selectedItemType.value ==
+                                                "R")
+                                            ? subColor
+                                            : AppTheme
+                                            .background),
+                                        width: 2,
+                                      )),
+                                  child: Column(
+                                    children: [
+                                      tc("Refill", txtColor, 10),
+                                      gapHC(3),
+                                      tc("${rrate} AED", txtColor,
+                                          10),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            gapHC(5),
+
+                            badges.Badge(
+                              badgeContent: tcn(
+                                  eqty.value.toString() ?? "",
+                                  white,
+                                  10),
+                              showBadge: eqty.value == 0.0
+                                  ? false
+                                  : true,
+                              badgeStyle: badges.BadgeStyle(
+                                shape: badges.BadgeShape.circle,
+                                padding: const EdgeInsets.all(7),
+                                borderRadius:
+                                BorderRadius.circular(1),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setstate(() {
+                                    selectedItem.value = itemCode;
+                                    selectedItemType.value = "E";
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 3),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                          10),
+                                      border: Border.all(
+                                        color: ((selectedItem.value == itemCode && selectedItemType.value == "E")
+                                            ? subColor
+                                            : AppTheme
+                                            .background),
+                                        width: 2,
+                                      )),
+                                  child: Column(
+                                    children: [
+                                      tc("Empty", txtColor, 10),
+                                      gapHC(3),
+                                      tc("${erate} AED", txtColor,
+                                          10),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        gapHC(20),
+                        Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.end,
+                          children: [
+                            rqty.value != 0 && selectedItemType.value == "R" || nqty.value != 0 && selectedItemType.value == "N"||eqty.value != 0 && selectedItemType.value == "E"
+                                ? Bounce(
+                              onPressed: () {
+                                setstate(() {
+                                  if (selectedItem.value == null || selectedItem.value != itemCode) {
+                                    wShowitemSelectedornot();
+                                  }
+                                  else  {
+                                    fnChngeQty(itemCode, selectedItemType.value, "D",nrate,erate,rrate);
+                                  }
+                                });
+                              },
+                              duration: const Duration(
+                                  milliseconds: 110),
+                              child: Container(
+                                  height: 30,
+                                  width: 35,
+                                  decoration:boxDecorationS(primaryColor, 10),
+                                  // decoration:qty!=0||qty!=0?boxGradientDecoration(0, 10):null,
+                                  //        decoration:selectedcylinder=="new"&&newQty!=0?boxGradientDecoration(0, 10):null,
+                                  child: const Center(
+                                      child: Icon(
+                                        Icons.remove,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ))),
+                            )
+                                : gapHC(0),
+                            gapWC(5),
+                            Bounce(
+                              onPressed: () {
+                                dprint("selectedIteqweqmType.value>>>>>>>>>${selectedItemType.value}");
+                                setstate(() {
+                                  if (selectedItem.value == null || selectedItem.value != itemCode) {
+                                    wShowitemSelectedornot();
+                                  }
+                                  else {
+                                    // rqty.value=rqty.value+1;
+                                    // dprint( rqty.value);
+                                    fnChngeQty(itemCode, selectedItemType.value,"A",nrate,erate,rrate);
+                                  }
+                                });
+                              },
+                              duration: const Duration(
+                                  milliseconds: 110),
+                              child: Container(
+                                  height: 30,
+                                  width: 55,
+                                  decoration:boxDecoration(primaryColor, 10),
+                                  child: const Center(
+                                      child: Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ))),
+                            ),
+                          ],
+                        ),
+
+
+
+                      ],
+                    )),
+                  )
+
+              );
+            } ,
+          ),
+        );
+      },
+    );
+
+
+
+
+
+
+  }
+  wDeletItemSelect(context,itemCodee,typee){
+
+    selectedItemType.value = typee;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 45),
+          child: StatefulBuilder(
+            builder:(context,setstate){
+
+              var item = lstrSalesList.where((el) => el["STKCODE"]==itemCodee).toList()??[];
+              if(item.isEmpty){
+                Get.back();
+                return Container();
+              }
+              var itemName  = (item[0]["STKDESCP"]??"").toString();
+
+
+              return AlertDialog(contentPadding: EdgeInsets.zero,
+
+                  shape:  const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  scrollable: true,
+                  content: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                    child:  Column(
+
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: boxBaseDecoration(white, 20),
+                            child: Bounce(child: const Icon(Icons.close),     duration: const Duration(
+                                milliseconds: 110), onPressed: (){
+                              Get.back();
+
+                            }),
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceAround,
+                          children: [
+                            tc("Do You Want to Delete", txtColor, 13),
+                            gapHC(10),
+                            tcn(itemName, txtColor, 12),
+                            gapHC(5),
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.end,
+                              children: [
+                                Bounce(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    duration: const Duration(
+                                        milliseconds: 110),
+                                    child: Container(
+                                        height: 30,
+                                        width: 35,
+                                        decoration:boxDecorationS(primaryColor, 10),
+                                        // decoration:qty!=0||qty!=0?boxGradientDecoration(0, 10):null,
+                                        //        decoration:selectedcylinder=="new"&&newQty!=0?boxGradientDecoration(0, 10):null,
+                                        child:  Center(
+                                            child: tc("No", white, 12)))),
+
+                                gapWC(5),
+                                Bounce(
+                                    onPressed: () {
+
+                                      lstrSalesList.removeWhere((element) =>element["STKCODE"]==itemCodee &&element["TYPE"]==typee.toString());
+                                      Get.back();
+
+                                    },
+                                    duration: const Duration(milliseconds: 110),
+                                    child: Container(
+                                        height: 30,
+                                        width: 55,
+                                        decoration:boxDecoration(primaryColor, 10),
+                                        child:  Center(
+                                            child: tc("Yes", white, 12)))),
+
+                              ],
+                            ),
+                          ],
+                        ),
+                        gapHC(20),
+
+
+
+
+                      ],
+                    ),
+                  )
+
+              );
+            } ,
+          ),
+        );
+      },
+    );
+
+
+
+
+
+
+  }
+
+  fnChngeQty(itemCode,type,mode,nrate,erate,rrate) {
     var taxAmount = ''.obs;
+    var itemMenu = lstrProductItemDetailList.value.where((element) => element["STKCODE"] == itemCode).toList();
+    dprint("MENUUUU  ${itemMenu}");
+    dprint(lstrSalesList.where((e) => e["STKCODE"] == itemCode  && e["TYPE"]==type).isEmpty);
 
-    var itemMenu = lstrProductItemDetailList.value
-        .where((element) => element["STKCODE"] == itemCode)
-        .toList();
+    if(mode == "A"){
+      if(lstrSalesList.where((e) => e["STKCODE"] == itemCode  && e["TYPE"]==type).isEmpty){
 
-    dprint("Item>>>>>> ${itemMenu}");
-    dprint("Vat>>>>>> ${vat}");
-    dprint("Mode>>>>> ${mode}");
 
-    var i = 0;
-    var exist = 0;
-    for (var item in lstrSalesList.value) {
-      dprint("itttt>>>> ${item}");
-      if (item["STKCODE"] == itemCode && item["TYPE"] == type) {
-        exist = 1;
-        if (mode == "A") {
-          lstrSalesList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) + 1;
-          lstrSalesList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
-        }
-        if (mode == "D" && item["QTY"] != 0) {
-          lstrSalesList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) - 1;
-          lstrSalesList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
+        var datas = Map<String, Object>.from({
+          "STKCODE": itemCode,
+          "STKDESCP": itemMenu[0]["STKDESCP"],
+          "QTY": 1,
+          "HEADER_DISC": 0.0,
+          "DISC_AMT": 0.0,
+          "AMT": 0.0,
+          "TYPE": type,
+          "RATE": ((type == "N" )? itemMenu[0]["PRICE1"]:(type == "R" )? itemMenu[0]["PRICE2"] : itemMenu[0]["CYL_SELL_RATE"]??200),
+          "TAX_PER":0.0,
+          "TAXABLE_AMT": 0.0,
+          "TOTAL_TAX_AMOUNT": 0.0,
+          "NET_AMOUNT": 0.0,
+          "NRATE":nrate,
+          "ERATE":erate,
+          "RRATE":rrate,
+          "GR_AMT": 0.0,
+          "UNIT":itemMenu[0]["UNIT"],
+          "CYL_SELL_RATE":itemMenu[0]["CYL_SELL_RATE"]??"",
+          "SALEUNIT":itemMenu[0]["SALEUNIT"]??"",
+          "CYLINDER_YN":itemMenu[0]["CYLINDER_YN"]??"",
+          "CATWEIGHT":itemMenu[0]["CATWEIGHT"]??"",
+          "MATERIAL_CODE":itemMenu[0]["MATERIAL_CODE"]??"",
+          "PRICE2":itemMenu[0]["PRICE2"]??"",
+          "PRICE1":itemMenu[0]["PRICE1"]??"",
+
+        });
+        lstrSalesList.add(datas);
+      }
+
+
+      else{
+        var item = lstrSalesList.where((element) => element["STKCODE"] == itemCode && element["TYPE"]==type).toList();
+        dprint("MENUUUUqqwq  ${item}>>>>>>>>> ${item[0]["QTY"] }");
+        if(item.isNotEmpty){
+          item[0]["QTY"] = g.mfnDbltoInt(item[0]["QTY"]) + 1;
         }
       }
-      i++;
-      dprint("taxxxxxxxxxxxam  ${taxAmount.value.toString()}");
-    }
-    // lstrOrderList.removeWhere((element) => commonController.mfnInt(element["QTY"]) <= 0);
-    if (exist == 0) {
-      var datas = Map<String, Object>.from({
-        "STKCODE": itemCode,
-        "STKDESCP": itemMenu[0]["STKDESCP"],
-        // "RATE": (type == "N" ? itemMenu[0]["PRICE1"] : itemMenu[0]["PRICE2"]),
-        "RATE": (type == "N") ? itemMenu[0]["PRICE1"]: (type == "R")? itemMenu[0]["PRICE2"]:g.mfnDbl(50.0),
-        "QTY": 1,
-        "TYPE": type,
-        "TAX_PER": vat,
-        "HEADER_DISC": 0.0,
-        // "GR_AMT": (type == "N" ? itemMenu[0]["PRICE1"] : itemMenu[0]["PRICE2"]) * 1,
-        "GR_AMT": (type == "N") ? itemMenu[0]["PRICE1"]??0 *1: (type == "R")? itemMenu[0]["PRICE2"]??0 *1:g.mfnDbl(50.0)*1,
-        "DISC_AMT": 0.0,
-        "AMT": 0.0,
-        "TAXABLE_AMT": 0.0,
-        "TOTAL_TAX_AMOUNT": 0.0,
-        "NET_AMOUNT": 0.0,
-      });
-      dprint("dattttSalesssss${datas}");
-
-      lstrSalesList.add(datas);
+    }else{
+      var item = lstrSalesList.where((element) => element["STKCODE"] == itemCode && element["TYPE"]==type).toList();
+      if(item.isNotEmpty){
+        item[0]["QTY"] = item[0]["QTY"] == 0?0: g.mfnDbltoInt(item[0]["QTY"]) - 1;
+      }
     }
     lstrSalesList.removeWhere((element) => element["QTY"] <= 0);
 
-    dprint("Updatedlisttt ${lstrSalesList}");
-    // fnTotal();
+    dprint("lstrSalesList>>>>>>>>>>>>>>>>>>>>>>> ${lstrSalesList.value}");
+
   }
 
   //**************************************************API
 
-  apiViewDeliveryOrder(docno,mode){
-    futureform = ApiCall().apiViewAssignment(docno,mode);
-    futureform.then((value) => apiViewDeliveryOrderRes(value));
+  apiViewSales(docno, mode) {
+    futureform = ApiCall().apiViewSales(docno, mode);
+    futureform.then((value) => apiViewSalesRes(value));
   }
-  apiViewDeliveryOrderRes(value){
-    if(g.fnValCheck(value)){
+  apiViewSalesRes(value) {
+    if (g.fnValCheck(value)) {
       fnClear();
       fnFill(value);
     }
-
   }
-  apiAddBuilding(code,name,context){
-    futureform = ApiCall().addBuilding(code,name);
-    futureform.then((value) => apiAddBuildinggRes(value,context));
-  }
-  apiAddBuildinggRes(value,context){
-    dprint("ddvaaalaueeeeeeeeeee ${value}");
-    if(g.fnValCheck(value)){
-      var sts = value[0]["STATUS"];
-      var msg = value[0]["MSG"];
-      var buildingCode = value[0]["CODE"];
-      if(sts=="1"){
-        dprint(msg);
-        txtBuildingCode.text = buildingCode;
-        Get.back();
-      }else{
-        errorMsg(context, msg);
-      }
+  //
+  // apiAddBuilding(code,name,context){
+  //   futureform = ApiCall().addBuilding(code,name);
+  //   futureform.then((value) => apiAddBuildinggRes(value,context));
+  // }
+  // apiAddBuildinggRes(value,context){
+  //   dprint("ddvaaalaueeeeeeeeeee ${value}");
+  //   if(g.fnValCheck(value)){
+  //     var sts = value[0]["STATUS"];
+  //     var msg = value[0]["MSG"];
+  //     var buildingCode = value[0]["CODE"];
+  //     if(sts=="1"){
+  //       dprint(msg);
+  //       txtBuildingCode.text = buildingCode;
+  //       Get.back();
+  //     }else{
+  //       errorMsg(context, msg);
+  //     }
+  //
+  //
+  //   }
+  //
+  // }
+  //
+  // apiAddApartment(aprtmntcode,buildingcode,context){
+  //   futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
+  //   futureform.then((value) => apiAddApartmentRes(value,context));
+  // }
+  // apiAddApartmentRes(value,context){
+  //   dprint("apaaaaaaaaart ${value}");
+  //   if(g.fnValCheck(value)){
+  //     var sts = value[0]["STATUS"];
+  //     var msg = value[0]["MSG"];
+  //     var buildingCode = value[0]["CODE"];
+  //     if(sts=="1"){
+  //       dprint(msg);
+  //       txtApartmentCode.text = buildingCode;
+  //       Get.back();
+  //     }else{
+  //       errorMsg(context, msg);
+  //     }
+  //
+  //
+  //   }
+  //
+  // }
 
-
-    }
-
-  }
-
-  apiAddApartment(aprtmntcode,buildingcode,context){
-    futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
-    futureform.then((value) => apiAddApartmentRes(value,context));
-  }
-  apiAddApartmentRes(value,context){
-    dprint("apaaaaaaaaart ${value}");
-    if(g.fnValCheck(value)){
-      var sts = value[0]["STATUS"];
-      var msg = value[0]["MSG"];
-      var buildingCode = value[0]["CODE"];
-      if(sts=="1"){
-        dprint(msg);
-        txtApartmentCode.text = buildingCode;
-        Get.back();
-      }else{
-        errorMsg(context, msg);
-      }
-
-
-    }
-
-  }
-
-  void apiProductTypeDetails(product, void Function() callback) {}
   apiProductType() {
     var lstrFilter = [];
     var columnList = 'CODE|DESCP|';
@@ -1187,6 +1676,34 @@ class HmSalesController extends GetxController{
     if (g.fnValCheck(value)) {
       dprint("xxxxxxxx  ${value}");
       lstrProductTypeList.value = value;
+    }
+  }
+
+  apiProductTypeDetails(product_type) {
+    dprint("product_type..... ${product_type}");
+    var lstrFilter = [
+      {
+        'Column': "COMPANY",
+        'Operator': '=',
+        'Value': g.wstrCompany,
+        'JoinType': 'AND'
+      },
+      {
+        'Column': "PRODUCT_TYPE",
+        'Operator': '=',
+        'Value': product_type,
+        'JoinType': 'AND'
+      },
+    ];
+
+    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|CYL_SELL_RATE|MATERIAL_CODE|CATWEIGHT|CYLINDER_YN|CYL_SELL_RATE|SALEUNIT|UNIT|';
+    futureform = ApiCall().LookupSearch("STOCKMASTER", columnList, 0, 100, lstrFilter);
+    futureform.then((value) => apiProductTypeDetailsRes(value));
+  }
+  apiProductTypeDetailsRes(value) {
+    if (g.fnValCheck(value)) {
+      dprint("Producttypeppp43243ppppp  ${value}");
+      lstrProductItemDetailList.value = value;
       update();
     }
   }

@@ -861,126 +861,18 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                 hmDelivryOrderController.txtContactNo, "Contact No", "N",enable: false,
                 prefixicon: Icons.phone_android_outlined),
             gapHC(10),
-            tc("Building Code", txtColor, 12),
-            gapHC(5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        if(hmDelivryOrderController.wstrPageMode.value=="VIEW"){
-                          return;
-                        }
 
-                        hmDelivryOrderController.fnLookup("GBUILDINGMASTER");
-                      },
-                      child: CommonTextField(
-                        txtController: hmDelivryOrderController.txtBuildingCode,
-                        obscureY: false,textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                        prefixIconColor: txtColor,
-                        enableY: false,
-                        prefixIcon: Icons.apartment,
-                        lookupY: true,
-                        sufixIconColor: txtColor,
-                        suffixIcon: Icons.search,
-                      ),
-                    )),
-                hmDelivryOrderController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
-                hmDelivryOrderController.wstrPageMode.value != 'VIEW'
-                    ? Bounce(
-                  duration: const Duration(milliseconds: 110),
-                  onPressed: () {
-                    wAddBuildAprtmntCode("Add Building", "Building Code", "Building Name", hmDelivryOrderController.txtBuildingCode, hmDelivryOrderController.txtBuildingName, Icons.apartment,
-                            (){
-                              hmDelivryOrderController.apiAddBuilding(hmDelivryOrderController.txtBuildingCode.text,hmDelivryOrderController.txtBuildingName.text,context);
-
-                        });
-                  },
-                  child: Container(
-                    height: 40,
-                    width: size.width * 0.12,
-                    decoration: boxDecoration(primaryColor, 10),
-                    child: const Center(
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                )
-                    : gapHC(0)
-              ],
-            ),
+            wRoundedInputField(
+                hmDelivryOrderController.txtBuildingCode, "Building Code", "N",enable: false,
+                prefixicon: Icons.apartment),
             gapHC(10),
-            tc("Apartment", txtColor, 12),
-            gapHC(5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        if(hmDelivryOrderController.wstrPageMode.value=="VIEW"){
-                          return;
-                        }
-
-                        hmDelivryOrderController.fnLookup("GAPARTMENTMASTER");
-                      },
-                      child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                        prefixIcon:   Icons.apartment,
-                        enableY:false,
-
-                        suffixIcon: Icons.search,
-                        sufixIconColor: txtColor,
-                        txtController: hmDelivryOrderController.txtApartmentCode,
-                        obscureY: false,prefixIconColor: txtColor,
-                      ),
-                    )),
-                hmDelivryOrderController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
-                hmDelivryOrderController.wstrPageMode.value != 'VIEW'
-                    ? Bounce(
-                  duration: const Duration(milliseconds: 110),
-                  onPressed: () {
-                    wAddBuildAprtmntCode("Add Apartment", "Apartment Code", "Apartment Name", hmDelivryOrderController.txtApartmentCode, hmDelivryOrderController.txtApartmentName, Icons.apartment,
-                            (){
-                              hmDelivryOrderController.apiAddApartment(hmDelivryOrderController.txtApartmentCode.text,hmDelivryOrderController.txtBuildingCode.text,context);
-
-                        });
-                  },
-                  child: Container(
-                    height: 40,
-                    width: size.width * 0.12,
-                    decoration: boxDecoration(primaryColor, 10),
-                    child: const Center(
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),)
-                    : gapHC(0)
-              ],
-            ),
+            wRoundedInputField(
+                hmDelivryOrderController.txtApartmentCode, "Apartment Code", "N",enable: false,
+                prefixicon: Icons.apartment),
             gapHC(10),
-            tc("AreaCode", txtColor, 12),
-            gapHC(5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                      prefixIcon:   Icons.apartment,prefixIconColor: txtColor,
-                      enableY: false,
-
-                      txtController: hmDelivryOrderController.txtAreaCode,
-                      obscureY: false,
-                    )),
-
-              ],
-            ),
+            wRoundedInputField(
+                hmDelivryOrderController.txtApartmentCode, "Area Code", "N",enable: false,
+                prefixicon: Icons.apartment),
             gapHC(10),
             wRoundedInputField(
               hmDelivryOrderController.txtLandmark,
@@ -1083,7 +975,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             obscureY: false,
 
             textStyle: const TextStyle(color:txtColor,fontSize: 12),
-            prefixIcon: Icons.tag,
+            prefixIcon: Icons.location_on_outlined,
             sufixIconColor: Colors.black,
             prefixIconColor: black,
             txtController: hmDelivryOrderController.txtlocation,

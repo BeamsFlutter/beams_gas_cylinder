@@ -635,7 +635,7 @@ class _HmeSalesState extends State<HmeSales> {
             Column(
               children: [
                 Column(
-                  children: hmSalesController.wDeliverItemList(context),
+                  children: hmSalesController.wSalesItemList(context),
                 ),
               ],
             ),
@@ -854,126 +854,18 @@ class _HmeSalesState extends State<HmeSales> {
                 hmSalesController.txtContactNo, "Contact No", "N",enable: false,
                 prefixicon: Icons.phone_android_outlined),
             gapHC(10),
-            tc("Building Code", txtColor, 12),
-            gapHC(5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        if(hmSalesController.wstrPageMode.value=="VIEW"){
-                          return;
-                        }
-
-                        hmSalesController.fnLookup("GBUILDINGMASTER");
-                      },
-                      child: CommonTextField(
-                        txtController: hmSalesController.txtBuildingCode,
-                        obscureY: false,textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                        prefixIconColor: txtColor,
-                        enableY: false,
-                        prefixIcon: Icons.apartment,
-                        lookupY: true,
-                        sufixIconColor: txtColor,
-                        suffixIcon: Icons.search,
-                      ),
-                    )),
-                hmSalesController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
-                hmSalesController.wstrPageMode.value != 'VIEW'
-                    ? Bounce(
-                  duration: const Duration(milliseconds: 110),
-                  onPressed: () {
-                    wAddBuildAprtmntCode("Add Building", "Building Code", "Building Name", hmSalesController.txtBuildingCode, hmSalesController.txtBuildingName, Icons.apartment,
-                            (){
-                              hmSalesController.apiAddBuilding(hmSalesController.txtBuildingCode.text,hmSalesController.txtBuildingName.text,context);
-
-                        });
-                  },
-                  child: Container(
-                    height: 40,
-                    width: size.width * 0.12,
-                    decoration: boxDecoration(primaryColor, 10),
-                    child: const Center(
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                )
-                    : gapHC(0)
-              ],
-            ),
+            wRoundedInputField(
+                hmSalesController.txtBuildingCode, "Building Code", "N",enable: false,
+                prefixicon: Icons.apartment),
             gapHC(10),
-            tc("Apartment", txtColor, 12),
-            gapHC(5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        if(hmSalesController.wstrPageMode.value=="VIEW"){
-                          return;
-                        }
-
-                        hmSalesController.fnLookup("GAPARTMENTMASTER");
-                      },
-                      child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                        prefixIcon:   Icons.apartment,
-                        enableY:false,
-
-                        suffixIcon: Icons.search,
-                        sufixIconColor: txtColor,
-                        txtController: hmSalesController.txtApartmentCode,
-                        obscureY: false,prefixIconColor: txtColor,
-                      ),
-                    )),
-                hmSalesController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
-                hmSalesController.wstrPageMode.value != 'VIEW'
-                    ? Bounce(
-                  duration: const Duration(milliseconds: 110),
-                  onPressed: () {
-                    wAddBuildAprtmntCode("Add Apartment", "Apartment Code", "Apartment Name", hmSalesController.txtApartmentCode, hmSalesController.txtApartmentName, Icons.apartment,
-                            (){
-                              hmSalesController.apiAddApartment(hmSalesController.txtApartmentCode.text,hmSalesController.txtBuildingCode.text,context);
-
-                        });
-                  },
-                  child: Container(
-                    height: 40,
-                    width: size.width * 0.12,
-                    decoration: boxDecoration(primaryColor, 10),
-                    child: const Center(
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),)
-                    : gapHC(0)
-              ],
-            ),
+            wRoundedInputField(
+                hmSalesController.txtApartmentCode, "Apartment Code", "N",enable: false,
+                prefixicon: Icons.apartment),
             gapHC(10),
-            tc("AreaCode", txtColor, 12),
-            gapHC(5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                      prefixIcon:   Icons.apartment,prefixIconColor: txtColor,
-                      enableY: false,
+            wRoundedInputField(
+                hmSalesController.txtApartmentCode, "Area Code", "N",enable: false,
+                prefixicon: Icons.apartment),
 
-                      txtController: hmSalesController.txtAreacode,
-                      obscureY: false,
-                    )),
-
-              ],
-            ),
             gapHC(10),
             wRoundedInputField(
               hmSalesController.txtLandmark,
@@ -1076,7 +968,7 @@ class _HmeSalesState extends State<HmeSales> {
               obscureY: false,
 
               textStyle: const TextStyle(color:txtColor,fontSize: 12),
-              prefixIcon: Icons.tag,
+              prefixIcon: Icons.location_on_outlined,
               sufixIconColor: Colors.black,
               prefixIconColor: black,
               txtController: hmSalesController.txtlocation,
