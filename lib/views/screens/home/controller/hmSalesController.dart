@@ -49,45 +49,19 @@ class HmSalesController extends GetxController{
   var txtController= TextEditingController();
   var txtlocation= TextEditingController();
 
-  RxList lstrOrderList = [].obs;
-  var lstrProductTypeList = [
-    {
-      "DESCP":"LPG",
-    },
-    {
-      "DESCP":"CNG",
-    },
-    {
-      "DESCP":"OXYGEN",
-    },
-    {
-      "DESCP":"erw",
-    },
-    {
-      "DESCP":"werw",
-    },
-    {
-      "DESCP":"werwer",
-    },   {
-      "DESCP":"ert",
-    },
-    {
-      "DESCP":"yuiyu",
-    },
-    {
-      "DESCP":"pio",
-    },
+  //************************PAYMENT__CONTROLLER
+  var txtDiscountAmt = TextEditingController();
+  var txtTotalAmt = TextEditingController();
+  var txtTaxAmt = TextEditingController();
+  var txtNetAmt = TextEditingController();
+  var txtRoundAmt = TextEditingController();
+  var txtPaidAmt = TextEditingController();
+  var txtBalanceAmt = TextEditingController();
+  var txtAddlAmt = TextEditingController();
+  RxList lstrSalesList = [].obs;
+  var lstrProductTypeList = [].obs;
 
-
-  ].obs;
-
-  var lstrProductItemDetailList =[
-    {  "STKCODE": "FIVE", "STKDESCP": "5L", "NRATE": 20.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":22,"PRICE1":43},
-    {  "STKCODE": "THREE", "STKDESCP": "3L", "NRATE": 30.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":11,"PRICE1":73},
-    {  "STKCODE": "TWO", "STKDESCP": "2L", "NRATE": 10.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":27,"PRICE1":63},
-    {  "STKCODE": "SIX", "STKDESCP": "6L", "NRATE": 40.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":46,"PRICE1":40},
-    {  "STKCODE": "SEVEN", "STKDESCP": "7L", "NRATE": 50.0, "RRATE": 10.0,"TYPE":"R","QTY":1,"PRICE2":21,"PRICE1":23},
-  ].obs;
+  var lstrProductItemDetailList =[].obs;
   //***********************************************************MENU
 
   fnAdd() {
@@ -134,7 +108,7 @@ class HmSalesController extends GetxController{
 
   fnFill(value){}
 
-  fnSave(){}
+  fnSave(context){}
 
   fnDelete(){}
   fnBackPage(context){
@@ -549,7 +523,36 @@ class HmSalesController extends GetxController{
   }
 
   //**************************************************FUNCTION
+  void fnFillData(data, mode) {}
 
+  void fnFillCustomerData(data, mode) {
+    if (g.fnValCheck(data)) {
+      if (mode == "LOCMAST") {
+        txtlocation.text = data["DESCP"] ?? "";
+
+        //   apiGetCustomerDetails();
+      }
+      else if (mode == "GUESTMASTER") {
+        dprint("RRRRRRRRRR ${data}");
+        txtCustomerCode.text = data["GUEST_CODE"] ?? "";
+        txtCustomerName.text = data["GUEST_NAME"] ?? "";
+        txtContactNo.text = data["MOBILE"] ?? "";
+        // frEmail.value  = data["EMAIL"]??"";
+        cstmrCode.value = data["GUEST_CODE"] ?? "";
+        cstmrName.value = data["GUEST_NAME"] ?? "";
+        txtContactNo.text = data["MOBILE"] ?? "";
+        txtApartmentCode.text = data["APARTMENT_CODE"] ?? "";
+        txtAreacode.text = data["AREA_CODE"] ?? "";
+        txtLandmark.text = data["LANDMARK"] ?? "";
+        txtAddress.text = data["CUST_ADDRESS"] ?? "";
+        txtRemark.text = data["REMARKS"] ?? "";
+        txtBuildingCode.text = data["BUILDING_CODE"] ?? "";
+        g.wstrBuildingCode = data["BUILDING_CODE"] ?? "";
+        g.wstrApartmentCode = data["APARTMENT_CODE"] ?? "";
+        //    apiGetCustomerInfo();
+      }
+    }
+  }
 
   wProductItem() {
     List<Widget> rtnPrdctList = [];
@@ -645,7 +648,7 @@ class HmSalesController extends GetxController{
                                           var rrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE2"].toString());
                                           var erate = g.mfnDbl(50.0);
 
-                                          var item = lstrOrderList.where((element) => element["STKCODE"] == itemCode).toList();
+                                          var item = lstrSalesList.where((element) => element["STKCODE"] == itemCode).toList();
                                           var itemR = item
                                               .where((element) => element["TYPE"] == "R")
                                               .toList();
@@ -953,16 +956,16 @@ class HmSalesController extends GetxController{
       ),
     );
   }
-  List<Widget> wDeliverItemList(){
+  List<Widget> wDeliverItemList(context){
     List<Widget> rtnList =[];
     var ftotal  = 0.0;
     var ftaxamount  = 0.0;
     //   {  "STKCODE": "FIVE", "STKDESCP": "5L", "RATE": 10.0,"TYPE":"R"},
-    dprint("Ordersdfrrrlistt >> ${lstrOrderList}");
+    dprint("lstrSalesList >> ${lstrSalesList}");
 
 
     // Get.find<SalesController>().txtTotalAmt.value.text="" ;
-    for(var e  in lstrOrderList.value){
+    for(var e  in lstrSalesList.value){
       dprint("LstrOrderList>>>>>>>>>>>>>   ${e}");
 
       var itemName  = (e["STKDESCP"]??"").toString();
@@ -1057,17 +1060,17 @@ class HmSalesController extends GetxController{
 
     var i = 0;
     var exist = 0;
-    for (var item in lstrOrderList.value) {
+    for (var item in lstrSalesList.value) {
       dprint("itttt>>>> ${item}");
       if (item["STKCODE"] == itemCode && item["TYPE"] == type) {
         exist = 1;
         if (mode == "A") {
-          lstrOrderList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) + 1;
-          lstrOrderList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
+          lstrSalesList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) + 1;
+          lstrSalesList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
         }
         if (mode == "D" && item["QTY"] != 0) {
-          lstrOrderList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) - 1;
-          lstrOrderList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
+          lstrSalesList.value[i]["QTY"] = g.mfnDbltoInt(item["QTY"]) - 1;
+          lstrSalesList.value[i]["GR_AMT"] = item["RATE"] * g.mfnDbltoInt(item["QTY"]);
         }
       }
       i++;
@@ -1094,11 +1097,11 @@ class HmSalesController extends GetxController{
       });
       dprint("dattttSalesssss${datas}");
 
-      lstrOrderList.add(datas);
+      lstrSalesList.add(datas);
     }
-    lstrOrderList.removeWhere((element) => element["QTY"] <= 0);
+    lstrSalesList.removeWhere((element) => element["QTY"] <= 0);
 
-    dprint("Updatedlisttt ${lstrOrderList}");
+    dprint("Updatedlisttt ${lstrSalesList}");
     // fnTotal();
   }
 
@@ -1115,37 +1118,65 @@ class HmSalesController extends GetxController{
     }
 
   }
+  apiAddBuilding(code,name,context){
+    futureform = ApiCall().addBuilding(code,name);
+    futureform.then((value) => apiAddBuildinggRes(value,context));
+  }
+  apiAddBuildinggRes(value,context){
+    dprint("ddvaaalaueeeeeeeeeee ${value}");
+    if(g.fnValCheck(value)){
+      var sts = value[0]["STATUS"];
+      var msg = value[0]["MSG"];
+      var buildingCode = value[0]["CODE"];
+      if(sts=="1"){
+        dprint(msg);
+        txtBuildingCode.text = buildingCode;
+        Get.back();
+      }else{
+        errorMsg(context, msg);
+      }
+
+
+    }
+
+  }
+
+  apiAddApartment(aprtmntcode,buildingcode,context){
+    futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
+    futureform.then((value) => apiAddApartmentRes(value,context));
+  }
+  apiAddApartmentRes(value,context){
+    dprint("apaaaaaaaaart ${value}");
+    if(g.fnValCheck(value)){
+      var sts = value[0]["STATUS"];
+      var msg = value[0]["MSG"];
+      var buildingCode = value[0]["CODE"];
+      if(sts=="1"){
+        dprint(msg);
+        txtApartmentCode.text = buildingCode;
+        Get.back();
+      }else{
+        errorMsg(context, msg);
+      }
+
+
+    }
+
+  }
 
   void apiProductTypeDetails(product, void Function() callback) {}
-
-  void fnFillData(data, mode) {}
-
-  void fnFillCustomerData(data, mode) {
-    if (g.fnValCheck(data)) {
-      if (mode == "LOCMAST") {
-        txtlocation.text = data["DESCP"] ?? "";
-
-        //   apiGetCustomerDetails();
-      }
-      else if (mode == "GUESTMASTER") {
-        dprint("RRRRRRRRRR ${data}");
-        txtCustomerCode.text = data["GUEST_CODE"] ?? "";
-        txtCustomerName.text = data["GUEST_NAME"] ?? "";
-        txtContactNo.text = data["MOBILE"] ?? "";
-        // frEmail.value  = data["EMAIL"]??"";
-        cstmrCode.value = data["GUEST_CODE"] ?? "";
-        cstmrName.value = data["GUEST_NAME"] ?? "";
-        txtContactNo.text = data["MOBILE"] ?? "";
-        txtApartmentCode.text = data["APARTMENT_CODE"] ?? "";
-        txtAreacode.text = data["AREA_CODE"] ?? "";
-        txtLandmark.text = data["LANDMARK"] ?? "";
-        txtAddress.text = data["CUST_ADDRESS"] ?? "";
-        txtRemark.text = data["REMARKS"] ?? "";
-        txtBuildingCode.text = data["BUILDING_CODE"] ?? "";
-        g.wstrBuildingCode = data["BUILDING_CODE"] ?? "";
-        g.wstrApartmentCode = data["APARTMENT_CODE"] ?? "";
-        //    apiGetCustomerInfo();
-      }
+  apiProductType() {
+    var lstrFilter = [];
+    var columnList = 'CODE|DESCP|';
+    futureform = ApiCall().LookupSearch("PRODUCT_TYPE", columnList, 0, 100, lstrFilter);
+    futureform.then((value) => apiGetProductTypeRes(value));
+  }
+  apiGetProductTypeRes(value) {
+    if (g.fnValCheck(value)) {
+      dprint("xxxxxxxx  ${value}");
+      lstrProductTypeList.value = value;
+      update();
     }
   }
+
 }

@@ -453,7 +453,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
         gapHC(5),
         CommonTextField(
           prefixIcon: prefixicon,
-          enableY: hmDelivryOrderController.wstrPageMode.value=="VIEW"?false:true,
+          enableY: enable,
           txtController: contrlr,
           prefixIconColor: txtColor,
           obscureY: false,
@@ -851,11 +851,11 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             gapHC(5),
 
             wRoundedInputField(
-                hmDelivryOrderController.txtCustomerName, "Customer Name", "N",
+                hmDelivryOrderController.txtCustomerName, "Customer Name", "N",enable: false,
                 prefixicon: Icons.drive_file_rename_outline),
             gapHC(10),
             wRoundedInputField(
-                hmDelivryOrderController.txtContactNo, "Contact No", "N",
+                hmDelivryOrderController.txtContactNo, "Contact No", "N",enable: false,
                 prefixicon: Icons.phone_android_outlined),
             gapHC(10),
             tc("Building Code", txtColor, 12),
@@ -983,11 +983,11 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
               hmDelivryOrderController.txtLandmark,
               "Landmark",
               "N",
-              prefixicon: Icons.apartment,
+              prefixicon: Icons.apartment,enable: false,
             ),
             gapHC(10),
             wRoundedInputField(
-              hmDelivryOrderController.txtAddress,
+              hmDelivryOrderController.txtAddress,enable: false,
               "Address",
               "N",
               maxLine: 5,
@@ -995,7 +995,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             ),
             gapHC(10),
             wRoundedInputField(
-              hmDelivryOrderController.txtRemark,enable: true,
+              hmDelivryOrderController.txtRemark,enable: hmDelivryOrderController.wstrPageMode=="VIEW"?false:true,
               "Remark",
               "N",
               maxLine: 5,
