@@ -183,177 +183,144 @@ class HmDelivryOrderController extends GetxController{
     for(var e in lstrDeliveredList.value){
       dprint("SAVELISTS>>tableDoDet>>>>>>>> ${lstrDeliveredList.value}");
 
+      var qty1 = 0.0;
+      var qty2 = 0.0;
+      var returnQty = 0.0;
+      var soldQty = 0.0;
 
+      var unit1 = e["UNIT"];
+      var unit2 = e["SALEUNIT"];
 
-      var qty = g.mfnDbl(e["QTY2"]);
-      var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
-      var rate2 = g.mfnDbl(e["RATEFC2"]);
-      var soldrate = g.mfnDbl(e["SOLD_RATEFC"]);
+      var rate1 = 0.0;
+      var rate2 = 0.0;
+      var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
       var disc  = g.mfnDbl(0.0);
-      var cf = g.mfnDbl(e["UNITCF"])  == 0.0 ? 1.0 :g.mfnDbl(e["UNITCF"]);
+      var unitCf = g.mfnDbl(e["CATWEIGHT"]) == 0? 1.0:g.mfnDbl(e["CATWEIGHT"])  ;
 
-      var soldQty = qty - rtnQty;
-      var gasAmount  =  qty * rate2 ;
-      var soldAmount =  soldQty * soldrate;
-      var gramt =  gasAmount + soldAmount;
-      var amt = gramt -  disc;
-      var amt1 = amt * cf;
-      var rate21 = rate2 * cf;
+      if(tableDoDet.where((edoDet) => edoDet["STKCODE"] ==e["STKCODE"] ).isEmpty){
+      //Empty
 
-      // var taxAmtV = (amt)*e["VAT_PERC"];
-      // var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
 
-      //totalCalc For Header
-      // totalGrAmt = totalGrAmt + gramt;
-      // totalTaxAmt = totalTaxAmt + taxAmt;
-      // var net = amt+taxAmt;
-      // netAmount = netAmount + net;
-      //
-      // srno= srno+1;
-      tableDoDet.add({
-        "COMPANY" : g.wstrCompany,
-        "YEARCODE" :g.wstrYearcode,
-        "DOCNO" : frDocno.value,
-        "DOCTYPE" : frDocType.value,
-        "SRNO" : i,
-        "CYLINDER_CAT" : "",
-        "STKCODE" : e["STKCODE"],
-        "STKDESCP" : e["STKDESCP"],
-        "LOC" : "",
-        "QTY1" : e["QTY"],
-        "QTY2" : "",
-        "QTYSOLD" : "",
-        "SOLDRATE" : "",
-        "SOLDRATEFC" : "",
-        "SOLDAMT" : "",
-        "SOLDAMTFC" : "",
-        "QTYRET" : "",
-        "RATE1" : "",
-        "RATE1FC" : "",
-        "AMT1" : "",
-        "AMT1FC" : "",
-        "RATE2" : "",
-        "RATE2FC" : "",
-        "AMT2" : "",
-        "AMT2FC" : "",
-        "NETAMTFC" : "",
-        "NETAMT" : "",
-        "PENDINGQTY" : "",
-        "CLEARED_QTY" : "",
-        "REF1" : "",
-        "REF2" : "",
-        "REF3" : "",
-        "BUILDING_CODE" : "",
-        "PROPERTY_CODE" : "",
-        "DELIVERY_DATE" : "",
-        "ACTUAL_DELIVERY_DATE" : "",
-        "GRAMT" : "",
-        "GRAMTFC" : "",
-        "CLEARED_QTY2" : "",
-        "CYLINDER_CODE" : "",
-        "DOCDATE" : "",
-        "VEHICLE_NO" : "",
-        "DRIVER" : "",
-        "DUEDATE" : "",
-        "UNIT2" : "",
-        "UNITCF" : "",
-        "RATE" : "",
-        "RATEFC" : "",
-        "RATEFC2" : "",
-        "AMTFC" : "",
-        "PRVDOCTABLE" : "",
-        "PRVYEARCODE" : "",
-        "PRVDOCNO" : "",
-        "PRVDOCTYPE" : "",
-        "PRVDOCSRNO" : "",
-        "PARTYCODE" : "",
-        "AMT" : "",
-        "SMAN" : "",
-        "SOLD_QTY" : "",
-        "SOLD_RATE" : "",
-        "SOLD_RATEFC" : "",
-        "SOLD_AMT" : "",
-        "SOLD_AMTFC" : "",
-        "RETURN_QTY" : "",
-        "CYLINDER_STKCODE" : "",
-        "CYLINDER_STKDESCP" : "",
-        "CYLINDER_UNIT" : "",
-        "CYLINDER_QTY1" : "",
-        "CYL_DBACCODE" : "",
-        "CYL_CRACCODE" : "",
-        "CYL_DBCOSTSALE" : "",
-        "CYL_DBINVENTORY" : "",
-        "CYL_CRCOSTSALE" : "",
-        "CYL_CRINVENTORY" : "",
-        "MATERIAL_CODE" : "",
-        "POSTDATE" : "",
-        "AM" : "",
-        "UNIT1" : "",
-        "RATE3" : "",
-        "RATEFC3" : "",
-        "REMARKS" : "",
-        "PRVDOCQTY" : "",
-        "PRVDOCPENDINGQTY" : "",
-        "PRVDOCCLRQTY" : "",
-        "AC_AMT" : "",
-        "AC_AMTFC" : "",
-        "BRNCODE" : "",
-        "DIVCODE" : "",
-        "CCCODE" : "",
-        "CRDAYS" : "",
-        "PARTYNAME" : "",
-        "CASH_CREDIT" : "",
-        "CURR" : "",
-        "CURRATE" : "",
-        "DISC_AMT" : "",
-        "DISC_AMTFC" : "",
-        "CHG_CODE" : "",
-        "CHG_AMT" : "",
-        "CHG_AMTFC" : "",
-        "PAID_AMT" : "",
-        "PAID_AMTFC" : "",
-        "BAL_AMT" : "",
-        "BAL_AMTFC" : "",
-        "REF4" : "",
-        "REF5" : "",
-        "REF6" : "",
-        "PRINT_YN" : "",
-        "CLOSED_YN" : "",
-        "PLACE_OF_DELIVERY" : "",
-        "DOCUMENT_STATUS" : "",
-        "DELIVERY_TIME" : "",
-        "PAYMENT_MODEL" : "",
-        "CHEQUE_TYPE" : "",
-        "CHEQUE_DAY" : "",
-        "CREATE_USER" : "",
-        "CREATE_DATE" : "",
-        "EDIT_USER" : "",
-        "EDIT_DATE" : "",
-        "DELIVERED_YN" : "",
-        "ROUND_OFF_AMT" : "",
-        "ROUND_OFF_AMTFC" : "",
-        "PRVMULTIDOCNO" : "",
-        "RETURNED_YN" : "",
-        "DBCURR" : "",
-        "DBCURRATE" : "",
-        "CRCURR" : "",
-        "CRCURRATE" : "",
-        "CRAMTFC" : "",
-        "CRACTIVITY2" : "",
-        "CRACTIVITY3" : "",
-        "TRNAMT" : "",
-        "PERCENTAGE" : "",
-        "ADD_DEDUCT" : "",
-        "CODE" : "",
-        "DESCP" : "",
-        "VAT_PERC" : "",
-        "VAT_AMTFC" : "",
-        "VAT_AMT" : "",
-        "TOT_TAX_AMTFC" : "",
-        "TOT_TAX_AMT" : "",
-        "HEADER_DISC_AMT" :e["HEADER_DISC"],
-        "HEADER_DISC_AMTFC" : e["HEADER_DISC"]
-      });
+        if(e["TYPE"] == "N"){
+          qty2 =  g.mfnDbl(e["QTY"]);
+        }else if(e["TYPE"] == "R"){
+          qty2 =  g.mfnDbl(e["QTY"]);
+          returnQty = g.mfnDbl(e["QTY"]);
+        }else if(e["TYPE"] == "E"){
+          qty2 =  0.0;
+          returnQty = g.mfnDbl(e["QTY"]);
+        }
+
+        qty1 =  qty2*unitCf;
+        soldQty =  qty2 - returnQty;
+
+        rate2  =g.mfnDbl(e["PRICE1"].toString()) ;
+        rate1  = rate2* unitCf;
+
+
+        var gasAmount  =  qty2 * rate2 ;
+        var soldAmount =  soldQty * soldRate;
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt -  disc;
+        var amt1 = amt * unitCf;
+
+        tableDoDet.add({
+          "COMPANY" : g.wstrCompany,
+          "YEARCODE" :g.wstrYearcode,
+          "DOCNO" : frDocno.value,
+          "DOCTYPE" : frDocType.value,
+          "DOCDATE": docDate,
+          "SRNO": i,
+          "STKCODE" : e["STKCODE"],
+          "STKDESCP" : e["STKDESCP"],
+          "MATERIAL_CODE": e["MATERIAL_CODE"],
+          "LOC": "",
+          "VEHICLE_NO": "",
+          "QTY1": qty1,
+          "QTY2": qty2,
+          "RATE": rate1,
+          "RATEFC": rate1,
+          "RATE2": rate2,
+          "RATEFC2": rate2,
+          "AMT": amt,
+          "AMTFC": amt,
+          "RETURN_QTY": returnQty,
+          "SOLD_QTY": soldQty,
+          "SOLD_RATE": soldRate,
+          "SOLD_RATEFC": soldRate,
+          "SOLD_AMT": soldAmount,
+          "SOLD_AMTFC": soldAmount,
+          "NETAMT": "",
+          "NETAMTFC": "",
+          "PRVDOCTABLE": "",
+          "PRVYEARCODE": "",
+          "PRVDOCNO": "",
+          "PRVDOCTYPE": "",
+          "PRVDOCSRNO": "",
+          "PRVDOCQTY": "",
+          "DBACCODE": "",
+          "CRACCODE": "",
+          "DBCOSTSALE": "",
+          "DBINVENTORY": "",
+          "CRCOSTSALE": "",
+          "CRINVENTORY": "",
+          "CYL_DBACCODE": "",
+          "CYL_CRACCODE": "",
+          "CYL_DBCOSTSALE": "",
+          "CYL_DBINVENTORY": "",
+          "CYL_CRCOSTSALE": "",
+          "CYL_CRINVENTORY": "",
+          "UNIT1": unit1,
+          "UNITCF": unitCf,
+          "UNIT2": unit2,
+          "CYLINDER_STKCODE":  e["STKCODE"],
+          "CYLINDER_STKDESCP": e["STKDESCP"],
+          "CYLINDER_QTY1": qty2,
+          "DRIVER": "",
+          "SMAN": "",
+          "PARTYCODE": "",
+          "DUEDATE": "",
+          "AM": "",
+          "HEADER_DISC_AMT":0.0,
+          "HEADER_DISC_AMTFC":0.0,
+          "VAT_PERC" : "",
+          "VAT_AMTFC" : "",
+          "VAT_AMT" : "",
+          "TOT_TAX_AMTFC" : "",
+          "TOT_TAX_AMT" : "",
+          "CRCURR" : "",
+          "CRCURRATE" : ""
+        });
+
+      }else{
+
+        if(e["TYPE"] == "N"){
+          qty2 =  g.mfnDbl(e["QTY"])+ g.mfnDbl(e["QTY"]);
+        }else if(e["TYPE"] == "R"){
+          qty2 =  g.mfnDbl(e["QTY"]);
+          returnQty = g.mfnDbl(e["QTY"]);
+        }else if(e["TYPE"] == "E"){
+          qty2 =  0.0;
+          returnQty = g.mfnDbl(e["QTY"]);
+        }
+
+        qty1 =  qty2*unitCf;
+        soldQty =  qty2 - returnQty;
+
+        rate2  =g.mfnDbl(e["PRICE1"].toString()) ;
+        rate1  = rate2* unitCf;
+
+
+        var gasAmount  =  qty2 * rate2 ;
+        var soldAmount =  soldQty * soldRate;
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt -  disc;
+        var amt1 = amt * unitCf;
+
+
+      }
+
+
     }
 
     // additionalTable.add({
@@ -396,10 +363,6 @@ class HmDelivryOrderController extends GetxController{
     //   "TAXRET_SRNO" : ""
     // });
 
-
-
-
-
   }
 
   fnDelete(){}
@@ -438,82 +401,70 @@ class HmDelivryOrderController extends GetxController{
   var totalGrAmt = 0.0.obs;
 
   fnPaymntCalc() {
-    dprint("************INTO THE PAYMNET FUNCTION**************");
-    var totalAmount = 0.0.obs;
-    var billDiscount = 0.0.obs;
-    var totalTaxAmount = 0.0.obs;
-    var roundOfAmount = 0.0.obs;
-    var netAmount = 0.0.obs;
-    var paidAmount = 0.0.obs;
-    var balanceAmount = 0.0.obs;
 
-    for (var e in lstrDeliveredList.value) {
-      dprint("ITEM>d>>>> ${e}");
-      totalAmount.value = totalAmount.value + e["GR_AMT"] - e["DISC_AMT"];
-      e["AMT"] = e["GR_AMT"] - e["DISC_AMT"];
-    }
-    billDiscount.value = g
-        .mfnDbl(txtDiscountAmt.value.text);
-    roundOfAmount.value = g
-        .mfnDbl(txtRoundAmt.value.text) ??
-        0.0;
-    paidAmount.value = g
-        .mfnDbl(txtPaidAmt.value.text) ??
-        0.0;
+      var totalAmount =  0.0;
+      var taxAmount =  0.0;
+      var netAmount =  0.0;
+      var balanceAmount =  0.0;
+      var grAmount =  0.0;
 
-    if (billDiscount.value > totalAmount.value) {
-      billDiscount.value = 0.0;
-      billDiscount.value = 0.0;
-      return false;
-    }
+      var discAmount =  g.mfnDbl(txtDiscountAmt.text);
+      var roundOfAmount =  g.mfnDbl(txtRoundAmt.text);
+      var addlAmount =  0.0;
+      var paidAmount =  g.mfnDbl(txtPaidAmt.text);
 
-    for (var e in lstrDeliveredList.value) {
-      // dprint("____________ ########### ${e["AMT"]} MMMMMMMMMM ${e["AMT"].runtimeType}");
-      // dprint("____________ total amount ${totalAmount.value} MMMMMMMMMM ${totalAmount.value.runtimeType}");
-      e["HEADER_DISC"] = (e["AMT"] / totalAmount.value) * billDiscount.value;
+      for(var e in lstrDeliveredList){
+        var qty = g.mfnDbl(e["QTY"]);
+        var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+        var disc  = 0.0;
 
-      // dprint("hhhhh_________ ${e["HEADER_DISC"]}");
+        var soldQty = qty - rtnQty;
+        var gasAmount  =  qty * price ;
+        var soldAmount =  soldQty * soldRate;
 
-      dprint("TOtall gr amount   ${totalGrAmt.value}");
-      var taxableAmount = 0.0.obs;
-      var taxAmount = 0.0.obs;
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt - disc;
+        totalAmount = totalAmount + amt;
 
-      if (lstrTaxIncldYn.value == 'Y' && e["TAX_PER"] > 0) {
-        taxableAmount.value =
-        ((e["AMT"] - e["HEADER_DISC"]) / (100 + e["TAX_PER"]) * 100);
-        taxAmount.value = (taxableAmount.value * e["TAX_PER"] / 100);
-        e["TOTAL_TAX_AMOUNT"] = taxAmount.value;
-        e["TAXABLE_AMT"] = taxableAmount.value;
-        totalTaxAmount.value = totalTaxAmount.value + taxAmount.value;
-      } else {
-        taxableAmount.value = (e["AMT"] - e["HEADER_DISC"]);
-        taxAmount.value = (taxableAmount.value * e["TAX_PER"] / 100);
-        e["TOTAL_TAX_AMOUNT"] = taxAmount.value;
-        e["TAXABLE_AMT"] = taxableAmount.value;
       }
-      e["NET_AMOUNT"] = taxAmount.value + taxableAmount.value;
-      dprint("netttttttttttttttttttttttt ${e["NET_AMOUNT"]}");
-    }
-    netAmount.value = totalAmount.value + roundOfAmount.value;
-    balanceAmount.value = paidAmount.value - netAmount.value;
 
-    // dprint("(((((((((((((((((((())))))))))))))))) ${lstrOrderList.value}");
-    //
-    // dprint("TOTAL______TAX AMOUNT  >> ${totalTaxAmount.value.toStringAsFixed(2)}") ;
-    // dprint("TOTAL_____ AMOUNT  >> ${totalAmount.value}");
-    // dprint("NET_____ AMOUNT  >> ${netAmount.value}");
-    // dprint("ROUND____ AMOUNT  >> ${roundOfAmount.value}");
-    // dprint("BALANCE____ AMOUNT  >> ${balanceAmount.value}");
-    //
+      for(var e in lstrDeliveredList){
+        var qty = g.mfnDbl(e["QTY"]);
+        var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+        var vat = g.mfnDbl(e["VAT_PERC"]);
+        var disc  = 0.0;
 
-    txtTotalAmt.text =
-        totalAmount.value.toStringAsFixed(2);
-   txtTaxAmt.text =
-        totalTaxAmount.value.toStringAsFixed(2);
- txtNetAmt.text =
-        netAmount.value.toStringAsFixed(2);
-   txtBalanceAmt.text =
-        balanceAmount.value.toStringAsFixed(2);
+        var soldQty = qty - rtnQty;
+        var gasAmount  =  qty * price ;
+        var soldAmount =  soldQty * soldRate;
+
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt - disc;
+
+
+        var headerDiscount  = (amt/totalAmount) * discAmount;
+        var taxAmtV = (amt-headerDiscount)*vat;
+        var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
+        //totalCalc For Header
+        grAmount = grAmount + gramt;
+        taxAmount = taxAmount + taxAmt;
+        var net = (amt-headerDiscount)+taxAmt;
+        netAmount = netAmount + net;
+
+      }
+
+      netAmount =  netAmount +  roundOfAmount;
+      balanceAmount =  netAmount - paidAmount;
+
+      txtTotalAmt.text =  totalAmount.toStringAsFixed(2);
+      txtTaxAmt.text =  taxAmount.toStringAsFixed(2);
+      txtNetAmt.text =  netAmount.toStringAsFixed(2);
+      txtBalanceAmt.text =  balanceAmount.toStringAsFixed(2);
+
   }
   //**************************************************FUNCTION
 
@@ -627,29 +578,24 @@ class HmDelivryOrderController extends GetxController{
                                         itemCount: lstrProductItemDetailList.value.length,
                                         itemBuilder: (context, index) {
 
-
-                                          //    {  "STKCODE": "FIVE", "STKDESCP": "5L", "NRATE": 20.0, "RRATE": 10.0,"TYPE":"R","QTY":1},
                                           var itemName = (lstrProductItemDetailList[index]["STKDESCP"] ?? "").toString();
                                           var itemCode = (lstrProductItemDetailList[index]["STKCODE"] ?? "").toString();
 
-                                          var nrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE1"].toString());
-                                          var rrate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE2"].toString());
-                                          var erate = g.mfnDbl("200");
+                                          var rate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE1"].toString());
+                                          var sellRate = g.mfnDbl(lstrProductItemDetailList[index]["CYL_SELL_RATE"].toString());
+                                          var item = lstrDeliveredList.value.where((element) => element["STKCODE"] == itemCode).toList()
+                                          ;
+                                          rqty.value = item.isNotEmpty
+                                              ? g.mfnDbltoInt(item[0]["RQTY"].toString())
+                                              : 0;
+                                          nqty.value = item.isNotEmpty
+                                              ?  g.mfnDbltoInt(item[0]["NQTY"].toString())
+                                              : 0;
+                                          eqty.value = item.isNotEmpty
+                                              ?  g.mfnDbltoInt(item[0]["EQTY"].toString())
+                                              : 0;
 
-                                          var item = lstrDeliveredList.value.where((element) => element["STKCODE"] == itemCode).toList();
-                                          var itemR = item.where((element) => element["TYPE"] == "R").toList();
-                                          var itemN = item.where((element) => element["TYPE"] == "N").toList();
-                                          var itemE = item.where((element) => element["TYPE"] == "E").toList();
-                                          // dprint("itemRrrr ${itemR}");
-                                          rqty.value = itemR.length > 0
-                                              ? g.mfnDbltoInt(itemR[0]["QTY"])
-                                              : 0;
-                                          nqty.value = itemN.length > 0
-                                              ?  g.mfnDbltoInt(itemN[0]["QTY"])
-                                              : 0;
-                                          eqty.value = itemE.length > 0
-                                              ?  g.mfnDbltoInt(itemE[0]["QTY"])
-                                              : 0;
+
 
                                           return Container(
                                             margin: const EdgeInsets.symmetric(horizontal: 5,vertical:3),
@@ -714,7 +660,7 @@ class HmDelivryOrderController extends GetxController{
                                                             children: [
                                                               tc("New", txtColor, 10),
                                                               gapHC(3),
-                                                              tc("${nrate} AED", txtColor,
+                                                              tc("$rate AED", txtColor,
                                                                   10)
                                                             ],
                                                           ),
@@ -766,7 +712,7 @@ class HmDelivryOrderController extends GetxController{
                                                             children: [
                                                               tc("Refill", txtColor, 10),
                                                               gapHC(3),
-                                                              tc("${rrate} AED", txtColor,
+                                                              tc("${rate - sellRate} AED", txtColor,
                                                                   10),
                                                             ],
                                                           ),
@@ -815,7 +761,7 @@ class HmDelivryOrderController extends GetxController{
                                                             children: [
                                                               tc("Empty", txtColor, 10),
                                                               gapHC(3),
-                                                              tc("${erate} AED", txtColor,
+                                                              tc("$sellRate AED", txtColor,
                                                                   10),
                                                             ],
                                                           ),
@@ -839,7 +785,7 @@ class HmDelivryOrderController extends GetxController{
                                                                   itemCode) {
                                                             wShowitemSelectedornot();
                                                           } else {
-                                                            fnChngeQty(itemCode, selectedItemType.value, "D",nrate,erate,rrate);
+                                                            fnChngeQty(itemCode, selectedItemType.value, "D");
                                                           }
                                                         });
                                                       },
@@ -867,7 +813,7 @@ class HmDelivryOrderController extends GetxController{
                                                               selectedItem.value != itemCode) {
                                                             wShowitemSelectedornot();
                                                           } else {
-                                                            fnChngeQty(itemCode, selectedItemType.value,"A",nrate,erate,rrate);
+                                                            fnChngeQty(itemCode, selectedItemType.value,"A",);
                                                           }
                                                         });
                                                       },
@@ -928,9 +874,8 @@ class HmDelivryOrderController extends GetxController{
       ),
     );
   }
-  wItemSelect(context,itemCodee,type,itemqty){
+  wItemSelect(context,itemCodee,itemqty){
 
-    selectedItemType.value = type;
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -947,48 +892,21 @@ class HmDelivryOrderController extends GetxController{
                 var itemName  = (item[0]["STKDESCP"]??"").toString();
                 var itemCode  = (item[0]["STKCODE"]??"").toString();
                 var rate  = g.mfnDbl(item[0]["RATE"].toString());
-                var type  = (item[0]["TYPE"]??"").toString();
+                var sellRate  = g.mfnDbl(item[0]["CYL_SELL_RATE"].toString());
                 var qty  = itemqty;
-              //  var qty  = g.mfnDbl(item[0]["QTY"].toString());
-                var total = qty*rate;
-                var taxAmount =g.mfnDbl(item[0]["TAX_AMT"].toString());
-                var amt =total;
 
-                var nrate=(item[0]["NRATE"]??"").toString();
-                var erate=(item[0]["ERATE"]??"").toString();
-                var rrate=(item[0]["RRATE"]??"").toString();;
-                var itemR = item.where((element) => element["TYPE"] == "R").toList();
-                var itemN = item.where((element) => element["TYPE"] == "N").toList();
-                var itemE = item.where((element) => element["TYPE"] == "E").toList();
                 // dprint("itemRrrr ${itemR}");
-                rqty.value = itemR.length > 0
-                    ? g.mfnDbltoInt(itemR[0]["QTY"])
+                rqty.value = item.isNotEmpty
+                    ? g.mfnDbltoInt(item[0]["RQTY"])
                     : 0;
-                nqty.value = itemN.length > 0
-                    ?  g.mfnDbltoInt(itemN[0]["QTY"])
+                nqty.value = item.isNotEmpty
+                    ?  g.mfnDbltoInt(item[0]["NQTY"])
                     : 0;
-                eqty.value = itemE.length > 0
-                    ?  g.mfnDbltoInt(itemE[0]["QTY"])
+                eqty.value = item.isNotEmpty
+                    ?  g.mfnDbltoInt(item[0]["EQTY"])
                     : 0;
-                dprint("RQTY>>>>> ${rqty.value}");
-                dprint("EQTY>>>>> ${eqty.value}");
-                dprint("NQTY>>>>> ${nqty.value}");
 
                 return AlertDialog(contentPadding: EdgeInsets.zero,
-                  // title: Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //
-                  //     children: [
-                  //
-                  //       gapWC(5),
-                  //       Bounce(
-                  //           duration: const Duration(
-                  //               milliseconds: 110),
-                  //           onPressed: (){
-                  //             Get.back();
-                  //           },
-                  //           child: Icon(Icons.close))
-                  //     ] ),
                     shape:  const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
@@ -1001,13 +919,13 @@ class HmDelivryOrderController extends GetxController{
                         Align(
                           alignment: Alignment.topRight,
                           child: Container(
-                            padding: EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(4),
                             decoration: boxBaseDecoration(white, 20),
-                            child: Bounce(child: const Icon(Icons.close),     duration: const Duration(
-                                milliseconds: 110), onPressed: (){
+                            child: Bounce(duration: const Duration(
+                                milliseconds: 110),
+                                onPressed: (){
                               Get.back();
-
-                            }),
+                            }, child: const Icon(Icons.close)),
                           ),
                         ),
                         tc(itemName, txtColor, 12),
@@ -1061,7 +979,7 @@ class HmDelivryOrderController extends GetxController{
                                     children: [
                                       tc("New", txtColor, 10),
                                       gapHC(3),
-                                      tc("${nrate} AED", txtColor,
+                                      tc("${rate} AED", txtColor,
                                           10)
                                     ],
                                   ),
@@ -1113,7 +1031,7 @@ class HmDelivryOrderController extends GetxController{
                                     children: [
                                       tc("Refill", txtColor, 10),
                                       gapHC(3),
-                                      tc("${rrate} AED", txtColor,
+                                      tc("${(rate - sellRate)} AED", txtColor,
                                           10),
                                     ],
                                   ),
@@ -1163,7 +1081,7 @@ class HmDelivryOrderController extends GetxController{
                                     children: [
                                       tc("Empty", txtColor, 10),
                                       gapHC(3),
-                                      tc("${erate} AED", txtColor,
+                                      tc("$sellRate AED", txtColor,
                                           10),
                                     ],
                                   ),
@@ -1185,7 +1103,7 @@ class HmDelivryOrderController extends GetxController{
                                     wShowitemSelectedornot();
                                   }
                                   else  {
-                                    fnChngeQty(itemCode, selectedItemType.value, "D",nrate,erate,rrate);
+                                    fnChngeQty(itemCode, selectedItemType.value, "D");
                                   }
                                 });
                               },
@@ -1216,7 +1134,7 @@ class HmDelivryOrderController extends GetxController{
                                   else {
                                     // rqty.value=rqty.value+1;
                                     // dprint( rqty.value);
-                                    fnChngeQty(itemCode, selectedItemType.value,"A",nrate,erate,rrate);
+                                    fnChngeQty(itemCode, selectedItemType.value,"A");
                                   }
                                 });
                               },
@@ -1255,9 +1173,8 @@ class HmDelivryOrderController extends GetxController{
 
 
   }
-  wDeletItemSelect(context,itemCodee,typee){
+  wDeletItemSelect(context,itemCodee){
 
-    selectedItemType.value = typee;
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -1288,7 +1205,7 @@ class HmDelivryOrderController extends GetxController{
                         Align(
                           alignment: Alignment.topRight,
                           child: Container(
-                            padding: EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(4),
                             decoration: boxBaseDecoration(white, 20),
                             child: Bounce(child: const Icon(Icons.close),     duration: const Duration(
                                 milliseconds: 110), onPressed: (){
@@ -1329,7 +1246,7 @@ class HmDelivryOrderController extends GetxController{
                                 Bounce(
                                   onPressed: () {
 
-                                  lstrDeliveredList.removeWhere((element) =>element["STKCODE"]==itemCodee &&element["TYPE"]==typee.toString());
+                                  lstrDeliveredList.removeWhere((element) =>element["STKCODE"]==itemCodee);
                                     Get.back();
 
                                   },
@@ -1370,123 +1287,102 @@ class HmDelivryOrderController extends GetxController{
 
   List<Widget> wDeliverItemList(context){
       List<Widget> rtnList =[];
-      var ftotal  = 0.0;
-      var ftaxamount  = 0.0;
 
-
-
-      // Get.find<SalesController>().txtTotalAmt.value.text="" ;
       for(var e  in lstrDeliveredList.value){
         dprint(">>>>>>MMMMMMMMM ${e}");
-
 
         var itemName  = (e["STKDESCP"]??"").toString();
         var itemCode  = (e["STKCODE"]??"").toString();
         var rate  = g.mfnDbl(e["RATE"].toString());
-        var type  = (e["TYPE"]??"").toString();
         var qty  = g.mfnDbl(e["QTY"].toString());
+        var returnQty  = g.mfnDbl(e["RETURN_QTY"].toString());
         var total = qty*rate;
-        var taxAmount =g.mfnDbl(e["TAX_AMT"].toString());
-        var amt =total;
-        ftotal += amt;
-        ftaxamount+=taxAmount;
-        // salesController.fnCalc();
-        //  salesController.fnPaymntCalc();
-        // salesController.fnTotal(ftotal);
-
-
-
-
 
         rtnList.add( Padding(
           padding: const EdgeInsets.only(left: 5,bottom: 2),
-          child: badges.Badge(
-            badgeContent: tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"",white, 8),
-            showBadge: true,
-            position: BadgePosition.topStart(top: 5,start: 2),
-            stackFit: StackFit.passthrough,
-            badgeStyle: badges.BadgeStyle(
-              badgeColor: (type=="E")?Colors.redAccent:(type=="N")?Colors.green:(type=="R")?Colors.blueAccent:Colors.redAccent,
-
-              padding: EdgeInsets.symmetric(horizontal: 16,),
-              shape: badges.BadgeShape.square,
-              borderRadius: BorderRadius.only(bottomRight: Radius.circular(10),
-                  topRight: Radius.circular(10)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 3),
-              child: InkWell(
-                onLongPress: (){
-                  wDeletItemSelect(context,itemCode,type);
-                  dprint(">>>>>looooooooo>>>>>> ${itemCode}");
-                },
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 3),
+            child: InkWell(
+              onLongPress: (){
+                wDeletItemSelect(context,itemCode);
+                dprint(">>>>>looooooooo>>>>>> ${itemCode}");
+              },
 
 
-                onTap: (){
-                  dprint(">>>>>fff>>>>>> ${itemCode}");
-                  wItemSelect(context,itemCode,type,qty);
-                },
-                child: Container(
-                  decoration: boxBaseDecoration(
-                      bGreyLight, 0),
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Flexible(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: tcn(itemName.toString(),
-                                      Colors.black, 10),
-                                )
-                              ],
-                            ),
-                          )),
-                      // Flexible(
-                      //     flex: 1,
-                      //     child: Row(
-                      //       mainAxisAlignment: MainAxisAlignment
-                      //           .end,
-                      //       children: [
-                      //         tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"", Colors.black, 10),
-                      //         gapWC(10)
-                      //       ],
-                      //     )),
-                      Flexible(
-                          flex: 1,
+              onTap: (){
+                dprint(">>>>>fff>>>>>> ${itemCode}");
+                wItemSelect(context,itemCode,qty);
+              },
+              child: Container(
+                decoration: boxBaseDecoration(
+                    bGreyLight, 0),
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Flexible(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment
-                                .end,
                             children: [
-                              tcn(rate.toString(), Colors.black, 10)
+                              Expanded(
+                                child: tcn(itemName.toString(),
+                                    Colors.black, 10),
+                              )
                             ],
-                          )),
-                      Flexible(
-                          flex: 1,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment
-                                .end,
-                            children: [
-                              tcn(qty.toString(),
-                                  Colors.black, 10)
-                            ],
-                          )),
-                      Flexible(
-                          flex: 1,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment
-                                .end,
-                            children: [
-                              tcn(total.toString(), Colors.black, 10)
-                            ],
-                          )),
-                    ],
-                  ),
-
+                          ),
+                        )),
+                    // Flexible(
+                    //     flex: 1,
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment
+                    //           .end,
+                    //       children: [
+                    //         tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"", Colors.black, 10),
+                    //         gapWC(10)
+                    //       ],
+                    //     )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(rate.toString(), Colors.black, 10)
+                          ],
+                        )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(qty.toString(),
+                                Colors.black, 10)
+                          ],
+                        )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(returnQty.toString(),
+                                Colors.black, 10)
+                          ],
+                        )),
+                    Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end,
+                          children: [
+                            tcn(total.toString(), Colors.black, 10)
+                          ],
+                        )),
+                  ],
                 ),
+
               ),
             ),
           ),
@@ -1498,63 +1394,124 @@ class HmDelivryOrderController extends GetxController{
     }
 
 
-  fnChngeQty(itemCode,type,mode,nrate,erate,rrate) {
+  fnChngeQty(itemCode,type,mode) {
     var taxAmount = ''.obs;
     var itemMenu = lstrProductItemDetailList.value.where((element) => element["STKCODE"] == itemCode).toList();
-    dprint("MENUUUU  ${itemMenu}");
-    dprint(lstrDeliveredList.where((e) => e["STKCODE"] == itemCode  && e["TYPE"]==type).isEmpty);
 
     if(mode == "A"){
-      if(lstrDeliveredList.where((e) => e["STKCODE"] == itemCode  && e["TYPE"]==type).isEmpty){
+      if(lstrDeliveredList.where((e) => e["STKCODE"] == itemCode).isEmpty){
+        var lQty = 0.0;
+        var nQty = 0.0;
+        var eQty = 0.0;
+        var rQty = 0.0;
+        var lReturnQty = 0.0;
+
+        if(type == "N"){
+          lQty = 1.0;
+          nQty = 1.0;
+        }else if(type == "R"){
+          lQty = 1.0;
+          rQty = 1.0;
+          lReturnQty = 1.0;
+        }else if(type == "E"){
+          lReturnQty = 1.0;
+          eQty = 1.0;
+        }
 
 
         var datas = Map<String, Object>.from({
           "STKCODE": itemCode,
           "STKDESCP": itemMenu[0]["STKDESCP"],
-          "QTY": 1,
-          "HEADER_DISC": 0.0,
+          "QTY": lQty,
+          "RETURN_QTY": lReturnQty,
           "DISC_AMT": 0.0,
-          "AMT": 0.0,
-           "TYPE": type,
-          "RATE": ((type == "N" )? itemMenu[0]["PRICE1"]:(type == "R" )? itemMenu[0]["PRICE2"] : itemMenu[0]["CYL_SELL_RATE"]??200),
-          "TAX_PER":0.0,
-          "TAXABLE_AMT": 0.0,
-          "TOTAL_TAX_AMOUNT": 0.0,
-          "NET_AMOUNT": 0.0,
-           "NRATE":nrate,
-           "ERATE":erate,
-           "RRATE":rrate,
-           "GR_AMT": 0.0,
+          "RATE": itemMenu[0]["PRICE1"],
+          "VAT_PERC":itemMenu[0]["VAT_PERC"],
+          "NQTY":nQty,
+          "EQTY":eQty,
+          "RQTY":rQty,
           "UNIT":itemMenu[0]["UNIT"],
+          "UNIT2":itemMenu[0]["SALEUNIT"],
           "CYL_SELL_RATE":itemMenu[0]["CYL_SELL_RATE"]??"",
           "SALEUNIT":itemMenu[0]["SALEUNIT"]??"",
           "CYLINDER_YN":itemMenu[0]["CYLINDER_YN"]??"",
           "CATWEIGHT":itemMenu[0]["CATWEIGHT"]??"",
           "MATERIAL_CODE":itemMenu[0]["MATERIAL_CODE"]??"",
-              "PRICE2":itemMenu[0]["PRICE2"]??"",
+          "PRICE2":itemMenu[0]["PRICE2"]??"",
           "PRICE1":itemMenu[0]["PRICE1"]??"",
 
         });
         lstrDeliveredList.add(datas);
       }
-
-
       else{
-        var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode && element["TYPE"]==type).toList();
-        dprint("MENUUUUqqwq  ${item}>>>>>>>>> ${item[0]["QTY"] }");
+        var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode).toList();
         if(item.isNotEmpty){
-          item[0]["QTY"] = g.mfnDbltoInt(item[0]["QTY"]) + 1;
+
+          var lQty = item[0]["QTY"];
+
+          var nQty = item[0]["NQTY"];
+          var eQty = item[0]["EQTY"];
+          var rQty = item[0]["RQTY"];
+
+          var lReturnQty = 0.0;
+
+          if(type == "N"){
+            lQty = item[0]["QTY"]+ 1.0;
+            nQty = item[0]["NQTY"] +1.0;
+          }else if(type == "R"){
+            lQty = item[0]["QTY"]+ 1.0;
+            rQty =item[0]["RQTY"] + 1.0;
+            lReturnQty = item[0]["RETURN_QTY"]+ 1.0;
+          }else if(type == "E"){
+            lReturnQty = item[0]["RETURN_QTY"]+ 1.0;
+            eQty =item[0]["EQTY"] + 1.0;
+          }
+
+
+          item[0]["QTY"] = lQty;
+          item[0]["RETURN_QTY"] = lReturnQty;
+          item[0]["NQTY"] = nQty;
+          item[0]["EQTY"] = eQty;
+          item[0]["RQTY"] = rQty;
         }
       }
     }else{
-      var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode && element["TYPE"]==type).toList();
+
+      var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode ).toList();
       if(item.isNotEmpty){
-        item[0]["QTY"] = item[0]["QTY"] == 0?0: g.mfnDbltoInt(item[0]["QTY"]) - 1;
+
+        var lQty = item[0]["QTY"];
+
+        var nQty = item[0]["NQTY"];
+        var eQty = item[0]["EQTY"];
+        var rQty = item[0]["RQTY"];
+
+        var lReturnQty = 0.0;
+
+        if(type == "N"){
+          lQty = item[0]["QTY"]- 1.0;
+          nQty = item[0]["NQTY"] -1.0;
+        }else if(type == "R"){
+          lQty = item[0]["QTY"]-1.0;
+          rQty =item[0]["RQTY"] - 1.0;
+          lReturnQty = item[0]["RETURN_QTY"]- 1.0;
+        }else if(type == "E"){
+          lReturnQty = item[0]["RETURN_QTY"]- 1.0;
+          eQty =item[0]["EQTY"] - 1.0;
+        }
+
+
+        item[0]["QTY"] = lQty < 0?0.0:lQty;
+        item[0]["RETURN_QTY"] = lReturnQty< 0?0.0:lReturnQty;
+        item[0]["NQTY"] = nQty< 0?0.0:nQty;
+        item[0]["EQTY"] = eQty< 0?0.0:eQty;
+        item[0]["RQTY"] = rQty< 0?0.0:rQty;
       }
     }
-    lstrDeliveredList.removeWhere((element) => element["QTY"] <= 0);
+    lstrDeliveredList.removeWhere((element) => g.mfnDbl(element["QTY"])+g.mfnDbl(element["RETURN_QTY"]) <= 0);
+    dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
 
-dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
+    fnPaymntCalc();
 
   }
 
@@ -2112,8 +2069,8 @@ dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
       },
     ];
 
-    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|CYL_SELL_RATE|MATERIAL_CODE|CATWEIGHT|CYLINDER_YN|CYL_SELL_RATE|SALEUNIT|UNIT|';
-    futureform = ApiCall().LookupSearch("STOCKMASTER", columnList, 0, 100, lstrFilter);
+    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|CYL_SELL_RATE|MATERIAL_CODE|CATWEIGHT|CYLINDER_YN|CYL_SELL_RATE|SALEUNIT|UNIT|VAT_PERC|';
+    futureform = ApiCall().LookupSearch('(SELECT A.*,B.VAT AS VAT_PERC FROM STOCKMASTER A LEFT JOIN TAX_INV_ACCOUNT B ON  (A.TAXACGROUP =  B.CODE)) AS TABLE1', columnList, 0, 100, lstrFilter);
     futureform.then((value) => apiProductTypeDetailsRes(value));
   }
   apiProductTypeDetailsRes(value) {

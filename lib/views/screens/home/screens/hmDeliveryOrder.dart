@@ -633,6 +633,12 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                   flex: 1,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
+                    children: [tcn('R.Qty', Colors.white, 10)],
+                  )),
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [tcn('Total', Colors.white, 10)],
                   )),
             ],
@@ -675,7 +681,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                         wRoundTxtField(hmDelivryOrderController.txtDiscountAmt,fieldName: "disAmt",
                             oncahnged: (value){
                               // salesController.fnCalc();
-                              // salesController.fnPaymntCalc();
+                              hmDelivryOrderController.fnPaymntCalc();
                             })
                       ],
                     ),
@@ -703,7 +709,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                         tcn('Round Of Amount', txtColor, 12),
                         wRoundTxtField(hmDelivryOrderController.txtRoundAmt,keybordType: "txtKeybrd",oncahnged: (val){
                           // salesController.fnCalc();
-                          // salesController.fnPaymntCalc();
+                          hmDelivryOrderController.fnPaymntCalc();
                         })
                       ],
                     ),
@@ -721,22 +727,22 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                     ),
                   ),
                   gapHC(5),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5, horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        tcn('Additional Amount', txtColor, 12),
-                        wRoundTxtField(hmDelivryOrderController.txtAddlAmt,
-                            oncahnged: (val){
-                              // salesController.fnCalc();
-                              // salesController.fnPaymntCalc();
-                            })
-                      ],
-                    ),
-                  ),
-                  gapHC(5),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       vertical: 5, horizontal: 5),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       tcn('Additional Amount', txtColor, 12),
+                  //       wRoundTxtField(hmDelivryOrderController.txtAddlAmt,
+                  //           oncahnged: (val){
+                  //             // salesController.fnCalc();
+                  //             hmDelivryOrderController.fnPaymntCalc();
+                  //           })
+                  //     ],
+                  //   ),
+                  // ),
+                  // gapHC(5),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 5, horizontal: 5),
@@ -747,7 +753,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                         wRoundTxtField(hmDelivryOrderController.txtPaidAmt,
                             oncahnged: (val){
                               // salesController.fnCalc();
-                              // salesController.fnPaymntCalc();
+                              hmDelivryOrderController.fnPaymntCalc();
                             })
                       ],
                     ),
