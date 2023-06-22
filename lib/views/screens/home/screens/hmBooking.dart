@@ -645,7 +645,7 @@ class _HmeBookingState extends State<HmeBooking> {
     );
   }
 
-  wRoundedInputField(contrlr, hintTxt, lookup, {maxLine,prefixicon,inputType,validate}) {
+  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup, {maxLine,prefixicon,inputType,validate}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -656,6 +656,9 @@ class _HmeBookingState extends State<HmeBooking> {
           txtController: contrlr,
           textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
           validate: validate,
+          fnClear: (){
+          contrlr.clear();
+          },
 
 
           prefixIconColor: txtColor,

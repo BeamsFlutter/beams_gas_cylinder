@@ -31,6 +31,7 @@ class Global {
    _wstrLoginDate = "";
     _wstrUserCD = "";
      _wstrUsername = "";
+    _wstrempcode="";
   }
   var _wstrToken  = '';
   var _wstrIp = '';
@@ -50,6 +51,7 @@ class Global {
   var  _wstrLoginDate = "";
   var  _wstrUserCD = "";
   var  _wstrUsername = "";
+  var  _wstrempcode = "";
 
 
   get wstrBaseUrl => _wstrBaseUrl;
@@ -69,6 +71,10 @@ class Global {
   get wstrUsername => _wstrUsername;
   set wstrUsername(value) {
     _wstrUsername = value;
+  }
+  get wstrempcode => _wstrempcode;
+  set wstrempcode(value) {
+    _wstrempcode = value;
   }
 
   get wstrBuildingName => _wstrBuildingName;

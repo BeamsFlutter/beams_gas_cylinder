@@ -31,6 +31,9 @@ class LoginController extends GetxController{
 
   }
   fnLoginDone(data,mode) async{
+    dprint("*******************  ${data}");
+
+
     try{
       var now = DateTime.now();
       var lstrLoginDate = setDate(9,now);
@@ -38,6 +41,7 @@ class LoginController extends GetxController{
       g.wstrLoginDate = lstrLoginDate;
       g.wstrUserCD= data["USER_CD"]??"";
       g.wstrUsername= data["USER_NAME"]??"";
+      g.wstrempcode= data["EMPCODE"]??"";
       fnClear();
       fnGoHome();
 

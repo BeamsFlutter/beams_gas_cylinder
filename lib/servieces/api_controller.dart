@@ -296,9 +296,60 @@ class ApiCall  with BaseController{
 
 
   }
+  Future<dynamic> apiGetAssignment(empcode) async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      ApiParams.company:g.wstrCompany,
+      "EMP_CODE":empcode
+
+
+    });
+    dprint('api/GetAssignmentList');
+    dprint(request);
+    var response = await ApiManager().post('api/GetAssignmentList',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
+
+  //============================================  DELIVERY ORDER
+  Future saveDeliveryOrder(mode,additionalTable,tableDoDet,tableDo)async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      ApiParams.mode:mode,
+      "MACHINENAME":g.wstrDeivceId,
+       "USERCODE":g.wstrUserCD,
+      "TABLE_DO":tableDo,
+      "TABLE_DODET":tableDoDet,
+      "ADDITIONAL_TABLE":additionalTable,
+    });
+    dprint('api/SaveDeliveryOrder');
+    // dprint(request);
+    var response = await ApiManager().post('api/SaveDeliveryOrder',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint("response,,,,,,,");
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+
+  }
+
+
+
   //============================================  SALE
-
-
   Future<dynamic> apiViewSales(docno,mode) async{
 
     var request = jsonEncode(<dynamic, dynamic>{
@@ -323,7 +374,6 @@ class ApiCall  with BaseController{
     return response;
 
   }
-
   Future saveSales(mode,usercode,tableinvoice,tableinvoice_details)async{
 
     var request = jsonEncode(<dynamic, dynamic>{

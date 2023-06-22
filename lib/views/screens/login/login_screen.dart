@@ -105,6 +105,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               txtController: loginController.txtUserName,
                               prefixIconColor: Colors.grey.shade600,
                               txtSize: 12,
+                              fnClear: (){
+                                loginController.txtUserName.clear();
+                              },
                               validate:(value){
                                 if(value.isEmpty ||value==null){
                                   return "Please Enter a Value";

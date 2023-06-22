@@ -34,12 +34,9 @@ class CommonTextField extends StatelessWidget {
       enabled: enableY,
       keyboardType:keybordType ,
       decoration: InputDecoration(
-
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey.shade500,),
           contentPadding: const EdgeInsets.all(15),
-
-
           border: OutlineInputBorder(
               borderSide: const BorderSide(width: 1, color: subColor),
               borderRadius: BorderRadius.circular(30),
@@ -52,8 +49,8 @@ class CommonTextField extends StatelessWidget {
           suffixIcon:suffixIcon!=null? GestureDetector(
             onTap: suffixIconOnclick,
               child: Icon(lookupY==true?Icons.search:suffixIcon,color: sufixIconColor,)):GestureDetector(
-            onTap: fnClear??fn(),
-            child:  (emptySts??true)?  Icon(Icons.cancel_outlined,size: 15,color: Colors.grey.withOpacity(0.6)): const Icon(Icons.cancel_outlined,size: 15,color: greyLight,),
+              onTap: fnClear??fn(),
+               child:  (emptySts??true)?  Icon(Icons.cancel_outlined,size: 15,color: Colors.grey.withOpacity(0.6)): const Icon(Icons.cancel_outlined,size: 15,color: greyLight,),
           ),
 
 

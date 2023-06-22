@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         color: primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
+        child: Obx(() => Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,19 +43,19 @@ class _SplashScreenState extends State<SplashScreen> {
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                 const Row(),
-                 tc1('Beams', Colors.white, 45),
-                 tc1('CYLINDER',Colors.white, 55),
-                 //tcn('Management Application',Colors.white, 13),
-               ],
-           ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(),
+                  tc1('Beams', Colors.white, 45),
+                  tc1('CYLINDER',Colors.white, 55),
+                  //tcn('Management Application',Colors.white, 13),
+                ],
+              ),
             ),
-           CommonButton(btnName: "Start", btnColor: white,iconSize: 17,iconYN: false,txtColor: Colors.grey.shade700,
+            splashController.tapedStartBtn.value!=true?  CommonButton(btnName: "Start", btnColor: white,iconSize: 17,iconYN: false,txtColor: Colors.grey.shade700,
                 onTap: (){
                   splashController.fnGetPageData(context);
-            }),
+                }):const SpinKitThreeBounce(color:white,size: 20,),
 
             gapHC(30),
             Center(
@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   tcn('Powered By', Colors.white.withOpacity(0.8), 8),
                   tc('BEAMS', Colors.white, 13),
                   tcn("V 1.0" , Colors.white, 10),
-                 // tcn(splashController.g.wstrVersionName , Colors.white, 10),
+                  // tcn(splashController.g.wstrVersionName , Colors.white, 10),
                 ],
               ),
             ),
@@ -77,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
 
           ],
-        ),
+        )),
       ),
     );
   }

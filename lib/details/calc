@@ -6,7 +6,7 @@ for(var e in lstrSalesList){
         var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
         var rate2 = g.mfnDbl(e["RATEFC2"]);
         var soldrate = g.mfnDbl(e["SOLD_RATEFC"]);
-        var disc  = g.mfnDbl(e["DISC_AMTFC"]);
+        var disc  = g.mfnDbl(0.0);
         var cf = g.mfnDbl(e["UNITCF"])  == 0.0 ? 1.0 :g.mfnDbl(e["UNITCF"]);
 
         var soldQty = qty - rtnQty;
@@ -58,8 +58,7 @@ for(var e in lstrSalesList){
           "RATEFC2": price ,
           "AMT2": amt * lstrCurrencyRate ,
           "AMT2FC": amt ,
-          "NETAMTFC": e["NETAMTFC"] ,
-          "NETAMT": e["NETAMT"] ,
+
           "CLEARED_QTY": e["CLEARED_QTY"]??0 ,
           "BUILDING_CODE": '' ,
           "PROPERTY_CODE": '' ,

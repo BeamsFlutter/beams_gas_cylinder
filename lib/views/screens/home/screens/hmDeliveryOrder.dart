@@ -11,7 +11,8 @@ import '../../../styles/colors.dart';
 import '../controller/hmDeliveryOrderController.dart';
 
 class HmeDeliveryOrder extends StatefulWidget {
-  const HmeDeliveryOrder({super.key});
+  final String ? bookingNumber;
+  const HmeDeliveryOrder({super.key,this.bookingNumber});
 
   @override
   State<HmeDeliveryOrder> createState() => _HmeDeliveryOrderState();
@@ -23,8 +24,18 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
   @override
   void initState() {
     hmDelivryOrderController.pageController = PageController();
-    hmDelivryOrderController.wstrPageMode.value = 'VIEW';
+    var bookingNumber = widget.bookingNumber??"";
+
+    if(bookingNumber.isNotEmpty){
+      hmDelivryOrderController.wstrPageMode.value = "ADD";
+      dprint("Call Booking Detail Api");
+      hmDelivryOrderController.apiGetBooking(bookingNumber, "mode");
+    }else{
+      hmDelivryOrderController.wstrPageMode.value = 'VIEW';
+
+    }
     hmDelivryOrderController.apiProductType();
+
     // TODO: implement initState
     super.initState();
   }
@@ -66,6 +77,8 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
+
+
                           hmDelivryOrderController.fnLookup("CRDELIVERYMANMASTER");
                         },
                         child: Container(
@@ -113,72 +126,111 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                     ],
                   ),
                   gapHC(15),
-                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
-                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
-                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
-                    onPressed: () {
-                      hmDelivryOrderController.fnLookup("GUESTMASTER");
-
-                    },
-                    duration: const Duration(milliseconds: 110),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.account_circle_outlined,
-                                    color: Colors.black,
-                                    size: 15,
-                                  ),
-                                  gapWC(5),
-                                  tc(hmDelivryOrderController.cstmrCode.value,
-                                      Colors.black, 12)
-                                ],
-                              ),
-
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                  margin: const EdgeInsets.symmetric(horizontal:0),
-                                  width: size.width-95,
-                                  child: const Divider(thickness:1)),
-
-                              const Icon(
-                                Icons.search,
-                                color: txtColor,
-                                size: 25,
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
-                              tcn("Credit Balance", Colors.black, 10),
-
-                            ],
-                          ),
-
-                        ],
-                      ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.grey.shade200,
                     ),
-                  ):gapHC(0),
+                    child:     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.account_circle_outlined,
+                                            color: Colors.black,
+                                            size: 15,
+                                          ),
+                                          gapWC(5),
+                                          tc(hmDelivryOrderController.cstmrName.value,
+                                              Colors.black, 12)
+                                        ],
+                                      ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.tag_outlined,
+                              color: Colors.black,
+                              size: 15,
+                            ),
+                            gapWC(5),
+                            tc(hmDelivryOrderController.cstmrCode.value,
+                                Colors.black, 12)
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
 
-                  hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
+
+                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
+                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
+                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
+                  //   onPressed: () {
+                  //     hmDelivryOrderController.fnLookup("GUESTMASTER");
+                  //
+                  //   },
+                  //   duration: const Duration(milliseconds: 110),
+                  //   child: Container(
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.grey.shade200,
+                  //
+                  //       borderRadius: BorderRadius.circular(10),
+                  //     ),
+                  //     padding: const EdgeInsets.all(10),
+                  //     child: Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             Row(
+                  //               children: [
+                  //                 const Icon(
+                  //                   Icons.account_circle_outlined,
+                  //                   color: Colors.black,
+                  //                   size: 15,
+                  //                 ),
+                  //                 gapWC(5),
+                  //                 tc(hmDelivryOrderController.cstmrCode.value,
+                  //                     Colors.black, 12)
+                  //               ],
+                  //             ),
+                  //
+                  //           ],
+                  //         ),
+                  //         Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             Container(
+                  //                 margin: const EdgeInsets.symmetric(horizontal:0),
+                  //                 width: size.width-95,
+                  //                 child: const Divider(thickness:1)),
+                  //
+                  //             const Icon(
+                  //               Icons.search,
+                  //               color: txtColor,
+                  //               size: 25,
+                  //             )
+                  //           ],
+                  //         ),
+                  //         Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
+                  //             tcn("Credit Balance", Colors.black, 10),
+                  //
+                  //           ],
+                  //         ),
+                  //
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ):gapHC(0),
+                  //
+                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
 
 
                   Container(
@@ -253,8 +305,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                                 wItemDetailScreen(MediaQuery.of(context).size),
 
                                 //2nd Page  design -----------------------------------
-                                wCustomerDetailsScreen(
-                                    MediaQuery.of(context).size),
+                                wCustomerDetailsScreen(MediaQuery.of(context).size),
                                 wOthersScreen( MediaQuery.of(context).size)
 
                                 // 3rd Page for Delivery Details
@@ -262,6 +313,20 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                               ],
                             ),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                              decoration: boxDecoration(nearlyWhite, 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  tc('Net Amount', txtColor, 16),
+                                  tc(hmDelivryOrderController.txtNetAmt.text,Colors.black,15)
+                                ],
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -293,7 +358,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                                 // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
                                 // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
 
-                                hmDelivryOrderController.fnSave();
+                                hmDelivryOrderController.fnSave(context);
                               },
                               duration: const Duration(milliseconds: 110),
                               child: Container(
@@ -343,13 +408,18 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                     )
                   : const BottomAppBar(),
         ),
-        floatingActionButton: Obx(() => (hmDelivryOrderController.wstrPageMode.value != "VIEW" )? FloatingActionButton(
-          backgroundColor: primaryColor,
-          tooltip: 'Add Items',
-          onPressed: () {
-            hmDelivryOrderController.wOpenBottomSheet(context);
-          },
-          child: Icon(Icons.add),
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+
+        floatingActionButton: Obx(() => (hmDelivryOrderController.wstrPageMode.value != "VIEW" )? Padding(
+          padding: const EdgeInsets.only(bottom: 67),
+          child: FloatingActionButton(
+            backgroundColor: primaryColor,
+            tooltip: 'Add Items',
+            onPressed: () {
+              hmDelivryOrderController.wOpenBottomSheet(context);
+            },
+            child: Icon(Icons.add),
+          ),
         ):SizedBox())
 
     );
@@ -375,7 +445,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
     }
   }
 
-  wRoundedInputField(contrlr, hintTxt, lookup, {maxLine, prefixicon,enable}) {
+  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup, {maxLine, prefixicon,enable}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -389,6 +459,10 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
           obscureY: false,
           textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
           maxline: maxLine,
+          fnClear: (){
+            contrlr.clear();
+          },
+
         )
       ],
     );
@@ -501,85 +575,207 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
   }
 
   wItemDetailScreen(Size size) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        child: Column(
-            children: [
-              // hmDelivryOrderController.wstrPageMode.value != "VIEW" ? Row(
-              //   mainAxisAlignment: MainAxisAlignment.end,
-              //   children: [
-              //     Bounce(
-              //       duration: const Duration(milliseconds: 110),
-              //       onPressed: (){
-              //         hmDelivryOrderController.wOpenBottomSheet(context);
-              //       },
-              //       child: Container(
-              //         padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-              //         decoration: boxBaseDecoration(primaryColor,30),
-              //           child: Row(
-              //             children: [
-              //               Icon(Icons.add,size: 15,color: white),
-              //               gapWC(1),
-              //               tc('Add Items', white, 12),
-              //             ],
-              //           )),
-              //     ),
-              //   ],
-              // ) : gapHC(0),
-          gapHC(5),
+    return SingleChildScrollView(
+      child: Column(
+          children: [
+            // hmDelivryOrderController.wstrPageMode.value != "VIEW" ? Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     Bounce(
+            //       duration: const Duration(milliseconds: 110),
+            //       onPressed: (){
+            //         hmDelivryOrderController.wOpenBottomSheet(context);
+            //       },
+            //       child: Container(
+            //         padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+            //         decoration: boxBaseDecoration(primaryColor,30),
+            //           child: Row(
+            //             children: [
+            //               Icon(Icons.add,size: 15,color: white),
+            //               gapWC(1),
+            //               tc('Add Items', white, 12),
+            //             ],
+            //           )),
+            //     ),
+            //   ],
+            // ) : gapHC(0),
 
-
-
-
-
-
-             Container(
+            Container(
             decoration: boxBaseDecoration(subColor, 5),
-            //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+          //padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
             padding: const EdgeInsets.all(10),
             child: Row(
+            children: [
+              Flexible(
+                  flex: 3,
+                  child: Row(
+                    children: [tcn('Item', Colors.white, 10)],
+                  )),
+              // Flexible(
+              //     flex: 1,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.end,
+              //       children: [tcn('N/R/E', Colors.white, 10)],
+              //     )),
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [tcn('Price', Colors.white, 10)],
+                  )),
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [tcn('Qty', Colors.white, 10)],
+                  )),
+              Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [tcn('Total', Colors.white, 10)],
+                  )),
+            ],
+          ),
+        ),
+            hmDelivryOrderController.lstrDeliveredList.isEmpty?gapHC(10):gapHC(0),
+            Column(
               children: [
-                Flexible(
-                    flex: 3,
-                    child: Row(
-                      children: [tcn('Item', Colors.white, 10)],
-                    )),
-                Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [tcn('N/R', Colors.white, 10)],
-                    )),
-                Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [tcn('Price', Colors.white, 10)],
-                    )),
-                Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [tcn('Qty', Colors.white, 10)],
-                    )),
-                Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [tcn('Total', Colors.white, 10)],
-                    )),
+                Column(
+                  children: hmDelivryOrderController.wDeliverItemList(context),
+                ),
               ],
             ),
-          ),
-              Column(
-                children: hmDelivryOrderController.wDeliverItemList(),
+            Padding(
+              padding: const EdgeInsets.only(left: 10,right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  tc('Payment  Details', txtColor, 12),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Total Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtTotalAmt,disable: "D")
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Discount Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtDiscountAmt,fieldName: "disAmt",
+                            oncahnged: (value){
+                              // salesController.fnCalc();
+                              // salesController.fnPaymntCalc();
+                            })
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Tax Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtTaxAmt,disable: "D")
+                      ],
+                    ),
+                  ),
+
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Round Of Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtRoundAmt,keybordType: "txtKeybrd",oncahnged: (val){
+                          // salesController.fnCalc();
+                          // salesController.fnPaymntCalc();
+                        })
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Net Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtNetAmt,disable: "D")
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Additional Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtAddlAmt,
+                            oncahnged: (val){
+                              // salesController.fnCalc();
+                              // salesController.fnPaymntCalc();
+                            })
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Paid Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtPaidAmt,
+                            oncahnged: (val){
+                              // salesController.fnCalc();
+                              // salesController.fnPaymntCalc();
+                            })
+                      ],
+                    ),
+                  ),
+                  gapHC(5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn('Balance Amount', txtColor, 12),
+                        wRoundTxtField(hmDelivryOrderController.txtBalanceAmt,disable: "D")
+                      ],
+                    ),
+                  ),
+                  gapHC(15),
+
+                ],
               ),
+            ),
 
 
 
-        ]),
-      ),
+
+
+
+      ]),
     );
   }
 
@@ -590,6 +786,70 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Bounce(
+              onPressed: () {
+                hmDelivryOrderController.fnLookup("GUESTMASTER");
+
+              },
+              duration: const Duration(milliseconds: 110),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.account_circle_outlined,
+                              color: Colors.black,
+                              size: 15,
+                            ),
+                            gapWC(5),
+                            tc(hmDelivryOrderController.cstmrCode.value,
+                                Colors.black, 12)
+                          ],
+                        ),
+
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                            margin: const EdgeInsets.symmetric(horizontal:0),
+                            width: size.width-95,
+                            child: const Divider(thickness:1)),
+
+                        const Icon(
+                          Icons.search,
+                          color: txtColor,
+                          size: 25,
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
+                        tcn("Credit Balance", Colors.black, 10),
+
+                      ],
+                    ),
+
+                  ],
+                ),
+              ),
+            ),
+            gapHC(5),
+
             wRoundedInputField(
                 hmDelivryOrderController.txtCustomerName, "Customer Name", "N",
                 prefixicon: Icons.drive_file_rename_outline),
@@ -807,6 +1067,32 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
     ),);
 
   }
+  wRoundTxtField(controller,{disable,keybordType,fieldName,ValueChanged<String>? oncahnged}){
+    return   Container(
+      height: 40,
+      width: 100,
 
+      decoration: boxBaseDecoration(bGreyLight, 10),
+      child: Center(
+        child: TextFormField(
+            enabled: hmDelivryOrderController.wstrPageMode=="VIEW" || disable=="D"?false:true,
+            inputFormatters: mfnInputDecFormatters(),
+            controller:controller,
+            textAlign: TextAlign.center,
+            keyboardType:keybordType=="txtKeybrd"?TextInputType.text: TextInputType.number,
+            style: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+            decoration:  InputDecoration(
+              contentPadding: EdgeInsets.symmetric(vertical: 4,),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                    width: 1, color: Colors.blueGrey.withOpacity(0.5)), //<-- SEE HERE
+              ),
+
+            ),
+            onChanged: oncahnged
+        ),
+      ),
+    );
+  }
 
 }

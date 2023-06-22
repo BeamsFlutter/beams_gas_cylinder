@@ -1,5 +1,6 @@
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
 import 'package:beams_gas_cylinder/views/screens/assignmnets/assignment_screen.dart';
+import 'package:beams_gas_cylinder/views/screens/assignmnets/controller/assignmnet_controller.dart';
 import 'package:beams_gas_cylinder/views/screens/home/controller/hmAssignmntController.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmBooking.dart';
@@ -33,11 +34,21 @@ class BottomnavBar extends StatefulWidget {
 
 class _BottomnavBarState extends State<BottomnavBar> {
   final HmAssignmentController hmAssignmentController = Get.put(HmAssignmentController());
+  final AssignmentController assignmentController = Get.put(AssignmentController());
   var pages = [];
   final GlobalKey<ScaffoldState> key = GlobalKey();
   @override
   void initState() {
-    pages = [const AssignmentScreen(), wHome(), wReport(), const SettingsScreen()];
+    Future.delayed(const Duration(
+        seconds: 3
+    ),assignmentController.apiGetAssignment("HLP0945")
+    );
+
+  pages = [
+    const AssignmentScreen(),
+    wHome(),
+    wReport(),
+    const SettingsScreen()];
     // TODO: implement initState
     super.initState();
   }
@@ -150,7 +161,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     ),
                   ),
                   gapHC(10),
-                  Expanded(
+                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: pages[hmAssignmentController.pageIndex.value],
@@ -188,13 +199,13 @@ class _BottomnavBarState extends State<BottomnavBar> {
             duration: const Duration(milliseconds: 110),
             child: hmAssignmentController.pageIndex.value == 0
                 ? badges.Badge(
-                    showBadge: true,
+                    showBadge: assignmentController.todayAssignedList.value.isEmpty?false:true,
                     badgeStyle: badges.BadgeStyle(
                       shape: badges.BadgeShape.circle,
                       padding: const EdgeInsets.all(7),
                       borderRadius: BorderRadius.circular(1),
                     ),
-                    badgeContent: tcn("6", white, 10),
+                    badgeContent: tcn(assignmentController.todayAssignedList.value.length.toString(), white, 10),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 6),
@@ -212,13 +223,13 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     ),
                   )
                 : badges.Badge(
-                    showBadge: true,
+              showBadge: assignmentController.todayAssignedList.value.isEmpty?false:true,
                     badgeStyle: badges.BadgeStyle(
                       shape: badges.BadgeShape.circle,
                       padding: const EdgeInsets.all(7),
                       borderRadius: BorderRadius.circular(1),
                     ),
-                    badgeContent: tcn("6", white, 10),
+                    badgeContent: tcn(assignmentController.todayAssignedList.value.length.toString(), white, 10),
                     child: const Icon(
                       Icons.assignment,
                       size: 25,
@@ -394,7 +405,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     }),
                     gapWC(10),
                     wMenuCard("Assignment", Icons.assignment, 55.0,() {
-                     Get.to(()=>HmeAssignmnet());
+                     Get.to(()=>const HmeAssignmnet());
                     },)
                   ],
                 ),

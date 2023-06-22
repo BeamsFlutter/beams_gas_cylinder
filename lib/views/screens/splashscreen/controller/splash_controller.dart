@@ -31,7 +31,7 @@ class SplashController extends GetxController{
   RxString deviceMode =''.obs;
   RxString appError = "".obs;
   var appMode  = "A";
-
+   var tapedStartBtn = false.obs;
   //Controller
 
   final TextEditingController txtMainCompany = TextEditingController();
@@ -78,6 +78,7 @@ class SplashController extends GetxController{
     g.wstrDeivceId = deviceId.value;
     g.wstrDeviceIP = deviceIp.value;
     dprint("Device ID ::>>>> ${g.wstrDeivceId}");
+    tapedStartBtn.value = true;
     // fnCheckReg(context);
     gapiCheckDevice(context,g.wstrDeivceId);
   }
@@ -206,6 +207,7 @@ class SplashController extends GetxController{
 
 
   gapiCheckDeviceRes(value,context){
+    tapedStartBtn.value = true;
     //[{STATUS: 0, MESSAGE: DEVICE NOT REGISTERED}]
     dprint("dddddddddd  ${value.toString()}");
 
@@ -214,11 +216,11 @@ class SplashController extends GetxController{
         var msg =  (value[0]["MESSAGE"]??"").toString();
 
         if(sts == "1"){
-
           fnRegisterDone(value);
+          tapedStartBtn.value = true;
         }else{
-
           fnRegisterScreen(context);
+          tapedStartBtn.value = true;
         }
 
 
