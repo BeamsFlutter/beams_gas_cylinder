@@ -117,9 +117,149 @@ class HmDelivryOrderController extends GetxController{
     List additionalTable =[];
     List tableDoDet=[];
     List tableDo =[];
+
+    var totalAmount = 0.0;
+    var totalGrAmt = 0.0;
+    var totalTaxAmt = 0.0;
+    var totalDiscountAmt = 0.0;
+    var balanceAmount = 0.0;
+
+    var discAmount =  g.mfnDbl(txtDiscountAmt.text);
+    var roundOfAmount =  g.mfnDbl(txtRoundAmt.text);
+    var addlAmount =  0.0;
+    var paidAmount =  g.mfnDbl(txtPaidAmt.text);
+    var netAmount = 0.0;
+
+    var currRate =  1;
+    var srno = 0;
+
+
+    for(var e in lstrDeliveredList.value){
+      var qty = g.mfnDbl(e["QTY2"]);
+      var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+      var price =  g.mfnDbl(e["RATEFC2"]);
+      var soldrate =g.mfnDbl(e["SOLD_RATEFC"]);
+      var disc  = g.mfnDbl(e["DISC_AMTFC"]);
+
+      var soldQty = qty - rtnQty;
+      var gasAmount  =  qty * price ;
+      var soldAmount =  soldQty * soldrate;
+
+      var gramt =  gasAmount + soldAmount;
+      var amt = gramt - disc;
+      totalAmount = totalAmount + amt;
+    }
+
+    int i=1;
+    for(var e in lstrDeliveredList.value){
+
+      var qty2 = g.mfnDbl(e["QTY"]);
+      var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
+      var price =  g.mfnDbl(e["RATE"]);
+      var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+      var vat = g.mfnDbl(e["VAT_PERC"]);
+      var disc  = 0.0;
+      var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+
+      var qty1 = qty2 * unitCf;
+
+      var rate2 = price;
+      var rate1 = price*unitCf;
+
+      var unit1 = e["UNIT1"];
+      var unit2 = e["UNIT2"];
+
+      var soldQty = qty2 - returnQty;
+      var gasAmount  =  qty2 * price ;
+      var soldAmount =  soldQty * soldRate;
+
+      var gramt =  gasAmount + soldAmount;
+      var amt = gramt - disc;
+
+      var headerDiscount  = (amt/totalAmount) * discAmount;
+      var taxAmtV = (amt-headerDiscount)*vat;
+      var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
+      //totalCalc For Header
+      totalGrAmt = totalGrAmt + gramt;
+      totalTaxAmt = totalTaxAmt + taxAmt;
+      var net = (amt-headerDiscount)+taxAmt;
+      netAmount = netAmount + net;
+
+
+      tableDoDet.add({
+        "COMPANY" : g.wstrCompany,
+        "YEARCODE" :g.wstrYearcode,
+        "DOCNO" : frDocno.value,
+        "DOCTYPE" : frDocType.value,
+        "DOCDATE": docDate,
+        "SRNO": i,
+        "STKCODE" : e["STKCODE"],
+        "STKDESCP" : e["STKDESCP"],
+        "MATERIAL_CODE": e["MATERIAL_CODE"],
+        "LOC": "",
+        "VEHICLE_NO": "",
+        "QTY1": qty1,
+        "QTY2": qty2,
+        "RATE": rate1,
+        "RATEFC": rate1*currRate,
+        "RATE2": rate2,
+        "RATEFC2": rate2*currRate,
+        "AMT": amt,
+        "AMTFC": amt*currRate,
+        "RETURN_QTY": returnQty,
+        "SOLD_QTY": soldQty,
+        "SOLD_RATE": soldRate,
+        "SOLD_RATEFC": soldRate*currRate,
+        "SOLD_AMT": soldAmount,
+        "SOLD_AMTFC": soldAmount*currRate,
+        "NETAMT": gramt,
+        "NETAMTFC": gramt,
+        "PRVDOCTABLE": "",
+        "PRVYEARCODE": "",
+        "PRVDOCNO": "",
+        "PRVDOCTYPE": "",
+        "PRVDOCSRNO": "",
+        "PRVDOCQTY": "",
+        "DBACCODE": "",
+        "CRACCODE": "",
+        "DBCOSTSALE": "",
+        "DBINVENTORY": "",
+        "CRCOSTSALE": "",
+        "CRINVENTORY": "",
+        "CYL_DBACCODE": "",
+        "CYL_CRACCODE": "",
+        "CYL_DBCOSTSALE": "",
+        "CYL_DBINVENTORY": "",
+        "CYL_CRCOSTSALE": "",
+        "CYL_CRINVENTORY": "",
+        "UNIT1": unit1,
+        "UNITCF": unitCf,
+        "UNIT2": unit2,
+        "CYLINDER_STKCODE":  e["STKCODE"],
+        "CYLINDER_STKDESCP": e["STKDESCP"],
+        "CYLINDER_QTY1": qty2,
+        "DRIVER": "",
+        "SMAN": "",
+        "PARTYCODE": "",
+        "DUEDATE": "",
+        "AM": "",
+        "HEADER_DISC_AMT":headerDiscount,
+        "HEADER_DISC_AMTFC":headerDiscount*currRate,
+        "VAT_PERC" : vat,
+        "VAT_AMTFC" : taxAmt*currRate,
+        "VAT_AMT" : taxAmt,
+        "TOT_TAX_AMTFC" : taxAmt*currRate,
+        "TOT_TAX_AMT" : taxAmt,
+        "CRCURR" : "AED",
+        "CRCURRATE" : currRate
+      });
+
+
+    }
+
     tableDo.add({
-       ApiParams.company : g.wstrCompany,
-       ApiParams.yearcode  : g.wstrYearcode,
+      ApiParams.company : g.wstrCompany,
+      ApiParams.yearcode  : g.wstrYearcode,
       "DOCNO" : frDocno.value,
       "DOCTYPE" : frDocType.value,
       "DOCDATE" : docDate,
@@ -137,20 +277,20 @@ class HmDelivryOrderController extends GetxController{
       "LOC" : txtAreaCode.text,
       "CASH_CREDIT" : "CR",
       "CURR" : "AED",
-      "CURRATE" : "1",
-      "GRAMT" : "",
-      "GRAMTFC" : "",
-      "DISC_AMT" : txtDiscountAmt.text,
-      "DISC_AMTFC" : txtDiscountAmt.text,
+      "CURRATE" : currRate,
+      "GRAMT" : totalGrAmt,
+      "GRAMTFC" : totalGrAmt*currRate,
+      "DISC_AMT" : totalDiscountAmt,
+      "DISC_AMTFC" : totalDiscountAmt*currRate,
       "CHG_CODE" : "",
       "CHG_AMT" : "",
       "CHG_AMTFC" : "",
-      "NETAMT" : txtNetAmt.text,
-      "NETAMTFC" : txtNetAmt.text,
-      "PAID_AMT" : txtPaidAmt.text,
-      "PAID_AMTFC" : txtPaidAmt.text,
-      "BAL_AMT" : txtBalanceAmt.text,
-      "BAL_AMTFC" :txtBalanceAmt.text,
+      "NETAMT" : netAmount,
+      "NETAMTFC" : netAmount*currRate,
+      "PAID_AMT" : paidAmount,
+      "PAID_AMTFC" : paidAmount*currRate,
+      "BAL_AMT" : balanceAmount,
+      "BAL_AMTFC" :balanceAmount*currRate,
       "REMARKS" : txtRemark.text,
       "PRINT_YN" : "",
       "CLOSED_YN" : "",
@@ -161,207 +301,24 @@ class HmDelivryOrderController extends GetxController{
       "DOCUMENT_STATUS" : "",
       "DRIVER" : txtDriver.text,
       "DELIVERY_TIME" : "",
-      "CREATE_USER" : "",
+      "CREATE_USER" : g.wstrUserCD,
       "CREATE_DATE" : "",
       "EDIT_USER" : "",
       "EDIT_DATE" : "",
       "DELIVERED_YN" : "",
       "ACTUAL_DELIVERY_DATE" : "",
-      "ADDL_AMT" : txtAddlAmt.text,
-      "ADDL_AMTFC" : txtAddlAmt.text,
-      "DISCPERCENT" : "",
-      "TAX_AMT" : txtTaxAmt.text,
-      "TAX_AMTFC" : txtTaxAmt.text,
-      "ROUND_OFF_AMT" : txtRoundAmt.text,
-      "ROUND_OFF_AMTFC" :txtRoundAmt.text,
+      "ADDL_AMT" : 0.0,
+      "ADDL_AMTFC" : 0.0,
+      "DISCPERCENT" : 0,
+      "TAX_AMT" : totalTaxAmt,
+      "TAX_AMTFC" : totalTaxAmt*currRate,
+      "ROUND_OFF_AMT" : roundOfAmount,
+      "ROUND_OFF_AMTFC" :roundOfAmount*currRate,
       "PRVMULTIDOCNO" : "",
       "VAT_PERC" : "",
-      "TOTAL_TAXAMTFC" : txtTotalAmt.text,
-      "TOTAL_TAXAMT" : txtTotalAmt.text
+      "TOTAL_TAXAMTFC" : totalTaxAmt*currRate,
+      "TOTAL_TAXAMT" : totalTaxAmt
     });
-    int i=1;
-    for(var e in lstrDeliveredList.value){
-      dprint("SAVELISTS>>tableDoDet>>>>>>>> ${lstrDeliveredList.value}");
-
-      var qty1 = 0.0;
-      var qty2 = 0.0;
-      var returnQty = 0.0;
-      var soldQty = 0.0;
-
-      var unit1 = e["UNIT"];
-      var unit2 = e["SALEUNIT"];
-
-      var rate1 = 0.0;
-      var rate2 = 0.0;
-      var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
-      var disc  = g.mfnDbl(0.0);
-      var unitCf = g.mfnDbl(e["CATWEIGHT"]) == 0? 1.0:g.mfnDbl(e["CATWEIGHT"])  ;
-
-      if(tableDoDet.where((edoDet) => edoDet["STKCODE"] ==e["STKCODE"] ).isEmpty){
-      //Empty
-
-
-        if(e["TYPE"] == "N"){
-          qty2 =  g.mfnDbl(e["QTY"]);
-        }else if(e["TYPE"] == "R"){
-          qty2 =  g.mfnDbl(e["QTY"]);
-          returnQty = g.mfnDbl(e["QTY"]);
-        }else if(e["TYPE"] == "E"){
-          qty2 =  0.0;
-          returnQty = g.mfnDbl(e["QTY"]);
-        }
-
-        qty1 =  qty2*unitCf;
-        soldQty =  qty2 - returnQty;
-
-        rate2  =g.mfnDbl(e["PRICE1"].toString()) ;
-        rate1  = rate2* unitCf;
-
-
-        var gasAmount  =  qty2 * rate2 ;
-        var soldAmount =  soldQty * soldRate;
-        var gramt =  gasAmount + soldAmount;
-        var amt = gramt -  disc;
-        var amt1 = amt * unitCf;
-
-        tableDoDet.add({
-          "COMPANY" : g.wstrCompany,
-          "YEARCODE" :g.wstrYearcode,
-          "DOCNO" : frDocno.value,
-          "DOCTYPE" : frDocType.value,
-          "DOCDATE": docDate,
-          "SRNO": i,
-          "STKCODE" : e["STKCODE"],
-          "STKDESCP" : e["STKDESCP"],
-          "MATERIAL_CODE": e["MATERIAL_CODE"],
-          "LOC": "",
-          "VEHICLE_NO": "",
-          "QTY1": qty1,
-          "QTY2": qty2,
-          "RATE": rate1,
-          "RATEFC": rate1,
-          "RATE2": rate2,
-          "RATEFC2": rate2,
-          "AMT": amt,
-          "AMTFC": amt,
-          "RETURN_QTY": returnQty,
-          "SOLD_QTY": soldQty,
-          "SOLD_RATE": soldRate,
-          "SOLD_RATEFC": soldRate,
-          "SOLD_AMT": soldAmount,
-          "SOLD_AMTFC": soldAmount,
-          "NETAMT": "",
-          "NETAMTFC": "",
-          "PRVDOCTABLE": "",
-          "PRVYEARCODE": "",
-          "PRVDOCNO": "",
-          "PRVDOCTYPE": "",
-          "PRVDOCSRNO": "",
-          "PRVDOCQTY": "",
-          "DBACCODE": "",
-          "CRACCODE": "",
-          "DBCOSTSALE": "",
-          "DBINVENTORY": "",
-          "CRCOSTSALE": "",
-          "CRINVENTORY": "",
-          "CYL_DBACCODE": "",
-          "CYL_CRACCODE": "",
-          "CYL_DBCOSTSALE": "",
-          "CYL_DBINVENTORY": "",
-          "CYL_CRCOSTSALE": "",
-          "CYL_CRINVENTORY": "",
-          "UNIT1": unit1,
-          "UNITCF": unitCf,
-          "UNIT2": unit2,
-          "CYLINDER_STKCODE":  e["STKCODE"],
-          "CYLINDER_STKDESCP": e["STKDESCP"],
-          "CYLINDER_QTY1": qty2,
-          "DRIVER": "",
-          "SMAN": "",
-          "PARTYCODE": "",
-          "DUEDATE": "",
-          "AM": "",
-          "HEADER_DISC_AMT":0.0,
-          "HEADER_DISC_AMTFC":0.0,
-          "VAT_PERC" : "",
-          "VAT_AMTFC" : "",
-          "VAT_AMT" : "",
-          "TOT_TAX_AMTFC" : "",
-          "TOT_TAX_AMT" : "",
-          "CRCURR" : "",
-          "CRCURRATE" : ""
-        });
-
-      }else{
-
-        if(e["TYPE"] == "N"){
-          qty2 =  g.mfnDbl(e["QTY"])+ g.mfnDbl(e["QTY"]);
-        }else if(e["TYPE"] == "R"){
-          qty2 =  g.mfnDbl(e["QTY"]);
-          returnQty = g.mfnDbl(e["QTY"]);
-        }else if(e["TYPE"] == "E"){
-          qty2 =  0.0;
-          returnQty = g.mfnDbl(e["QTY"]);
-        }
-
-        qty1 =  qty2*unitCf;
-        soldQty =  qty2 - returnQty;
-
-        rate2  =g.mfnDbl(e["PRICE1"].toString()) ;
-        rate1  = rate2* unitCf;
-
-
-        var gasAmount  =  qty2 * rate2 ;
-        var soldAmount =  soldQty * soldRate;
-        var gramt =  gasAmount + soldAmount;
-        var amt = gramt -  disc;
-        var amt1 = amt * unitCf;
-
-
-      }
-
-
-    }
-
-    // additionalTable.add({
-    //   "COMPANY" : "",
-    //   "YEARCODE" : "",
-    //   "DOCNO" : "",
-    //   "DOCTYPE" : "",
-    //   "SRNO" : "",
-    //   "DOCNO_RPT" : "",
-    //   "DOCDATE" : "",
-    //   "CODE" : "",
-    //   "DESCP" : "",
-    //   "ADD_DEDUCT" : "",
-    //   "DBCURR" : "",
-    //   "DBCURRATE" : "",
-    //   "DBAMTFC" : "",
-    //   "CRCURR" : "",
-    //   "CRCURRATE" : "",
-    //   "CRAMTFC" : "",
-    //   "PERCENTAGE" : "",
-    //   "CURR" : "",
-    //   "CURRATE" : "",
-    //   "AMT" : "",
-    //   "AMTFC" : "",
-    //   "TRNAMT" : "",
-    //   "REF1" : "",
-    //   "REF2" : "",
-    //   "REF3" : "",
-    //   "REMARKS" : "",
-    //   "DB_CONSIDERCOST_YN" : "",
-    //   "CR_CONSIDERCOST_YN" : "",
-    //   "VAT_PERC" : "",
-    //   "VAT_AMTFC" : "",
-    //   "VAT_AMT" : "",
-    //   "VAT_ACCODE" : "",
-    //   "TAX_RETURN_SUBMITTED_YN" : "",
-    //   "TAXRET_DOCNO" : "",
-    //   "TAXRET_DOCTYPE" : "",
-    //   "TAXRET_YEARCODE" : "",
-    //   "TAXRET_SRNO" : ""
-    // });
 
   }
 
