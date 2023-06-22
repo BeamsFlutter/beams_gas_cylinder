@@ -52,6 +52,7 @@ class HmDelivryOrderController extends GetxController{
   var txtAreaCode = TextEditingController();
   var txtDriver = TextEditingController();
   var txtVehiclenumber= TextEditingController();
+  var txtlocation= TextEditingController();
   //************************PAYMENT__CONTROLLER
   var txtDiscountAmt = TextEditingController();
   var txtTotalAmt = TextEditingController();
@@ -1608,6 +1609,11 @@ dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
 
         //   apiGetCustomerDetails();
       }
+      else if(mode  ==  "LOCMAST"){
+        txtlocation.text = data["DESCP"]??"";
+
+        //   apiGetCustomerDetails();
+      }
     }
 
 
@@ -1617,7 +1623,6 @@ dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
 
   fnLookup(mode){
     dprint(mode);
-
     if(mode == "GCYLINDER_CALL_LOGIN"){
 
       final List<Map<String, dynamic>> lookup_Columns = [
@@ -1983,6 +1988,37 @@ dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
           )
       );
     }
+    else if(mode == "LOCMAST" ){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'LOCMAST',
+            title: 'Location',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+
+
   }
 
   //**************************************************API

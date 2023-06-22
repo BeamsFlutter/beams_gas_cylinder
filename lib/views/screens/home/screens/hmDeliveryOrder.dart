@@ -1061,6 +1061,31 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             txtController: hmDelivryOrderController.txtVehiclenumber,
             enableY:false,
           ),
+        ),
+        gapHC(10),
+        tc('Location', black, 12),
+        gapHC(5),
+        Bounce(
+          duration: const Duration(milliseconds: 110),
+          onPressed: (){
+            if(hmDelivryOrderController.wstrPageMode.value  == "VIEW"){
+              return;
+            }else{
+              dprint(" VehicleNumb Lookupp");
+              hmDelivryOrderController.fnLookup("LOCMAST");
+            }
+          },
+          child: CommonTextField(
+            lookupY: true,
+            obscureY: false,
+
+            textStyle: const TextStyle(color:txtColor,fontSize: 12),
+            prefixIcon: Icons.tag,
+            sufixIconColor: Colors.black,
+            prefixIconColor: black,
+            txtController: hmDelivryOrderController.txtlocation,
+            enableY:false,
+          ),
         )
       ],
 

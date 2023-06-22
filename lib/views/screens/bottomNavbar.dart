@@ -420,7 +420,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                     }),
                     gapWC(10),
                     wMenuCard("Sales", Icons.point_of_sale, 55.0,() {
-                      Get.to(const HmeSales());
+                      // Get.to(const Hme());
                       dprint("Sales.............");
                     }),
                   ],
