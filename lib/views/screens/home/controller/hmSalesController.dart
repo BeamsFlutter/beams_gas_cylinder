@@ -551,6 +551,18 @@ class HmSalesController extends GetxController{
         g.wstrApartmentCode = data["APARTMENT_CODE"] ?? "";
         //    apiGetCustomerInfo();
       }
+      else if (mode == "CRDELIVERYMANMASTER") {
+        dprint("RRRRRRRRRR ${data}");
+        txtDriver.text = data["NAME"];
+
+        //    apiGetCustomerInfo();
+      }
+      else if (mode == "CRVEHICLEMASTER") {
+        dprint("RRRRRRRRRR ${data}");
+        txtVehiclenumber.text = data["VEHICLE_NO"];
+
+        //    apiGetCustomerInfo();
+      }
     }
   }
 

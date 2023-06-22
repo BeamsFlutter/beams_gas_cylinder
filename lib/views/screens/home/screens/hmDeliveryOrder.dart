@@ -788,6 +788,9 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
           children: [
             Bounce(
               onPressed: () {
+                if(hmDelivryOrderController.wstrPageMode=="VIEW"){
+                  return;
+                }
                 hmDelivryOrderController.fnLookup("GUESTMASTER");
 
               },

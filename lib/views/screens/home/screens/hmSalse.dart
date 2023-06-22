@@ -446,7 +446,7 @@ class _HmeSalesState extends State<HmeSales> {
         gapHC(5),
         CommonTextField(
           prefixIcon: prefixicon,
-          enableY: hmSalesController.wstrPageMode.value=="VIEW"?false:true,
+          enableY: enable,
           txtController: contrlr,
           prefixIconColor: txtColor,
           obscureY: false,
@@ -847,11 +847,11 @@ class _HmeSalesState extends State<HmeSales> {
             gapHC(5),
 
             wRoundedInputField(
-                hmSalesController.txtCustomerName, "Customer Name", "N",
+                hmSalesController.txtCustomerName, "Customer Name", "N",enable: false,
                 prefixicon: Icons.drive_file_rename_outline),
             gapHC(10),
             wRoundedInputField(
-                hmSalesController.txtContactNo, "Contact No", "N",
+                hmSalesController.txtContactNo, "Contact No", "N",enable: false,
                 prefixicon: Icons.phone_android_outlined),
             gapHC(10),
             tc("Building Code", txtColor, 12),
@@ -977,14 +977,14 @@ class _HmeSalesState extends State<HmeSales> {
             gapHC(10),
             wRoundedInputField(
               hmSalesController.txtLandmark,
-              "Landmark",
+              "Landmark",enable: false,
               "N",
               prefixicon: Icons.apartment,
             ),
             gapHC(10),
             wRoundedInputField(
               hmSalesController.txtAddress,
-              "Address",
+              "Address",enable: false,
               "N",
               maxLine: 5,
               prefixicon: Icons.abc_outlined,
