@@ -1,24 +1,15 @@
 
 
 
-  Future<dynamic> getStockDetails(company,doctype) async {
-    var request = jsonEncode(<dynamic,dynamic>{
-      "COMPANY":company,
-      "DOCTYPE":doctype
-    });
-
-    var response = await ApiManager().post('api/getPrvDoc', request).catchError((error){
-      if(error is BadRequestException){
-        var apiError = json.decode(error.message!);
-      }else{
-        handleError(error);
-      }
-    });
-
-    if(response == null)
-      return;
-
-    return response;
-
-
-  }
+ if(vatSts == 'Y' && vatP > 0){
+            var dvd = 100 /(100+vatP);
+            vat =  total * dvd;
+            vatA = total - vat;
+            taxableAmount = (taxableAmount + total) - vatA;
+            totalAmount = totalAmount +total ;
+          }else{
+            vat = (vatP)/100;
+            vatA = total * vat;
+            taxableAmount = (taxableAmount +total);
+            totalAmount =totalAmount +total + vatA;
+          }
