@@ -1,3 +1,4 @@
+import 'package:beams_gas_cylinder/views/screens/home/screens/previousSales.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
@@ -20,14 +21,23 @@ class HmeSales extends StatefulWidget {
 }
 
 class _HmeSalesState extends State<HmeSales> {
-  final HmSalesController hmSalesController =
-  Get.put(HmSalesController());
+  final HmSalesController hmSalescontroller = Get.put(HmSalesController());
   @override
   void initState() {
-    hmSalesController.pageController = PageController();
+    hmSalescontroller.pageController = PageController();
+    var bookingNumber = widget.bookingNumber??"";
 
-
-   hmSalesController.apiProductType();
+    // if(bookingNumber.isNotEmpty){
+    //   hmSalescontroller.wstrPageMode.value = "ADD";
+    //   dprint("Call Booking Detail Api");
+    //   hmSalescontroller.apiGetBooking(bookingNumber, "mode");
+    // }else{
+    //   hmSalescontroller.wstrPageMode.value = 'VIEW';
+    //
+    // }
+    hmSalescontroller.apiViewSales("","LAST");
+    hmSalescontroller.apiGetStockDetails("CGI");
+    hmSalescontroller.apiProductType();
 
     // TODO: implement initState
     super.initState();
@@ -36,311 +46,325 @@ class _HmeSalesState extends State<HmeSales> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return Obx(() =>  Scaffold(
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
           leading: IconButton(
             onPressed: () {
-              hmSalesController.fnBackPage(context);
+              hmSalescontroller.fnBackPage(context);
             },
             icon: const Icon(Icons.arrow_back),
           ),
           title: tcn('Sales', Colors.white, 20),
-          actions: const [
-            Padding(
+          actions:  [
+            hmSalescontroller.wstrPageMode.value=="VIEW"? const Padding(
               padding: EdgeInsets.all(12.0),
               child: Icon(
                 Icons.water_drop_outlined,
                 color: Colors.white,
                 size: 25,
               ),
+            ):Bounce(
+              duration: const Duration(milliseconds: 110),
+              onPressed: (){
+                Get.to(()=>PreviousSales());
+
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
+                child: Container(
+                     decoration: boxDecoration(white, 30),
+                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 9),
+                    child: Center(child: tc("Previous", txtColor, 12))),
+              ),
             ),
           ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Obx(
-                  () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child:Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+
+
+                        hmSalescontroller.fnLookup("Gcylinder_inv");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: primaryColor),
+                            borderRadius: BorderRadius.circular(30)
+                        ),
+
+                        child: Row(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.tag,
+                                  color: black,
+                                  weight: 100,
+                                  size: 15,
+                                ),
+                                tc(hmSalescontroller.frDocno.value, txtColor, 12)
+                              ],
+                            ),
+                            gapWC(5),
+                            const Icon(Icons.search,size: 14,)
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month,
+                          color: black,
+                          size: 15,
+                        ),
+                        gapWC(3),
+                        tcn(
+                            setDate(7, hmSalescontroller.docDate.value)
+                                .toString()
+                                .toUpperCase(),
+                            txtColor,
+                            12)
+                      ],
+                    ),
+                  ],
+                ),
+                gapHC(15),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.grey.shade200,
+                  ),
+                  child:     Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Bounce(
-                        duration: const Duration(milliseconds: 110),
-                        onPressed: () {
-
-
-                          hmSalesController.fnLookup("CRDELIVERYMANMASTER");
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: primaryColor),
-                              borderRadius: BorderRadius.circular(30)
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.account_circle_outlined,
+                            color: Colors.black,
+                            size: 15,
                           ),
-
-                          child: Row(
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.tag,
-                                    color: black,
-                                    weight: 100,
-                                    size: 15,
-                                  ),
-                                  tc(hmSalesController.frDocno.value, txtColor, 12)
-                                ],
-                              ),
-                              gapWC(5),
-                              const Icon(Icons.search,size: 14,)
-                            ],
-                          ),
-                        ),
+                          gapWC(5),
+                          tc(hmSalescontroller.cstmrName.value,
+                              Colors.black, 12)
+                        ],
                       ),
                       Row(
                         children: [
                           const Icon(
-                            Icons.calendar_month,
-                            color: black,
+                            Icons.tag_outlined,
+                            color: Colors.black,
                             size: 15,
                           ),
-                          gapWC(3),
-                          tcn(
-                              setDate(7, hmSalesController.docDate.value)
-                                  .toString()
-                                  .toUpperCase(),
-                              txtColor,
-                              12)
+                          gapWC(5),
+                          tc(hmSalescontroller.cstmrCode.value,
+                              Colors.black, 12)
                         ],
                       ),
                     ],
                   ),
-                  gapHC(15),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: Colors.grey.shade200,
-                    ),
-                    child:     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.account_circle_outlined,
-                              color: Colors.black,
-                              size: 15,
-                            ),
-                            gapWC(5),
-                            tc(hmSalesController.cstmrName.value,
-                                Colors.black, 12)
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.tag_outlined,
-                              color: Colors.black,
-                              size: 15,
-                            ),
-                            gapWC(5),
-                            tc(hmSalesController.cstmrCode.value,
-                                Colors.black, 12)
-                          ],
-                        ),
-                      ],
-                    ),
+                ),
+                gapHC(5),
+
+
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
+                //   onPressed: () {
+                //     hmDelivryOrderController.fnLookup("GUESTMASTER");
+                //
+                //   },
+                //   duration: const Duration(milliseconds: 110),
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //       color: Colors.grey.shade200,
+                //
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     padding: const EdgeInsets.all(10),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             Row(
+                //               children: [
+                //                 const Icon(
+                //                   Icons.account_circle_outlined,
+                //                   color: Colors.black,
+                //                   size: 15,
+                //                 ),
+                //                 gapWC(5),
+                //                 tc(hmDelivryOrderController.cstmrCode.value,
+                //                     Colors.black, 12)
+                //               ],
+                //             ),
+                //
+                //           ],
+                //         ),
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             Container(
+                //                 margin: const EdgeInsets.symmetric(horizontal:0),
+                //                 width: size.width-95,
+                //                 child: const Divider(thickness:1)),
+                //
+                //             const Icon(
+                //               Icons.search,
+                //               color: txtColor,
+                //               size: 25,
+                //             )
+                //           ],
+                //         ),
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
+                //             tcn("Credit Balance", Colors.black, 10),
+                //
+                //           ],
+                //         ),
+                //
+                //       ],
+                //     ),
+                //   ),
+                // ):gapHC(0),
+                //
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
+
+
+                Container(
+
+                  padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 2),
+
+
+                  decoration: boxDecoration(primaryColor, 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: TabButton(
+                            width: 0.3,
+                            text: "Items",
+                            pageNumber: 0,
+                            selectedPage:
+                            hmSalescontroller.selectedPage.value,
+                            onPressed: () {
+                              hmSalescontroller.lstrSelectedPage.value = "IT";
+                              changePage(0);
+                            },
+                            icon: Icons.shopping_cart_outlined),
+                      ),
+                      Flexible(
+                        child: TabButton(
+                            width: 0.3,
+                            text: " Customer",
+                            pageNumber: 1,
+                            selectedPage:
+                            hmSalescontroller.selectedPage.value,
+                            onPressed: () {
+                              hmSalescontroller.lstrSelectedPage.value = "CD";
+                              changePage(1);
+                            },
+                            icon: Icons.person_2_outlined),
+                      ),
+                      Flexible(
+                        child: TabButton(
+                            width: 0.3,
+                            text: "Others",
+                            pageNumber: 2,
+                            selectedPage:
+                            hmSalescontroller.selectedPage.value,
+                            onPressed: () {
+                              hmSalescontroller.lstrSelectedPage.value = "OT";
+                              changePage(2);
+                            },
+                            icon: Icons.more_horiz),
+                      ),
+                    ],
                   ),
-                  gapHC(5),
-
-
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
-                  //   onPressed: () {
-                  //     hmDelivryOrderController.fnLookup("GUESTMASTER");
-                  //
-                  //   },
-                  //   duration: const Duration(milliseconds: 110),
-                  //   child: Container(
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.grey.shade200,
-                  //
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //     padding: const EdgeInsets.all(10),
-                  //     child: Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       children: [
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             Row(
-                  //               children: [
-                  //                 const Icon(
-                  //                   Icons.account_circle_outlined,
-                  //                   color: Colors.black,
-                  //                   size: 15,
-                  //                 ),
-                  //                 gapWC(5),
-                  //                 tc(hmDelivryOrderController.cstmrCode.value,
-                  //                     Colors.black, 12)
-                  //               ],
-                  //             ),
-                  //
-                  //           ],
-                  //         ),
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             Container(
-                  //                 margin: const EdgeInsets.symmetric(horizontal:0),
-                  //                 width: size.width-95,
-                  //                 child: const Divider(thickness:1)),
-                  //
-                  //             const Icon(
-                  //               Icons.search,
-                  //               color: txtColor,
-                  //               size: 25,
-                  //             )
-                  //           ],
-                  //         ),
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
-                  //             tcn("Credit Balance", Colors.black, 10),
-                  //
-                  //           ],
-                  //         ),
-                  //
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ):gapHC(0),
-                  //
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
-
-
-                  Container(
-
-                    padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 2),
-
-
-                    decoration: boxDecoration(primaryColor, 25),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                gapHC(8),
+                Expanded(
+                  child: Container(
+                    width: size.width,
+                    decoration: boxDecoration(white, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(
-                          child: TabButton(
-                              width: 0.3,
-                              text: "Items",
-                              pageNumber: 0,
-                              selectedPage:
-                              hmSalesController.selectedPage.value,
-                              onPressed: () {
-                                hmSalesController.lstrSelectedPage.value = "IT";
-                                changePage(0);
-                              },
-                              icon: Icons.shopping_cart_outlined),
+                        Expanded(
+                          child: PageView(
+                            onPageChanged: (int page) {
+                              hmSalescontroller.selectedPage.value =
+                                  page;
+                            },
+                            controller:
+                            hmSalescontroller.pageController,
+                            children: [
+                              // 1st page design ------ Choose Item
+                              wItemDetailScreen(MediaQuery.of(context).size),
+
+                              //2nd Page  design -----------------------------------
+                              wCustomerDetailsScreen(MediaQuery.of(context).size),
+                              wOthersScreen( MediaQuery.of(context).size)
+
+                              // 3rd Page for Delivery Details
+                              // Container for  1st page   design -----------------------------------
+                            ],
+                          ),
                         ),
-                        Flexible(
-                          child: TabButton(
-                              width: 0.3,
-                              text: " Customer",
-                              pageNumber: 1,
-                              selectedPage:
-                              hmSalesController.selectedPage.value,
-                              onPressed: () {
-                                hmSalesController.lstrSelectedPage.value = "CD";
-                                changePage(1);
-                              },
-                              icon: Icons.person_2_outlined),
-                        ),
-                        Flexible(
-                          child: TabButton(
-                              width: 0.3,
-                              text: "Others",
-                              pageNumber: 2,
-                              selectedPage:
-                              hmSalesController.selectedPage.value,
-                              onPressed: () {
-                                hmSalesController.lstrSelectedPage.value = "OT";
-                                changePage(2);
-                              },
-                              icon: Icons.more_horiz),
-                        ),
-                      ],
-                    ),
-                  ),
-                  gapHC(8),
-                  Expanded(
-                    child: Container(
-                      width: size.width,
-                      decoration: boxDecoration(white, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: PageView(
-                              onPageChanged: (int page) {
-                                hmSalesController.selectedPage.value =
-                                    page;
-                              },
-                              controller:
-                              hmSalesController.pageController,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 50,right: 50,bottom: 10),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                            decoration: boxDecoration(nearlyWhite, 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+
                               children: [
-                                // 1st page design ------ Choose Item
-                                wItemDetailScreen(MediaQuery.of(context).size),
-
-                                //2nd Page  design -----------------------------------
-                                wCustomerDetailsScreen(MediaQuery.of(context).size),
-                                wOthersScreen( MediaQuery.of(context).size)
-
-                                // 3rd Page for Delivery Details
-                                // Container for  1st page   design -----------------------------------
+                                tc('Net Amount', txtColor, 16),
+                                gapWC(40),
+                                tc(hmSalescontroller.txtNetAmt.text,Colors.black,15)
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-                              decoration: boxDecoration(nearlyWhite, 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  tc('Net Amount', txtColor, 16),
-                                  tc(hmSalesController.txtNetAmt.text,Colors.black,15)
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                        )
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             )),
         bottomNavigationBar: Obx(
-              () => (hmSalesController.wstrPageMode.value == "VIEW")
+              () => (hmSalescontroller.wstrPageMode.value == "VIEW")
               ? BottomNavigationItem(
             type: "booking",
-            mode: hmSalesController.wstrPageMode.value,
-            fnAdd: hmSalesController.fnAdd,
-            fnEdit: hmSalesController.fnEdit,
-            fnCancel: hmSalesController.fnCancel,
-            fnPage: hmSalesController.fnPage,
-            fnSave: hmSalesController.fnSave,
-            fnDelete: hmSalesController.fnDelete,
+            mode: hmSalescontroller.wstrPageMode.value,
+            fnAdd: hmSalescontroller.fnAdd,
+            fnEdit: hmSalescontroller.fnEdit,
+            fnCancel: hmSalescontroller.fnCancel,
+            fnPage: hmSalescontroller.fnPage,
+            fnSave: hmSalescontroller.fnSave,
+            fnDelete: hmSalescontroller.fnDelete,
           )
-              : (hmSalesController.wstrPageMode.value == "ADD" ||
-                  hmSalesController.wstrPageMode.value == "EDIT")
+              : (hmSalescontroller.wstrPageMode.value == "ADD" ||
+              hmSalescontroller.wstrPageMode.value == "EDIT")
               ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -351,7 +375,7 @@ class _HmeSalesState extends State<HmeSales> {
                       // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
                       // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
 
-                      hmSalesController.fnSave(context);
+                      hmSalescontroller.fnSave(context);
                     },
                     duration: const Duration(milliseconds: 110),
                     child: Container(
@@ -375,7 +399,7 @@ class _HmeSalesState extends State<HmeSales> {
                 ),
                 Bounce(
                   onPressed: () {
-                    hmSalesController.fnCancel();
+                    hmSalescontroller.fnCancel();
                   },
                   duration: const Duration(milliseconds: 110),
                   child: Container(
@@ -403,38 +427,38 @@ class _HmeSalesState extends State<HmeSales> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
 
-        floatingActionButton: Obx(() => (hmSalesController.wstrPageMode.value != "VIEW" )? Padding(
+        floatingActionButton: Obx(() => (hmSalescontroller.wstrPageMode.value != "VIEW" )? Padding(
           padding: const EdgeInsets.only(bottom: 67),
           child: FloatingActionButton(
             backgroundColor: primaryColor,
             tooltip: 'Add Items',
             onPressed: () {
-              hmSalesController.wOpenBottomSheet(context);
+              hmSalescontroller.wOpenBottomSheet(context);
             },
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
-        ):SizedBox())
+        ):const SizedBox())
 
-    );
+    ));
   }
 
   changePage(int pageNum) {
-    hmSalesController.selectedPage.value = pageNum;
-    hmSalesController.pageController.animateToPage(
+    hmSalescontroller.selectedPage.value = pageNum;
+    hmSalescontroller.pageController.animateToPage(
       pageNum,
       duration: const Duration(milliseconds: 1000),
       curve: Curves.fastLinearToSlowEaseIn,
     );
 
     if (pageNum == 0) {
-      hmSalesController.lstrSelectedPage.value = "IT";
+      hmSalescontroller.lstrSelectedPage.value = "IT";
     }
 
     if (pageNum == 1) {
-      hmSalesController.lstrSelectedPage.value = "CD";
+      hmSalescontroller.lstrSelectedPage.value = "CD";
     }
     if (pageNum == 2) {
-      hmSalesController.lstrSelectedPage.value = "OT";
+      hmSalescontroller.lstrSelectedPage.value = "OT";
     }
   }
 
@@ -464,7 +488,7 @@ class _HmeSalesState extends State<HmeSales> {
   wAddBuildAprtmntCode(heading, codetxt, nametxt, codetxtController,
       nametxtController, prefixIcon, onTap) {
     return Get.bottomSheet(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(30), topLeft: Radius.circular(30)),
         ),
@@ -626,16 +650,22 @@ class _HmeSalesState extends State<HmeSales> {
                       flex: 1,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
+                        children: [tcn('R.Qty', Colors.white, 10)],
+                      )),
+                  Flexible(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [tcn('Total', Colors.white, 10)],
                       )),
                 ],
               ),
             ),
-            hmSalesController.lstrSalesList.isEmpty?gapHC(10):gapHC(0),
+            hmSalescontroller.lstrSalesList.isEmpty?gapHC(10):gapHC(0),
             Column(
               children: [
                 Column(
-                  children: hmSalesController.wSalesItemList(context),
+                  children: hmSalescontroller.wSalesItemList(context),
                 ),
               ],
             ),
@@ -653,7 +683,7 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Total Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtTotalAmt,disable: "D")
+                        wRoundTxtField(hmSalescontroller.txtTotalAmt,disable: "D")
                       ],
                     ),
                   ),
@@ -665,10 +695,10 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Discount Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtDiscountAmt,fieldName: "disAmt",
+                        wRoundTxtField(hmSalescontroller.txtDiscountAmt,fieldName: "disAmt",
                             oncahnged: (value){
                               // salesController.fnCalc();
-                              // salesController.fnPaymntCalc();
+                              hmSalescontroller.fnPaymntCalc();
                             })
                       ],
                     ),
@@ -681,7 +711,7 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Tax Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtTaxAmt,disable: "D")
+                        wRoundTxtField(hmSalescontroller.txtTaxAmt,disable: "D")
                       ],
                     ),
                   ),
@@ -694,9 +724,9 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Round Of Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtRoundAmt,keybordType: "txtKeybrd",oncahnged: (val){
+                        wRoundTxtField(hmSalescontroller.txtRoundAmt,keybordType: "txtKeybrd",oncahnged: (val){
                           // salesController.fnCalc();
-                          // salesController.fnPaymntCalc();
+                          hmSalescontroller.fnPaymntCalc();
                         })
                       ],
                     ),
@@ -709,27 +739,27 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Net Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtNetAmt,disable: "D")
+                        wRoundTxtField(hmSalescontroller.txtNetAmt,disable: "D")
                       ],
                     ),
                   ),
                   gapHC(5),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5, horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        tcn('Additional Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtAddlAmt,
-                            oncahnged: (val){
-                              // salesController.fnCalc();
-                              // salesController.fnPaymntCalc();
-                            })
-                      ],
-                    ),
-                  ),
-                  gapHC(5),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       vertical: 5, horizontal: 5),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       tcn('Additional Amount', txtColor, 12),
+                  //       wRoundTxtField(hmDelivryOrderController.txtAddlAmt,
+                  //           oncahnged: (val){
+                  //             // salesController.fnCalc();
+                  //             hmDelivryOrderController.fnPaymntCalc();
+                  //           })
+                  //     ],
+                  //   ),
+                  // ),
+                  // gapHC(5),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 5, horizontal: 5),
@@ -737,10 +767,10 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Paid Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtPaidAmt,
+                        wRoundTxtField(hmSalescontroller.txtPaidAmt,
                             oncahnged: (val){
                               // salesController.fnCalc();
-                              // salesController.fnPaymntCalc();
+                              hmSalescontroller.fnPaymntCalc();
                             })
                       ],
                     ),
@@ -753,7 +783,7 @@ class _HmeSalesState extends State<HmeSales> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         tcn('Balance Amount', txtColor, 12),
-                        wRoundTxtField(hmSalesController.txtBalanceAmt,disable: "D")
+                        wRoundTxtField(hmSalescontroller.txtBalanceAmt,disable: "D")
                       ],
                     ),
                   ),
@@ -781,10 +811,10 @@ class _HmeSalesState extends State<HmeSales> {
           children: [
             Bounce(
               onPressed: () {
-                if(hmSalesController.wstrPageMode.value=="VIEW"){
+                if(hmSalescontroller.wstrPageMode=="VIEW"){
                   return;
                 }
-                hmSalesController.fnLookup("GUESTMASTER");
+                hmSalescontroller.fnLookup("GUESTMASTER");
 
               },
               duration: const Duration(milliseconds: 110),
@@ -809,7 +839,7 @@ class _HmeSalesState extends State<HmeSales> {
                               size: 15,
                             ),
                             gapWC(5),
-                            tc(hmSalesController.cstmrCode.value,
+                            tc(hmSalescontroller.cstmrCode.value,
                                 Colors.black, 12)
                           ],
                         ),
@@ -834,7 +864,7 @@ class _HmeSalesState extends State<HmeSales> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc(hmSalesController.cstmrName.value, Colors.black, 12),
+                        tc(hmSalescontroller.cstmrName.value, Colors.black, 12),
                         tcn("Credit Balance", Colors.black, 10),
 
                       ],
@@ -847,43 +877,43 @@ class _HmeSalesState extends State<HmeSales> {
             gapHC(5),
 
             wRoundedInputField(
-                hmSalesController.txtCustomerName, "Customer Name", "N",enable: false,
+                hmSalescontroller.txtCustomerName, "Customer Name", "N",enable: false,
                 prefixicon: Icons.drive_file_rename_outline),
             gapHC(10),
             wRoundedInputField(
-                hmSalesController.txtContactNo, "Contact No", "N",enable: false,
+                hmSalescontroller.txtContactNo, "Contact No", "N",enable: false,
                 prefixicon: Icons.phone_android_outlined),
             gapHC(10),
-            wRoundedInputField(
-                hmSalesController.txtBuildingCode, "Building Code", "N",enable: false,
-                prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-                hmSalesController.txtApartmentCode, "Apartment Code", "N",enable: false,
-                prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-                hmSalesController.txtApartmentCode, "Area Code", "N",enable: false,
-                prefixicon: Icons.apartment),
 
+            wRoundedInputField(
+                hmSalescontroller.txtBuildingCode, "Building Code", "N",enable: false,
+                prefixicon: Icons.apartment),
             gapHC(10),
             wRoundedInputField(
-              hmSalesController.txtLandmark,
-              "Landmark",enable: false,
+                hmSalescontroller.txtApartmentCode, "Apartment Code", "N",enable: false,
+                prefixicon: Icons.apartment),
+            gapHC(10),
+            wRoundedInputField(
+                hmSalescontroller.txtApartmentCode, "Area Code", "N",enable: false,
+                prefixicon: Icons.apartment),
+            gapHC(10),
+            wRoundedInputField(
+              hmSalescontroller.txtLandmark,
+              "Landmark",
               "N",
-              prefixicon: Icons.apartment,
+              prefixicon: Icons.apartment,enable: false,
             ),
             gapHC(10),
             wRoundedInputField(
-              hmSalesController.txtAddress,
-              "Address",enable: false,
+              hmSalescontroller.txtAddress,enable: false,
+              "Address",
               "N",
               maxLine: 5,
               prefixicon: Icons.abc_outlined,
             ),
             gapHC(10),
             wRoundedInputField(
-              hmSalesController.txtRemark,enable: true,
+              hmSalescontroller.txtRemark,enable: hmSalescontroller.wstrPageMode=="VIEW"?false:true,
               "Remark",
               "N",
               maxLine: 5,
@@ -898,7 +928,7 @@ class _HmeSalesState extends State<HmeSales> {
   }
 
   wOthersScreen(Size size){
-    return Padding(padding: EdgeInsets.all(10),
+    return Padding(padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -907,11 +937,11 @@ class _HmeSalesState extends State<HmeSales> {
           Bounce(
             duration: const Duration(milliseconds: 110),
             onPressed: (){
-              if(hmSalesController.wstrPageMode.value  == "VIEW"){
+              if(hmSalescontroller.wstrPageMode.value  == "VIEW"){
                 return;
               }else{
                 dprint(" Driver Lookupp");
-                hmSalesController.fnLookup("CRDELIVERYMANMASTER");
+                hmSalescontroller.fnLookup("CRDELIVERYMANMASTER");
               }
             },
             child: CommonTextField(
@@ -921,7 +951,7 @@ class _HmeSalesState extends State<HmeSales> {
               textStyle: const TextStyle(color:txtColor,fontSize: 12),
               prefixIcon: Icons.directions_car_filled_outlined,
               prefixIconColor: black,
-              txtController: hmSalesController.txtDriver,
+              txtController: hmSalescontroller.txtDriver,
               enableY:false,
             ),
           ),
@@ -931,11 +961,11 @@ class _HmeSalesState extends State<HmeSales> {
           Bounce(
             duration: const Duration(milliseconds: 110),
             onPressed: (){
-              if(hmSalesController.wstrPageMode.value  == "VIEW"){
+              if(hmSalescontroller.wstrPageMode.value  == "VIEW"){
                 return;
               }else{
                 dprint(" VehicleNumb Lookupp");
-                hmSalesController.fnLookup("CRVEHICLEMASTER");
+                hmSalescontroller.fnLookup("CRVEHICLEMASTER");
               }
             },
             child: CommonTextField(
@@ -946,7 +976,7 @@ class _HmeSalesState extends State<HmeSales> {
               prefixIcon: Icons.tag,
               sufixIconColor: Colors.black,
               prefixIconColor: black,
-              txtController: hmSalesController.txtVehiclenumber,
+              txtController: hmSalescontroller.txtVehiclenumber,
               enableY:false,
             ),
           ),
@@ -956,11 +986,11 @@ class _HmeSalesState extends State<HmeSales> {
           Bounce(
             duration: const Duration(milliseconds: 110),
             onPressed: (){
-              if(hmSalesController.wstrPageMode.value  == "VIEW"){
+              if(hmSalescontroller.wstrPageMode.value  == "VIEW"){
                 return;
               }else{
                 dprint(" VehicleNumb Lookupp");
-                hmSalesController.fnLookup("LOCMAST");
+                hmSalescontroller.fnLookup("LOCMAST");
               }
             },
             child: CommonTextField(
@@ -971,7 +1001,7 @@ class _HmeSalesState extends State<HmeSales> {
               prefixIcon: Icons.location_on_outlined,
               sufixIconColor: Colors.black,
               prefixIconColor: black,
-              txtController: hmSalesController.txtlocation,
+              txtController: hmSalescontroller.txtlocation,
               enableY:false,
             ),
           )
@@ -988,14 +1018,14 @@ class _HmeSalesState extends State<HmeSales> {
       decoration: boxBaseDecoration(bGreyLight, 10),
       child: Center(
         child: TextFormField(
-            enabled: hmSalesController.wstrPageMode=="VIEW" || disable=="D"?false:true,
+            enabled: hmSalescontroller.wstrPageMode=="VIEW" || disable=="D"?false:true,
             inputFormatters: mfnInputDecFormatters(),
             controller:controller,
             textAlign: TextAlign.center,
             keyboardType:keybordType=="txtKeybrd"?TextInputType.text: TextInputType.number,
             style: GoogleFonts.poppins(fontSize: 12,color: txtColor),
             decoration:  InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: 4,),
+              contentPadding: const EdgeInsets.symmetric(vertical: 4,),
               border: OutlineInputBorder(
                 borderSide: BorderSide(
                     width: 1, color: Colors.blueGrey.withOpacity(0.5)), //<-- SEE HERE

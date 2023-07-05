@@ -58,6 +58,7 @@ class AssignmentController extends GetxController{
   var allAssignedList = [].obs;
   var todayAssignedList =[].obs;
   var bookingItemList =[].obs;
+
   //==============================================================================FUNCTION
 
   void fnFillGetAssignmnt(data) {

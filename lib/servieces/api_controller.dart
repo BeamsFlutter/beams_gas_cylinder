@@ -246,6 +246,26 @@ class ApiCall  with BaseController{
     return response;
 
   }
+  Future<dynamic> apiGetStockdetails(doctype) async{
+    var request = jsonEncode(<dynamic, dynamic>{
+      "COMPANY":g.wstrCompany,
+      "DOCTYPE":doctype
+
+    });
+    dprint('api/getPrvDoc');
+     dprint(request);
+    var response = await ApiManager().post('api/getPrvDoc',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
 
   //============================================  ASSIGNMENT
   Future<dynamic> apiViewAssignment(docno,mode) async{
@@ -320,7 +340,14 @@ class ApiCall  with BaseController{
   }
 
   //============================================  DELIVERY ORDER
-  Future saveDeliveryOrder(mode,additionalTable,tableDoDet,tableDo)async{
+  Future saveDeliveryOrder(mode,tableDoDet,tableDo)async{
+    dprint("MODE>>>>> ${mode}");
+    dprint("tableDoDet>>>>> ${tableDoDet}");
+    dprint("**************************************************************");
+    dprint("tableDo>>>>> ${tableDo}");
+    dprint("**************************************************************");
+    dprint("g.wstrUserCD>>>>> ${g.wstrUserCD}");
+    dprint("g.g.wstrDeivceId>>>>> ${g.wstrDeivceId}");
 
     var request = jsonEncode(<dynamic, dynamic>{
       ApiParams.mode:mode,
@@ -328,17 +355,15 @@ class ApiCall  with BaseController{
        "USERCODE":g.wstrUserCD,
       "TABLE_DO":tableDo,
       "TABLE_DODET":tableDoDet,
-      "ADDITIONAL_TABLE":additionalTable,
     });
     dprint('api/SaveDeliveryOrder');
-    // dprint(request);
+     dprint(request);
     var response = await ApiManager().post('api/SaveDeliveryOrder',request).catchError((error){
       if (error is BadRequestException) {
       } else {
         handleError(error);
       }
     });
-    dprint("response,,,,,,,");
     dprint(response);
     if (response == null) return;
 
@@ -346,7 +371,30 @@ class ApiCall  with BaseController{
 
 
   }
+  Future<dynamic> apiViewDeliveryOrder(docno,mode) async{
 
+    var request = jsonEncode(<dynamic, dynamic>{
+      'DOCNO':docno,
+      ApiParams.company:g.wstrCompany,
+      ApiParams.yearcode:g.wstrYearcode,
+      'DOCTYPE':"CCD",
+      'MODE':mode,
+
+    });
+    dprint('api/GetDeliveryOrder');
+    dprint(request);
+    var response = await ApiManager().post('api/GetDeliveryOrder',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
 
 
   //============================================  SALE
@@ -361,7 +409,7 @@ class ApiCall  with BaseController{
 
     });
     dprint('api/GetInvoice');
-    // dprint(request);
+     dprint(request);
     var response = await ApiManager().post('api/GetInvoice',request).catchError((error){
       if (error is BadRequestException) {
       } else {
@@ -374,17 +422,17 @@ class ApiCall  with BaseController{
     return response;
 
   }
-  Future saveSales(mode,usercode,tableinvoice,tableinvoice_details)async{
+  Future saveSales(mode,tableinvoice,tableinvoice_details)async{
 
     var request = jsonEncode(<dynamic, dynamic>{
       ApiParams.mode:mode,
       "MACHINENAME":g.wstrDeivceId,
-      "USERCODE":usercode,
+      "USERCODE":g.wstrUserCD,
       "TABLE_INV":tableinvoice,
       "TABLE_INVDET":tableinvoice_details,
     });
     dprint('api/SaveInvoice');
-    // dprint(request);
+     dprint(request);
     var response = await ApiManager().post('api/SaveInvoice',request).catchError((error){
       if (error is BadRequestException) {
       } else {

@@ -42,6 +42,84 @@ class HmAssignmentController extends GetxController{
   RxString bookingNumber = "".obs;
   RxBool checkAll = false.obs;
 
+  var hmButtonsList =[
+    {
+      "ButtonName":"Contract",
+      "ButtonCode":"C",
+
+    },
+    {
+      "ButtonName":"Contract\n Receipt",
+      "ButtonCode":"CR",
+    },
+    {
+      "ButtonName":"Customer\n Balance",
+      "ButtonCode":"CB",
+    },
+    {
+      "ButtonName":"Booking",
+      "ButtonCode":"B",
+    },
+    {
+      "ButtonName":"SalesOrder",
+      "ButtonCode":"SO",
+    },
+
+    {
+      "ButtonName":"Assignment",
+      "ButtonCode":"A",
+    },
+    {
+      "ButtonName":"DeliveryOrder",
+      "ButtonCode":"DO",
+    },
+    {
+      "ButtonName":"Sales",
+      "ButtonCode":"S",
+    },
+    {
+      "ButtonName":"Collections",
+      "ButtonCode":"CN",
+    },
+
+
+
+
+
+
+
+  ];
+  var repButtonsList =[
+    {
+      "ButtonName":"Daily Sales",
+      "ButtonCode":"DS",
+
+    },
+    {
+      "ButtonName":"Collections",
+      "ButtonCode":"CN",
+    },
+    {
+      "ButtonName":"Assignment",
+      "ButtonCode":"A",
+    },
+    {
+      "ButtonName":"Booking",
+      "ButtonCode":"B",
+    },
+    {
+      "ButtonName":"Customer\n Balance",
+      "ButtonCode":"CB",
+    },
+    {
+      "ButtonName":"Others",
+      "ButtonCode":"O",
+    },
+
+
+
+  ];
+
 
 
   var txtController = TextEditingController();

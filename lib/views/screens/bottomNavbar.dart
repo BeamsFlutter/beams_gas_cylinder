@@ -5,8 +5,11 @@ import 'package:beams_gas_cylinder/views/screens/home/controller/hmAssignmntCont
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmAssignmnt.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmBooking.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmCollection.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmContract.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmContractRecipt.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmDeliveryOrder.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmReport.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmSalesOrder.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmSalse.dart';
 import 'package:beams_gas_cylinder/views/screens/report/screens/RepAssignment.dart';
 import 'package:beams_gas_cylinder/views/screens/report/screens/RepBooking.dart';
@@ -44,11 +47,11 @@ class _BottomnavBarState extends State<BottomnavBar> {
     ),assignmentController.apiGetAssignment("HLP0945")
     );
 
-  pages = [
-    const AssignmentScreen(),
-    wHome(),
-    wReport(),
-    const SettingsScreen()];
+    pages = [
+      const AssignmentScreen(),
+      wHome(),
+      wReport(),
+      const SettingsScreen()];
     // TODO: implement initState
     super.initState();
   }
@@ -58,120 +61,120 @@ class _BottomnavBarState extends State<BottomnavBar> {
     return SafeArea(
       child: Obx(() => Scaffold(
         key: key,
-            backgroundColor: bgColor,
-            drawer:  wDrawer(),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
+        backgroundColor: bgColor,
+        drawer:  wDrawer(),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            children: [
+              gapHC(20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  gapHC(20),
-                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Bounce(
-                          duration: const Duration(milliseconds: 110),
-                          onPressed: () {
-                            key.currentState!.openDrawer();
-                          },
-                          child: const Icon(Icons.segment, color: Colors.black, size: 25)),
-                       Bounce(
-                         duration: const Duration(milliseconds: 110),
-                         onPressed: (){
-                           dprint("SignOut.......");
-                         },
-                         child: const Icon(
-                          Icons.power_settings_new_outlined,
-                          color: Colors.black,
-                          size: 25,
-                      ),
-                       ),
-                    ],
-                  ),
-                  gapHC(15),
-                  Container(
-                    padding: const EdgeInsets.only(
-                        top: 10, left: 10, right: 10, bottom: 10),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(26),
+                  Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+                        key.currentState!.openDrawer();
+                      },
+                      child: const Icon(Icons.segment, color: Colors.black, size: 25)),
+                  Bounce(
+                    duration: const Duration(milliseconds: 110),
+                    onPressed: (){
+                      dprint("SignOut.......");
+                    },
+                    child: const Icon(
+                      Icons.power_settings_new_outlined,
+                      color: Colors.black,
+                      size: 25,
                     ),
-                    child: Column(
-                      children: [
-                        Text.rich(
+                  ),
+                ],
+              ),
+              gapHC(15),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 10, right: 10, bottom: 10),
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: BorderRadius.circular(26),
+                ),
+                child: Column(
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          const TextSpan(
+                              text: 'Good Morning,',
+                              style: TextStyle(color: white, fontSize: 15)),
                           TextSpan(
-                            children: [
-                              const TextSpan(
-                                  text: 'Good Morning,',
-                                  style: TextStyle(color: white, fontSize: 15)),
-                              TextSpan(
-                                text: ' ${hmAssignmentController.g.wstrUsername.toString()}',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    color: white,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ],
+                            text: ' ${hmAssignmentController.g.wstrUsername.toString()}',
+                            style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: white,
+                                fontWeight: FontWeight.w700),
                           ),
-                        ),
-                        tcn(setDate(15, DateTime.now()), white, 17),
-                        gapHC(10),
-                        Container(
-                          height: 50,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: Row(
-                                  children: [
-                                    tcn("Delivered", white, 14),
-                                    gapWC(5),
-                                    tc("18", white, 16),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: 50,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                width: MediaQuery.of(context).size.width / 2,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.white.withOpacity(0.2),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    tcn("Pending", white, 14),
-                                    gapWC(20),
-                                    tc("24", white, 16),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  gapHC(10),
-                   Expanded(
-                      child: Padding(
+                    tcn(setDate(15, DateTime.now()), white, 17),
+                    gapHC(10),
+                    Container(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 15),
+                            child: Row(
+                              children: [
+                                tcn("Delivered", white, 14),
+                                gapWC(5),
+                                tc("18", white, 16),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 15),
+                            width: MediaQuery.of(context).size.width / 2,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                tcn("Pending", white, 14),
+                                gapWC(20),
+                                tc("24", white, 16),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              gapHC(10),
+              Expanded(
+                  child: Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: pages[hmAssignmentController.pageIndex.value],
                   )),
-                  // wHome()
-                ],
-              ),
-            ),
-            bottomNavigationBar: buildMyNavBar(context),
-          )),
+              // wHome()
+            ],
+          ),
+        ),
+        bottomNavigationBar: buildMyNavBar(context),
+      )),
     );
   }
 
@@ -199,42 +202,42 @@ class _BottomnavBarState extends State<BottomnavBar> {
             duration: const Duration(milliseconds: 110),
             child: hmAssignmentController.pageIndex.value == 0
                 ? badges.Badge(
-                    showBadge: assignmentController.todayAssignedList.value.isEmpty?false:true,
-                    badgeStyle: badges.BadgeStyle(
-                      shape: badges.BadgeShape.circle,
-                      padding: const EdgeInsets.all(7),
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                    badgeContent: tcn(assignmentController.todayAssignedList.value.length.toString(), white, 10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: Colors.grey.shade300),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.assignment,
-                              size: 20, color: primaryColor),
-                          gapWC(5),
-                          tc("Assignments", black, 12)
-                        ],
-                      ),
-                    ),
-                  )
+              showBadge: assignmentController.todayAssignedList.value.isEmpty?false:true,
+              badgeStyle: badges.BadgeStyle(
+                shape: badges.BadgeShape.circle,
+                padding: const EdgeInsets.all(7),
+                borderRadius: BorderRadius.circular(1),
+              ),
+              badgeContent: tcn(assignmentController.todayAssignedList.value.length.toString(), white, 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.grey.shade300),
+                child: Row(
+                  children: [
+                    const Icon(Icons.assignment,
+                        size: 20, color: primaryColor),
+                    gapWC(5),
+                    tc("Assignments", black, 12)
+                  ],
+                ),
+              ),
+            )
                 : badges.Badge(
               showBadge: assignmentController.todayAssignedList.value.isEmpty?false:true,
-                    badgeStyle: badges.BadgeStyle(
-                      shape: badges.BadgeShape.circle,
-                      padding: const EdgeInsets.all(7),
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                    badgeContent: tcn(assignmentController.todayAssignedList.value.length.toString(), white, 10),
-                    child: const Icon(
-                      Icons.assignment,
-                      size: 25,
-                    ),
-                  ),
+              badgeStyle: badges.BadgeStyle(
+                shape: badges.BadgeShape.circle,
+                padding: const EdgeInsets.all(7),
+                borderRadius: BorderRadius.circular(1),
+              ),
+              badgeContent: tcn(assignmentController.todayAssignedList.value.length.toString(), white, 10),
+              child: const Icon(
+                Icons.assignment,
+                size: 25,
+              ),
+            ),
           ),
           Bounce(
             onPressed: () {
@@ -243,23 +246,23 @@ class _BottomnavBarState extends State<BottomnavBar> {
             duration: const Duration(milliseconds: 110),
             child: hmAssignmentController.pageIndex.value == 1
                 ? Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.grey.shade300),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.home, size: 20, color: primaryColor),
-                        gapWC(5),
-                        tc("Home", black, 12)
-                      ],
-                    ),
-                  )
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Colors.grey.shade300),
+              child: Row(
+                children: [
+                  const Icon(Icons.home, size: 20, color: primaryColor),
+                  gapWC(5),
+                  tc("Home", black, 12)
+                ],
+              ),
+            )
                 : const Icon(
-                    Icons.home,
-                    size: 25,
-                  ),
+              Icons.home,
+              size: 25,
+            ),
           ),
           Bounce(
             onPressed: () {
@@ -268,24 +271,24 @@ class _BottomnavBarState extends State<BottomnavBar> {
             duration: const Duration(milliseconds: 110),
             child: hmAssignmentController.pageIndex.value == 2
                 ? Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.grey.shade300),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.bar_chart,
-                            size: 20, color: primaryColor),
-                        gapWC(5),
-                        tc("Report", black, 12)
-                      ],
-                    ),
-                  )
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Colors.grey.shade300),
+              child: Row(
+                children: [
+                  const Icon(Icons.bar_chart,
+                      size: 20, color: primaryColor),
+                  gapWC(5),
+                  tc("Report", black, 12)
+                ],
+              ),
+            )
                 : const Icon(
-                    Icons.bar_chart,
-                    size: 25,
-                  ),
+              Icons.bar_chart,
+              size: 25,
+            ),
           ),
           Bounce(
             onPressed: () {
@@ -294,24 +297,24 @@ class _BottomnavBarState extends State<BottomnavBar> {
             duration: const Duration(milliseconds: 110),
             child: hmAssignmentController.pageIndex.value == 3
                 ? Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.grey.shade300),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.settings,
-                            size: 20, color: primaryColor),
-                        gapWC(5),
-                        tc("Settings", black, 12)
-                      ],
-                    ),
-                  )
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Colors.grey.shade300),
+              child: Row(
+                children: [
+                  const Icon(Icons.settings,
+                      size: 20, color: primaryColor),
+                  gapWC(5),
+                  tc("Settings", black, 12)
+                ],
+              ),
+            )
                 : const Icon(
-                    Icons.settings,
-                    size: 25,
-                  ),
+              Icons.settings,
+              size: 25,
+            ),
           ),
         ],
       ),
@@ -321,125 +324,40 @@ class _BottomnavBarState extends State<BottomnavBar> {
 
 
   wReport() {
-    return Container(
-      decoration: boxDecoration(bgColor, 12),
-      child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    wMenuCard("Daily Sales", Icons.calendar_month, 55.0,() {
-                      dprint("DailySales................");
-                      Get.to(const RepDailySalesScreen());
-                    }),
-                    gapWC(10),
-                    wMenuCard(
-                        "Collections", Icons.featured_play_list_outlined, 55.0,() {
-                      Get.to(RepCollectionScreen());
-                      dprint("Collections................");
-                        },)
-                  ],
-                ),
-              ),
-              gapHC(10),
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    wMenuCard("Assignment", Icons.assignment, 55.0,() {
-                      Get.to(const RepAssignmentScreen());
-                      dprint("Assignment................");
-                    }),
-                    gapWC(10),
-                    wMenuCard("Booking", Icons.calendar_month, 55.0,() {
-                      Get.to(const RepBookingScreen());
-                      dprint("Booking................");
-                    }),
-                  ],
-                ),
-              ),
-              gapHC(10),
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    wMenuCard("Customer Balance", Icons.balance, 55.0,() {
+    return   GridView.count(
+        crossAxisCount: 3,
+        crossAxisSpacing: 2.0,physics: BouncingScrollPhysics(),
+        mainAxisSpacing: 2.0,
+        shrinkWrap: false,
+        children: wReportButtons(context)
 
 
-                      dprint("Customer Balance................");
-                      Get.to(const RepCustomerBalanceScreen());
-                    }),
-                    gapWC(10),
-                    wMenuCard("Others", Icons.more_horiz, 55.0,() {
-                      Get.to(const RepOthers());
-
-
-                    }),
-                  ],
-                ),
-              ),
-            ],
-          )),
     );
   }
 
   wHome() {
-    return Container(
-      decoration: boxDecoration(bgColor, 12),
-      child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    wMenuCard("Booking", Icons.calendar_month, 55.0,() {
-                      Get.to(const HmeBooking());
-                       dprint("Booking.............");
-                    }),
-                    gapWC(10),
-                    wMenuCard("Assignment", Icons.assignment, 55.0,() {
-                     Get.to(()=>const HmeAssignmnet());
-                    },)
-                  ],
-                ),
-              ),
-              gapHC(10),
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    wMenuCard("Delivery Order", Icons.delivery_dining, 55.0,() {
-                      Get.to(const HmeDeliveryOrder());
-                    }),
-                    gapWC(10),
-                    wMenuCard("Sales", Icons.point_of_sale, 55.0,() {
-                      Get.to(()=>const HmeSales());
-                      dprint("Sales.............");
-                    }),
-                  ],
-                ),
-              ),
-              gapHC(10),
-              wCollCard("Collections", Icons.collections_bookmark, 25,
-                  (){
-                   Get.to(const HmeCollections());
+    return Column(
+      children: [
+        Expanded(
+          child: GridView.count(
+              crossAxisCount: 3,
+              crossAxisSpacing: 2.0,physics: BouncingScrollPhysics(),
+              mainAxisSpacing: 2.0,
+              shrinkWrap: false,
+              children: wHomeButtons(context)
 
-                  }),
-              gapHC(10),
-              wCollCard("Reports", Icons.arrow_forward_ios_outlined, 25,(){
-                Get.to(const HmReport());
-                dprint("REport..................");
 
-              })
-            ],
-          )),
+          ),
+        ),        gapHC(10),
+
+        wCollCard("Report", Icons.report, 44, (){
+          Get.to(()=>HmReport());
+
+        }),
+        gapHC(10),
+
+
+      ],
     );
   }
 
@@ -493,7 +411,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
                   ),
                   ListTile(
                     leading:
-                        const Icon(Icons.info_outline_rounded, color: black),
+                    const Icon(Icons.info_outline_rounded, color: black),
                     title: const Text("AppInfo"),
                     onTap: () {},
                   ),
@@ -520,44 +438,144 @@ class _BottomnavBarState extends State<BottomnavBar> {
   }
 
   wMenuCard(title, icon, double iconSize,VoidCallback onTap) {
-    return Flexible(
-      child: Bounce(
-          duration: const Duration(milliseconds: 110),
-          onPressed: onTap,
-          child: Container(
-            decoration: BoxDecoration(
-                color: subColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12)),
-            child: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, color: subColor.withOpacity(0.8), size: iconSize),
-                tc(title, subColor, 14),
-              ],
-            )),
-          )),
-    );
+    return Bounce(
+        duration: const Duration(milliseconds: 110),
+        onPressed: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+              color: subColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(icon,
+
+
+                  color: subColor.withOpacity(0.8), size: iconSize),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  tc(title, subColor, 14),
+                ],
+              ),
+            ],
+          ),
+        ));
   }
 
   wCollCard(title, icon, double iconSize,onTap) {
-    return Flexible(
-      child: Bounce(
-          duration: const Duration(milliseconds: 110),
-          onPressed: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                color: subColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                tc(title, subColor, 14),
-                Icon(icon, color: subColor, size: iconSize),
-              ],
-            ),
-          )),
-    );
+    return Bounce(
+        duration: const Duration(milliseconds: 110),
+        onPressed: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+              color: subColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              tc(title, subColor, 14),
+              Icon(icon, color: subColor, size: iconSize),
+            ],
+          ),
+        ));
   }
+
+List<Widget> wHomeButtons(context){
+  List<Widget> rtnList =[];
+
+  for(var e  in hmAssignmentController.hmButtonsList){
+
+
+
+    var buttonName  = (e["ButtonName"]??"").toString();
+    var buttonCode = (e["ButtonCode"]??"").toString();
+
+
+    rtnList.add(
+
+        wMenuCard(buttonName,
+            (buttonCode=="B")?Icons.calendar_month_outlined:(buttonCode=="C")?Icons.confirmation_num_outlined:(buttonCode=="CR")?Icons.receipt:(buttonCode=="SO")?Icons.point_of_sale:
+            (buttonCode=="A")?Icons.assignment:(buttonCode=="DO")?Icons.delivery_dining:Icons.point_of_sale_sharp,
+            55.0,
+              (buttonCode=="B")?(){
+                Get.to(()=>HmeBooking());
+
+              }:(buttonCode=="CN")?(){
+                Get.to(()=>HmeCollections());
+              }:(buttonCode=="CR")?(){
+                Get.to(()=> HmeContractRecipt());
+
+                dprint("Contract recipt");
+              }:(buttonCode=="SO")?(){
+                Get.to(()=> HmeSalesOrder());
+                     dprint("SAlesOrder");
+              }:
+              (buttonCode=="A")?(){
+                Get.to(()=>HmeAssignmnet());
+              }:(buttonCode=="DO")?(){
+                Get.to(()=>HmeDeliveryOrder());
+              }:
+              (buttonCode=="C")?(){
+                dprint("Contract");
+               Get.to(()=>HmeContract());
+              }:
+              (buttonCode=="S")?(){
+
+                 Get.to(()=>HmeSales());
+              }:
+                  (){
+                // Get.to(()=>HmeBooking());
+
+
+
+
+    }));
+
+  }
+
+  return rtnList;
+}
+List<Widget> wReportButtons(context){
+  List<Widget> rtnList =[];
+
+  for(var e  in hmAssignmentController.repButtonsList){
+
+
+
+    var buttonName  = (e["ButtonName"]??"").toString();
+    var buttonCode = (e["ButtonCode"]??"").toString();
+
+
+    rtnList.add(
+
+        wMenuCard(buttonName,
+            (buttonCode=="DS")?Icons.calendar_month_outlined:(buttonCode=="CN")?Icons.featured_play_list_outlined:(buttonCode=="A")?Icons.assignment:(buttonCode=="B")?Icons.calendar_month_outlined:
+            (buttonCode=="CB")?Icons.balance:Icons.more_horiz,
+            55.0,  (buttonCode=="B")?(){
+              Get.to(()=>RepBookingScreen());
+
+            }:(buttonCode=="CN")?(){
+              Get.to(()=>RepCollectionScreen());
+            }:(buttonCode=="DS")?(){
+              Get.to(()=>RepDailySalesScreen());
+            }:(buttonCode=="A")?(){
+              Get.to(()=>RepAssignmentScreen());
+            }:
+            (buttonCode=="CB")?(){
+              Get.to(()=>RepCustomerBalanceScreen());
+            }:(){
+              Get.to(()=>RepOthers());
+            }
+
+    ));
+
+  }
+
+  return rtnList;
+}
+
+
 }

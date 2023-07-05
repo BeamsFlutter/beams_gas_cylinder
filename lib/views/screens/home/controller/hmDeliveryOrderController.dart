@@ -14,9 +14,11 @@ import '../../../components/lookup/lookup.dart';
 import '../../../styles/colors.dart';
 import 'package:badges/badges.dart' as badges;
 
-class HmDelivryOrderController extends GetxController{
+class HmDeliveryOrderController extends GetxController{
 
   Rx<DateTime> docDate = DateTime.now().obs;
+  Rx<DateTime> delivryDate = DateTime.now().obs;
+
   RxString frDocno="".obs;
   RxString frDocType="".obs;
   var g  = Global();
@@ -29,6 +31,7 @@ class HmDelivryOrderController extends GetxController{
   var pageIndex = 0.obs;
   late PageController pageController;
   RxList lstrDeliveredList =[].obs;
+  RxList lstrStockDetailList =[].obs;
   RxInt rqty = 0.obs;
   RxInt nqty = 0.obs;
   RxInt eqty = 0.obs;
@@ -44,7 +47,6 @@ class HmDelivryOrderController extends GetxController{
   var txtLandmark = TextEditingController();
   var txtAddress = TextEditingController();
   var txtCustomerName = TextEditingController();
-  var txtdelivryDate = TextEditingController();
   var txtBuildingCode = TextEditingController();
   var txtBuildingName = TextEditingController();
   var txtApartmentCode = TextEditingController();
@@ -108,13 +110,226 @@ class HmDelivryOrderController extends GetxController{
     }
   }
 
-  fnClear(){}
+  fnClear(){
 
-  fnFill(value){}
+    dprint("######################   clear #####################");
+    frDocno.value="";
+    frDocType.value="";
+    txtLandmark.clear();
+    txtRemark.clear();
+    txtAddress.clear();
+    txtAreaCode.clear();
+    docDate.value=DateTime.now();
+    cstmrName.value="";
+    cstmrCode.value="";
+    delivryDate.value=DateTime.now();
+    lstrDeliveredList.value=[];
+    txtDriver.clear();
+    cstmrCode.value="";
+    cstmrName.value="";
+    txtCustomerName.clear();
+    txtApartmentCode.text="";
+    txtAreaCode.text="";
+    txtApartmentName.clear();
+    txtTotalAmt.text="";
+    txtVehiclenumber.clear();
+    txtApartmentName.clear();
+    txtBuildingCode.clear();
+    txtBuildingName.clear();
+    txtAddlAmt.clear();
+    txtDiscountAmt.clear();
+    txtlocation.clear();
+    txtBalanceAmt.clear();
+    txtPaidAmt.clear();
+    txtNetAmt.clear();
+    selectedItem.value="";
+    selectedproduct.value="";
+    txtRoundAmt.clear();
+    txtTaxAmt.clear();
+    txtTotalAmt.clear();
+    txtNetAmt.clear();
+
+
+  }
+
+  fnFill(data){
+    var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
+    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
+    dprint("FIlled  HEADER>>>>  ${headerList}");
+    dprint("FIlled  DET>>>>  ${detList}");
+
+
+
+    if(g.fnValCheck(headerList)){
+      g.wstrCompany=(headerList["COMPANY"]??"").toString();
+      g.wstrYearcode=(headerList["YEARCODE"]??"").toString();
+      frDocno.value = (headerList["DOCNO"]??"").toString();
+      frDocType.value = (headerList["DOCTYPE"]??"").toString();
+      cstmrName.value = (headerList["PARTYNAME"]??"").toString();
+      txtCustomerCode.text = (headerList["PARTYCODE"]??"").toString();
+      cstmrCode.value = (headerList["PARTYCODE"]??"").toString();
+      txtlocation.text = (headerList["LOC"]??"").toString();
+      txtCustomerName.text = (headerList["PARTYNAME"]??"").toString();
+      txtVehiclenumber.text = (headerList["VEHICLE_NO"]??"").toString();
+      txtDriver.text = (headerList["DRIVER"]??"").toString();
+      txtRoundAmt.text =(headerList["ROUND_OFF_AMT"]??"").toString();
+      txtAddlAmt.text =(headerList["ADDL_AMT"]??"").toString();
+      txtTaxAmt.text =(headerList["TOTAL_TAXAMT"]??"").toString();
+      txtBalanceAmt.text =(headerList["BAL_AMT"]??"").toString();
+      txtPaidAmt.text =(headerList["PAID_AMT"]??"").toString();
+      txtNetAmt.text =(headerList["NETAMT"]??"").toString();
+      txtDiscountAmt.text =(headerList["DISC_AMT"]??"").toString();
+      txtBuildingCode.text = (headerList["BUILDING_CODE"]??"").toString();
+      txtRemark.text = (headerList["REMARKS"]??"").toString();
+      txtAddress.text = (headerList["CUST_ADDRESS"]??"").toString();
+      txtLandmark.text = (headerList["LANDMARK"]??"").toString();
+      txtContactNo.text = (headerList["MOBILE"]??"").toString();
+      txtAreaCode.text = (headerList["AREA_CODE"]??"").toString();
+      txtlocation.text = (headerList["LOC"]??"").toString();
+
+     txtTotalAmt.text = (headerList["GRAMTFC"]??"").toString();
+
+      txtApartmentCode.text = (headerList["PROPERTY_CODE"]??"").toString();
+      if(headerList["DELIVERY_REQ_DATE"] != null|| headerList["DELIVERY_REQ_DATE"] != ""){
+        try{
+          delivryDate.value =setDate(15, DateTime.parse(headerList["DELIVERY_REQ_DATE"].toString()));
+
+        }catch(e){
+          dprint(e);
+        }
+      }
+
+      if(headerList["DOCDATE"] != null|| headerList["DOCDATE"] != ""){
+        try{
+          docDate.value=DateTime.parse(headerList["DOCDATE"].toString());
+        }catch(e){
+          docDate.value =DateTime.now();
+        }
+      }
+
+    }
+
+
+    if(g.fnValCheck(detList)){
+      int i = 1;
+      lstrDeliveredList.value = [];
+
+
+      var totalAmount = 0.0;
+      var totalGrAmt = 0.0;
+      var totalTaxAmt = 0.0;
+      var totalDiscountAmt = 0.0;
+      var balanceAmount = 0.0;
+      var addlAmount =  0.0;
+      var netAmount = 0.0;
+      var currRate =  1.0;
+      var srno = 0;
+      for(var e in detList){
+        var qty = g.mfnDbl(e["QTY2"]);
+        var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldrate =g.mfnDbl(e["CYL_SELL_RATE"]);
+        var disc  =0.0;
+
+        var soldQty = qty - rtnQty;
+        var gasAmount  =  qty * price ;
+        var soldAmount =  soldQty * soldrate;
+
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt - disc;
+        totalAmount = totalAmount + amt;
+      }
+
+      for (var e in detList) {
+        dprint("##########dd##########  ${e}");
+        var qty2 = g.mfnDbl(e["QTY2"]);
+        var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+        var vat = g.mfnDbl(e["VAT_PERC"]);
+        var disc  = 0.0;
+        var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+
+        var qty1 = qty2 * unitCf;
+
+        var rate2 = price;
+        var rate1 = price*unitCf;
+
+        var unit1 = e["UNIT"];
+        var unit2 = e["UNIT2"];
+
+
+
+
+
+
+
+        dprint("##########qty1##########  ${qty1}");
+        dprint("##########qty2##########  ${qty2}");
+
+  var datas =Map<String,dynamic>.from({
+    "STKCODE": e["STKCODE"],
+    "STKDESCP": e["STKDESCP"],
+    "QTY": qty2,
+    "RETURN_QTY": returnQty,
+    "DISC_AMT": e["DISC_AMT"],
+    "RATE": e["RATE2"],
+    "VAT_PERC":e["VAT_PERC"],
+    "NQTY":e["QTY2"],
+    "EQTY":e["RETURN_QTY"],
+    "RQTY":0,
+    "UNIT":unit1,
+    "UNIT2":unit2,
+    "CYL_SELL_RATE":e["SOLD_RATE"],
+    "SALEUNIT":unit2,
+      "CYLINDER_YN":"Y",
+    "CATWEIGHT":e["UNITCF"],
+    "MATERIAL_CODE":e["MATERIAL_CODE"]??"",
+    "PRICE2":e["PRICE2"]??"",
+    "PRICE1":e["PRICE1"]??"",
+    "CYLINDER_TYPE":e["CYLINDER_CAT"],
+  });
+
+
+         lstrDeliveredList.value.add(datas);
+        i++;
+        update();
+      }
+
+      // txtTotalAmt.text =  totalAmount.toStringAsFixed(2);
+
+
+
+    }
+
+
+  }
 
   fnSave(context){
-    dprint("SAVELISTS>>>>>>>>>> ${lstrDeliveredList.value}");
-    List additionalTable =[];
+    if(lstrDeliveredList.isEmpty){
+      errorMsg(context, "Choose Items");
+      return;
+
+    }
+    if(txtCustomerName.value.text.isEmpty){
+      errorMsg(context, "Choose Customer");
+      return;
+    }
+    if(txtBuildingCode.text.isEmpty){
+      errorMsg(context, "Choose Building");
+      return;
+    }
+    //
+    if(txtApartmentCode.text.isEmpty){
+      errorMsg(context, "Choose Apartment");
+      return;
+    }
+
+    if(txtlocation.text.isEmpty){
+      errorMsg(context, "Choose Location");
+      return;
+    }
+    var taxincldYN = lstrStockDetailList[0]["Column1"];
     List tableDoDet=[];
     List tableDo =[];
 
@@ -123,23 +338,28 @@ class HmDelivryOrderController extends GetxController{
     var totalTaxAmt = 0.0;
     var totalDiscountAmt = 0.0;
     var balanceAmount = 0.0;
+    var taxAmount =  0.0;
 
-    var discAmount =  g.mfnDbl(txtDiscountAmt.text);
+    totalDiscountAmt =  g.mfnDbl(txtDiscountAmt.text);
     var roundOfAmount =  g.mfnDbl(txtRoundAmt.text);
-    var addlAmount =  0.0;
+
     var paidAmount =  g.mfnDbl(txtPaidAmt.text);
     var netAmount = 0.0;
 
-    var currRate =  1;
-    var srno = 0;
+    var currRate =  1.0;
+
+    var vatAmount=0.0;
+    var vatB=0.0;
+
+
 
 
     for(var e in lstrDeliveredList.value){
-      var qty = g.mfnDbl(e["QTY2"]);
+      var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
-      var price =  g.mfnDbl(e["RATEFC2"]);
-      var soldrate =g.mfnDbl(e["SOLD_RATEFC"]);
-      var disc  = g.mfnDbl(e["DISC_AMTFC"]);
+      var price =  g.mfnDbl(e["RATE"]);
+      var soldrate =g.mfnDbl(e["CYL_SELL_RATE"]);
+      var disc  =0.0;
 
       var soldQty = qty - rtnQty;
       var gasAmount  =  qty * price ;
@@ -152,6 +372,11 @@ class HmDelivryOrderController extends GetxController{
 
     int i=1;
     for(var e in lstrDeliveredList.value){
+
+     dprint("******************* lstrDeliveredList ${lstrDeliveredList}");
+     dprint("******************* txtBuildingCode ${txtBuildingCode.text}");
+     dprint("******************* txtdelivryDate ${delivryDate}");
+     dprint("******************* txtlocation.text ${txtlocation.text}");
 
       var qty2 = g.mfnDbl(e["QTY"]);
       var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
@@ -166,43 +391,65 @@ class HmDelivryOrderController extends GetxController{
       var rate2 = price;
       var rate1 = price*unitCf;
 
-      var unit1 = e["UNIT1"];
+      var unit1 = e["UNIT"];
       var unit2 = e["UNIT2"];
-
+      var grAmount =  0.0;
       var soldQty = qty2 - returnQty;
       var gasAmount  =  qty2 * price ;
       var soldAmount =  soldQty * soldRate;
-
+      var discAmount =  g.mfnDbl(txtDiscountAmt.text);
       var gramt =  gasAmount + soldAmount;
       var amt = gramt - disc;
+      dprint("AMTTTT ${amt}");
+      dprint("totalllllll ${totalAmount}");
 
-      var headerDiscount  = (amt/totalAmount) * discAmount;
-      var taxAmtV = (amt-headerDiscount)*vat;
-      var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
-      //totalCalc For Header
-      totalGrAmt = totalGrAmt + gramt;
-      totalTaxAmt = totalTaxAmt + taxAmt;
-      var net = (amt-headerDiscount)+taxAmt;
-      netAmount = netAmount + net;
+     var headerDiscount  = (amt/totalAmount) * discAmount;
+     var total = amt-headerDiscount;
+     var net = 0.0;
+
+
+     if(taxincldYN == 'Y' && vat > 0){
+       var dvd = 100 /(100+vat);
+       vatB =  total * dvd;
+       vatAmount = total - vatB;
+       net = total;
+     }else{
+       vatB = (vat)/100;
+       vatAmount = total * vatB;
+       net = total+vatAmount;
+     }
+
+
+     dprint("HEADERDDI ${headerDiscount}");
+     var taxAmtV = (amt-headerDiscount)*vat;
+     var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
+     //totalCalc For Header
+     totalGrAmt = totalGrAmt + gramt;
+     totalTaxAmt = totalTaxAmt + taxAmt;
+     grAmount = grAmount + gramt;
+     taxAmount =  taxAmount +vatAmount;
+     netAmount = netAmount + net ;
 
 
       tableDoDet.add({
         "COMPANY" : g.wstrCompany,
         "YEARCODE" :g.wstrYearcode,
         "DOCNO" : frDocno.value,
-        "DOCTYPE" : frDocType.value,
-        "DOCDATE": docDate,
+        "DOCTYPE" : "CCD",
+        "DOCDATE":  setDate(2,docDate.value),
         "SRNO": i,
+        "REMARKS":txtRemark.text,
         "STKCODE" : e["STKCODE"],
         "STKDESCP" : e["STKDESCP"],
         "MATERIAL_CODE": e["MATERIAL_CODE"],
-        "LOC": "",
-        "VEHICLE_NO": "",
+        "LOC": txtlocation.text,
+        "VEHICLE_NO": txtVehiclenumber.text,
         "QTY1": qty1,
         "QTY2": qty2,
         "RATE": rate1,
         "RATEFC": rate1*currRate,
         "RATE2": rate2,
+         "QTYRET":returnQty,
         "RATEFC2": rate2*currRate,
         "AMT": amt,
         "AMTFC": amt*currRate,
@@ -218,11 +465,12 @@ class HmDelivryOrderController extends GetxController{
         "PRVYEARCODE": "",
         "PRVDOCNO": "",
         "PRVDOCTYPE": "",
-        "PRVDOCSRNO": "",
-        "PRVDOCQTY": "",
+        "PRVDOCSRNO": 0,
+        "PRVDOCQTY": 0,
         "DBACCODE": "",
         "CRACCODE": "",
         "DBCOSTSALE": "",
+        "BUILDING_CODE":txtBuildingCode.text??"",
         "DBINVENTORY": "",
         "CRCOSTSALE": "",
         "CRINVENTORY": "",
@@ -232,49 +480,65 @@ class HmDelivryOrderController extends GetxController{
         "CYL_DBINVENTORY": "",
         "CYL_CRCOSTSALE": "",
         "CYL_CRINVENTORY": "",
+        "CYLINDER_CAT":e["CYLINDER_TYPE"],
         "UNIT1": unit1,
         "UNITCF": unitCf,
         "UNIT2": unit2,
         "CYLINDER_STKCODE":  e["STKCODE"],
+        "CYLINDER_CODE":  e["STKCODE"],
         "CYLINDER_STKDESCP": e["STKDESCP"],
         "CYLINDER_QTY1": qty2,
-        "DRIVER": "",
+        "CYLINDER_UNIT": unit2,
+        "DRIVER": txtDriver.text,
         "SMAN": "",
-        "PARTYCODE": "",
+        "PARTYCODE" : cstmrCode.value,
+        "PARTYNAME" : cstmrName.value,
         "DUEDATE": "",
         "AM": "",
+        "DELIVERY_DATE" : setDate(2,delivryDate.value),
+        "ACTUAL_DELIVERY_DATE" : setDate(2,docDate.value),
         "HEADER_DISC_AMT":headerDiscount,
         "HEADER_DISC_AMTFC":headerDiscount*currRate,
         "VAT_PERC" : vat,
-        "VAT_AMTFC" : taxAmt*currRate,
-        "VAT_AMT" : taxAmt,
-        "TOT_TAX_AMTFC" : taxAmt*currRate,
-        "TOT_TAX_AMT" : taxAmt,
+        "VAT_AMTFC" : taxAmount*currRate,
+        "VAT_AMT" : taxAmount,
+        "TOT_TAX_AMTFC" : taxAmount*currRate,
+        "TOT_TAX_AMT" : taxAmount,
         "CRCURR" : "AED",
-        "CRCURRATE" : currRate
+        "CRCURRATE" : currRate,
+        "CASH_CREDIT" : "CR",
+        "CURR" : "AED",
+        "CREATE_USER":g.wstrUsername,
+        "EDIT_USER":g.wstrUsername,
+
       });
+      i++;
 
 
     }
+    netAmount =  netAmount +  roundOfAmount;
+    balanceAmount =netAmount-paidAmount;
+    dprint("NETAMOUNT>>>>>>>>>>>>>>>>> ${netAmount}");
+    dprint("BALANCEAMOUNT>>>>>>>>>>>>>>>>> ${balanceAmount}");
 
     tableDo.add({
       ApiParams.company : g.wstrCompany,
       ApiParams.yearcode  : g.wstrYearcode,
       "DOCNO" : frDocno.value,
-      "DOCTYPE" : frDocType.value,
-      "DOCDATE" : docDate,
+      "DOCTYPE" : "CCD",
+      "DOCDATE" : setDate(2,docDate.value),
       "BRNCODE" : "",
       "DIVCODE" : "",
       "CCCODE" : "",
-      "CRDAYS" : "",
+      "CRDAYS" : 0,
       "DUEDATE" : "",
       "PARTYCODE" : cstmrCode.value,
       "PARTYNAME" : cstmrName.value,
       "PRVDOCNO" : "",
       "PRVDOCTYPE" : "",
-      "SMAN" : txtDriver.text,
+      "SMAN" : "",
       "VEHICLE_NO" :txtVehiclenumber.text,
-      "LOC" : txtAreaCode.text,
+      "LOC" : txtlocation.text,
       "CASH_CREDIT" : "CR",
       "CURR" : "AED",
       "CURRATE" : currRate,
@@ -283,8 +547,8 @@ class HmDelivryOrderController extends GetxController{
       "DISC_AMT" : totalDiscountAmt,
       "DISC_AMTFC" : totalDiscountAmt*currRate,
       "CHG_CODE" : "",
-      "CHG_AMT" : "",
-      "CHG_AMTFC" : "",
+      "CHG_AMT" : 0,
+      "CHG_AMTFC" : 0,
       "NETAMT" : netAmount,
       "NETAMTFC" : netAmount*currRate,
       "PAID_AMT" : paidAmount,
@@ -295,9 +559,9 @@ class HmDelivryOrderController extends GetxController{
       "PRINT_YN" : "",
       "CLOSED_YN" : "",
       "BUILDING_CODE" : txtBuildingCode.text,
-      "PROPERTY_CODE" : "",
+      "PROPERTY_CODE" : txtApartmentCode.text,
       "PLACE_OF_DELIVERY" : "",
-      "DELIVERY_DATE" : txtdelivryDate.text,
+      "DELIVERY_DATE" :setDate(2,delivryDate.value) ,
       "DOCUMENT_STATUS" : "",
       "DRIVER" : txtDriver.text,
       "DELIVERY_TIME" : "",
@@ -315,10 +579,16 @@ class HmDelivryOrderController extends GetxController{
       "ROUND_OFF_AMT" : roundOfAmount,
       "ROUND_OFF_AMTFC" :roundOfAmount*currRate,
       "PRVMULTIDOCNO" : "",
-      "VAT_PERC" : "",
+      "VAT_PERC" : 0,
       "TOTAL_TAXAMTFC" : totalTaxAmt*currRate,
       "TOTAL_TAXAMT" : totalTaxAmt
     });
+
+
+
+
+
+    apiSaveDeliverOrder( tableDoDet, tableDo, context);
 
   }
 
@@ -354,7 +624,7 @@ class HmDelivryOrderController extends GetxController{
   }
 
   //**************************************************PAYMENT_CALCULATION
-  var lstrTaxIncldYn = 'Y'.obs;
+
   var totalGrAmt = 0.0.obs;
 
   fnPaymntCalc() {
@@ -364,13 +634,16 @@ class HmDelivryOrderController extends GetxController{
       var netAmount =  0.0;
       var balanceAmount =  0.0;
       var grAmount =  0.0;
+      var taxincldYN = lstrStockDetailList[0]["Column1"];
+      dprint("taxincldYN>>>>>>>> ${taxincldYN}");
 
       var discAmount =  g.mfnDbl(txtDiscountAmt.text);
       var roundOfAmount =  g.mfnDbl(txtRoundAmt.text);
       var addlAmount =  0.0;
       var paidAmount =  g.mfnDbl(txtPaidAmt.text);
 
-      for(var e in lstrDeliveredList){
+
+      for(var e in lstrDeliveredList.value){
         var qty = g.mfnDbl(e["QTY"]);
         var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
         var price =  g.mfnDbl(e["RATE"]);
@@ -384,6 +657,8 @@ class HmDelivryOrderController extends GetxController{
         var gramt =  gasAmount + soldAmount;
         var amt = gramt - disc;
         totalAmount = totalAmount + amt;
+
+        dprint("TOTAL>>>>>>>>>>> ${totalAmount}");
 
       }
 
@@ -401,16 +676,31 @@ class HmDelivryOrderController extends GetxController{
 
         var gramt =  gasAmount + soldAmount;
         var amt = gramt - disc;
-
+        var vatAmount=0.0;
+        var vatB=0.0;
+        var net = 0.0;
 
         var headerDiscount  = (amt/totalAmount) * discAmount;
-        var taxAmtV = (amt-headerDiscount)*vat;
-        var taxAmt  = taxAmtV !=0 ? (taxAmtV/100):0.0;
-        //totalCalc For Header
+        var total = amt-headerDiscount;
+
+        if(taxincldYN == 'Y' && vat > 0){
+          var dvd = 100 /(100+vat);
+          vatB =  total * dvd;
+          vatAmount = total - vatB;
+          net = total;
+        }else{
+          vatB = (vat)/100;
+          vatAmount = total * vatB;
+          net = total+vatAmount;
+        }
+
+
+
         grAmount = grAmount + gramt;
-        taxAmount = taxAmount + taxAmt;
-        var net = (amt-headerDiscount)+taxAmt;
-        netAmount = netAmount + net;
+        taxAmount =  taxAmount +vatAmount;
+
+        dprint("NETT>>>> INCLUSIVE ${net}");
+        netAmount = netAmount + net ;
 
       }
 
@@ -832,8 +1122,13 @@ class HmDelivryOrderController extends GetxController{
     );
   }
   wItemSelect(context,itemCodee,itemqty){
+    if(wstrPageMode=="VIEW"){
+      return;
+    }
+    dprint("Newwwqty  ${itemqty}");
 
-      showDialog(
+
+    showDialog(
         context: context,
         builder: (BuildContext context) {
        return Container(
@@ -846,6 +1141,7 @@ class HmDelivryOrderController extends GetxController{
                  Get.back();
                  return Container();
                }
+                dprint("item>>>A>>> ${item}");
                 var itemName  = (item[0]["STKDESCP"]??"").toString();
                 var itemCode  = (item[0]["STKCODE"]??"").toString();
                 var rate  = g.mfnDbl(item[0]["RATE"].toString());
@@ -1131,6 +1427,10 @@ class HmDelivryOrderController extends GetxController{
 
   }
   wDeletItemSelect(context,itemCodee){
+    if(wstrPageMode=="VIEW"){
+      return;
+    }
+
 
       showDialog(
         context: context,
@@ -1246,7 +1546,8 @@ class HmDelivryOrderController extends GetxController{
       List<Widget> rtnList =[];
 
       for(var e  in lstrDeliveredList.value){
-        dprint(">>>>>>MMMMMMMMM ${e}");
+        dprint("LSTR DELIVERLIS>>>>>>>>>>>>>>>>>  ${e}");
+
 
         var itemName  = (e["STKDESCP"]??"").toString();
         var itemCode  = (e["STKCODE"]??"").toString();
@@ -1262,12 +1563,11 @@ class HmDelivryOrderController extends GetxController{
             child: InkWell(
               onLongPress: (){
                 wDeletItemSelect(context,itemCode);
-                dprint(">>>>>looooooooo>>>>>> ${itemCode}");
+
               },
 
 
               onTap: (){
-                dprint(">>>>>fff>>>>>> ${itemCode}");
                 wItemSelect(context,itemCode,qty);
               },
               child: Container(
@@ -1353,10 +1653,13 @@ class HmDelivryOrderController extends GetxController{
 
   fnChngeQty(itemCode,type,mode) {
     var taxAmount = ''.obs;
+    dprint("itemCode>>>>>>>>>>>> ${itemCode}");
     var itemMenu = lstrProductItemDetailList.value.where((element) => element["STKCODE"] == itemCode).toList();
+    dprint("ITEMmUNU>>>>>>>>>>>> ${itemMenu}");
 
     if(mode == "A"){
       if(lstrDeliveredList.where((e) => e["STKCODE"] == itemCode).isEmpty){
+        dprint(">>>>>>>>>>>AAAAAAAAAAAAAAAAempty");
         var lQty = 0.0;
         var nQty = 0.0;
         var eQty = 0.0;
@@ -1396,16 +1699,18 @@ class HmDelivryOrderController extends GetxController{
           "MATERIAL_CODE":itemMenu[0]["MATERIAL_CODE"]??"",
           "PRICE2":itemMenu[0]["PRICE2"]??"",
           "PRICE1":itemMenu[0]["PRICE1"]??"",
+          "CYLINDER_TYPE":itemMenu[0]["PRODUCT_TYPE1"],
 
         });
         lstrDeliveredList.add(datas);
       }
       else{
+        dprint(">>>>>>>>>>>AAAAAAAAAAAAAAAAnotempty");
         var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode).toList();
         if(item.isNotEmpty){
 
-          var lQty = item[0]["QTY"];
 
+          var lQty = item[0]["QTY"];
           var nQty = item[0]["NQTY"];
           var eQty = item[0]["EQTY"];
           var rQty = item[0]["RQTY"];
@@ -1415,14 +1720,17 @@ class HmDelivryOrderController extends GetxController{
           if(type == "N"){
             lQty = item[0]["QTY"]+ 1.0;
             nQty = item[0]["NQTY"] +1.0;
+            lReturnQty = item[0]["RETURN_QTY"];
           }else if(type == "R"){
             lQty = item[0]["QTY"]+ 1.0;
             rQty =item[0]["RQTY"] + 1.0;
             lReturnQty = item[0]["RETURN_QTY"]+ 1.0;
           }else if(type == "E"){
-            lReturnQty = item[0]["RETURN_QTY"]+ 1.0;
             eQty =item[0]["EQTY"] + 1.0;
+            lReturnQty = item[0]["RETURN_QTY"]+ 1.0;
+
           }
+
 
 
           item[0]["QTY"] = lQty;
@@ -1436,18 +1744,15 @@ class HmDelivryOrderController extends GetxController{
 
       var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode ).toList();
       if(item.isNotEmpty){
-
         var lQty = item[0]["QTY"];
-
         var nQty = item[0]["NQTY"];
         var eQty = item[0]["EQTY"];
         var rQty = item[0]["RQTY"];
-
         var lReturnQty = 0.0;
-
         if(type == "N"){
           lQty = item[0]["QTY"]- 1.0;
           nQty = item[0]["NQTY"] -1.0;
+          lReturnQty = item[0]["RETURN_QTY"];
         }else if(type == "R"){
           lQty = item[0]["QTY"]-1.0;
           rQty =item[0]["RQTY"] - 1.0;
@@ -1456,8 +1761,6 @@ class HmDelivryOrderController extends GetxController{
           lReturnQty = item[0]["RETURN_QTY"]- 1.0;
           eQty =item[0]["EQTY"] - 1.0;
         }
-
-
         item[0]["QTY"] = lQty < 0?0.0:lQty;
         item[0]["RETURN_QTY"] = lReturnQty< 0?0.0:lReturnQty;
         item[0]["NQTY"] = nQty< 0?0.0:nQty;
@@ -1467,7 +1770,6 @@ class HmDelivryOrderController extends GetxController{
     }
     lstrDeliveredList.removeWhere((element) => g.mfnDbl(element["QTY"])+g.mfnDbl(element["RETURN_QTY"]) <= 0);
     dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
-
     fnPaymntCalc();
 
   }
@@ -1513,10 +1815,9 @@ class HmDelivryOrderController extends GetxController{
         //    apiGetCustomerInfo();
       }
       else if(mode  ==  "CRDELIVERYMANMASTER"){
-        dprint("1111111111111111111111");
+        dprint("1111111111111111111111>> ${data}" );
         txtDriver.text = data["DEL_MAN_CODE"]??"";
-        frDocno.value = data["DEL_MAN_CODE"]??"";
-
+        txtVehiclenumber.text = data["VEHICLE_NO"]??"";
       }
       else if(mode  ==  "CRVEHICLEMASTER"){
         txtVehiclenumber.text = data["VEHICLE_NO"]??"";
@@ -1524,12 +1825,28 @@ class HmDelivryOrderController extends GetxController{
         //   apiGetCustomerDetails();
       }
       else if(mode  ==  "LOCMAST"){
-        txtlocation.text = data["DESCP"]??"";
+        dprint("11111111111SDAS11111111111>> ${data}" );
+        txtlocation.text = data["CODE"]??"";
+
+
+        //   apiGetCustomerDetails();
+      }
+      else if(mode  ==  "GCYLINDER_DO"){
+        dprint("11111111111SDAS11111111111>> ${data}" );
+        frDocno.value = data["DOCNO"]??"";
+        frDocType.value = data["DOCTYPE"]??"";
+        apiViewDeliveryOrder(frDocno.value,"");
+
 
         //   apiGetCustomerDetails();
       }
     }
 
+
+  }
+  fnfillStockDetails(data) {
+    lstrStockDetailList.value  =data["Table1"];
+    dprint("Stoc>>>>>>>>>>>> ${lstrStockDetailList.value}");
 
   }
 
@@ -1579,9 +1896,6 @@ class HmDelivryOrderController extends GetxController{
       );
     }
     else if(mode == "CRDELIVERYMANMASTER") {
-      if( wstrPageMode.value != 'VIEW'){
-        return;
-      }
 
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
@@ -1931,6 +2245,35 @@ class HmDelivryOrderController extends GetxController{
           )
       );
     }
+    else if(mode == "GCYLINDER_DO" ){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DOCNO', 'Display': 'DOCNO'},
+        {'Column': "DOCTYPE", 'Display': 'DOCTYPE'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GCYLINDER_DO',
+            title: 'cylinder doc',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DOCNO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
 
 
   }
@@ -1938,62 +2281,86 @@ class HmDelivryOrderController extends GetxController{
   //**************************************************API
 
   apiViewDeliveryOrder(docno,mode){
-    futureform = ApiCall().apiViewAssignment(docno,mode);
+   futureform = ApiCall().apiViewDeliveryOrder(docno,mode);
     futureform.then((value) => apiViewDeliveryOrderRes(value));
   }
   apiViewDeliveryOrderRes(value){
     if(g.fnValCheck(value)){
-      fnClear();
-      fnFill(value);
+     fnClear();
+     fnFill(value);
     }
 
   }
 
-  apiAddBuilding(code,name,context){
-    futureform = ApiCall().addBuilding(code,name);
-    futureform.then((value) => apiAddBuildinggRes(value,context));
+  apiSaveDeliverOrder( tableDoDet, tableDo,context){
+    dprint("save deliiiiiii");
+    futureform = ApiCall().saveDeliveryOrder(wstrPageMode.value,tableDoDet,tableDo);
+    futureform.then((value) => apiSaveDeliverOrderRes(value,context));
   }
-  apiAddBuildinggRes(value,context){
-    dprint("ddvaaalaueeeeeeeeeee ${value}");
+  apiSaveDeliverOrderRes(value,context){
+
     if(g.fnValCheck(value)){
-      var sts = value[0]["STATUS"];
-      var msg = value[0]["MSG"];
-      var buildingCode = value[0]["CODE"];
-      if(sts=="1"){
-        dprint(msg);
-        txtBuildingCode.text = buildingCode;
-        Get.back();
+      dprint("VVVVVVVVVVVVVVVV  4{}${value}");
+      var sts  =  value[0]["STATUS"];
+      var msg  =  value[0]["MSG"]??"";
+      if(sts == "1"){
+        frDocno.value = value[0]["DOCNO"];
+        var doctype = value[0]["DOCTYPE"];
+        wstrPageMode.value ="VIEW";
+        apiViewDeliveryOrder(frDocno.value, "LAST");
+        successMsg(context, msg);
+
       }else{
         errorMsg(context, msg);
       }
-
-
     }
-
   }
 
-  apiAddApartment(aprtmntcode,buildingcode,context){
-    futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
-    futureform.then((value) => apiAddApartmentRes(value,context));
-  }
-  apiAddApartmentRes(value,context){
-    dprint("apaaaaaaaaart ${value}");
-    if(g.fnValCheck(value)){
-      var sts = value[0]["STATUS"];
-      var msg = value[0]["MSG"];
-      var buildingCode = value[0]["CODE"];
-      if(sts=="1"){
-        dprint(msg);
-        txtApartmentCode.text = buildingCode;
-        Get.back();
-      }else{
-        errorMsg(context, msg);
-      }
+  // apiAddBuilding(code,name,context){
+  //   futureform = ApiCall().addBuilding(code,name);
+  //   futureform.then((value) => apiAddBuildinggRes(value,context));
+  // }
+  // apiAddBuildinggRes(value,context){
+  //   dprint("ddvaaalaueeeeeeeeeee ${value}");
+  //   if(g.fnValCheck(value)){
+  //     var sts = value[0]["STATUS"];
+  //     var msg = value[0]["MSG"];
+  //     var buildingCode = value[0]["CODE"];
+  //     if(sts=="1"){
+  //       dprint(msg);
+  //       txtBuildingCode.text = buildingCode;
+  //       Get.back();
+  //     }else{
+  //       errorMsg(context, msg);
+  //     }
+  //
+  //
+  //   }
+  //
+  // }
 
-
-    }
-
-  }
+  // apiAddApartment(aprtmntcode,buildingcode,context){
+  //   futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
+  //   futureform.then((value) => apiAddApartmentRes(value,context));
+  // }
+  // apiAddApartmentRes(value,context){
+  //   dprint("apaaaaaaaaart ${value}");
+  //   if(g.fnValCheck(value)){
+  //     var sts = value[0]["STATUS"];
+  //     var msg = value[0]["MSG"];
+  //     var buildingCode = value[0]["CODE"];
+  //     if(sts=="1"){
+  //       dprint(msg);
+  //       txtApartmentCode.text = buildingCode;
+  //       Get.back();
+  //     }else{
+  //       errorMsg(context, msg);
+  //     }
+  //
+  //
+  //   }
+  //
+  // }
 
   apiProductType() {
     var lstrFilter = [];
@@ -2026,7 +2393,7 @@ class HmDelivryOrderController extends GetxController{
       },
     ];
 
-    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|CYL_SELL_RATE|MATERIAL_CODE|CATWEIGHT|CYLINDER_YN|CYL_SELL_RATE|SALEUNIT|UNIT|VAT_PERC|';
+    var columnList = 'STKCODE|STKDESCP|PRODUCT_TYPE|PRICE1|PRICE2|CYL_SELL_RATE|MATERIAL_CODE|CATWEIGHT|CYLINDER_YN|CYL_SELL_RATE|SALEUNIT|UNIT|VAT_PERC|PRODUCT_TYPE|';
     futureform = ApiCall().LookupSearch('(SELECT A.*,B.VAT AS VAT_PERC FROM STOCKMASTER A LEFT JOIN TAX_INV_ACCOUNT B ON  (A.TAXACGROUP =  B.CODE)) AS TABLE1', columnList, 0, 100, lstrFilter);
     futureform.then((value) => apiProductTypeDetailsRes(value));
   }
@@ -2049,4 +2416,18 @@ class HmDelivryOrderController extends GetxController{
     }
 
   }
+
+  apiGetStockDetails(doctype){
+    futureform = ApiCall().apiGetStockdetails(doctype);
+    futureform.then((value) => apiGetStockDetailsRes(value));
+  }
+  apiGetStockDetailsRes(value){
+    if(g.fnValCheck(value)){
+      dprint("GetStockDetails>>>>>>>>>>>DETAILS>>>>>>>>>>> ${value}");
+      fnfillStockDetails(value);
+    }
+
+  }
+
+
 }

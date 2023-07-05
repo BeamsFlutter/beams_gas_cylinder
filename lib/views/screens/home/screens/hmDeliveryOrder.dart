@@ -19,8 +19,7 @@ class HmeDeliveryOrder extends StatefulWidget {
 }
 
 class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
-  final HmDelivryOrderController hmDelivryOrderController =
-      Get.put(HmDelivryOrderController());
+  final HmDeliveryOrderController hmDelivryOrderController =   Get.put(HmDeliveryOrderController());
   @override
   void initState() {
     hmDelivryOrderController.pageController = PageController();
@@ -35,6 +34,8 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
 
     }
     hmDelivryOrderController.apiProductType();
+    hmDelivryOrderController.apiViewDeliveryOrder("", "LAST");
+    hmDelivryOrderController.apiGetStockDetails("CCD");
 
     // TODO: implement initState
     super.initState();
@@ -79,7 +80,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                         onPressed: () {
 
 
-                          hmDelivryOrderController.fnLookup("CRDELIVERYMANMASTER");
+                          hmDelivryOrderController.fnLookup("GCYLINDER_DO");
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
@@ -314,14 +315,16 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+                            padding: const EdgeInsets.only(left: 50,right: 50,bottom: 10),
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
                               decoration: boxDecoration(nearlyWhite, 10),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.center,
+
                                 children: [
                                   tc('Net Amount', txtColor, 16),
+                                  gapWC(40),
                                   tc(hmDelivryOrderController.txtNetAmt.text,Colors.black,15)
                                 ],
                               ),
@@ -611,12 +614,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                   child: Row(
                     children: [tcn('Item', Colors.white, 10)],
                   )),
-              // Flexible(
-              //     flex: 1,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.end,
-              //       children: [tcn('N/R/E', Colors.white, 10)],
-              //     )),
+
               Flexible(
                   flex: 1,
                   child: Row(
@@ -877,7 +875,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                 prefixicon: Icons.apartment),
             gapHC(10),
             wRoundedInputField(
-                hmDelivryOrderController.txtApartmentCode, "Area Code", "N",enable: false,
+                hmDelivryOrderController.txtAreaCode, "Area Code", "N",enable: false,
                 prefixicon: Icons.apartment),
             gapHC(10),
             wRoundedInputField(
