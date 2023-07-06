@@ -95,7 +95,6 @@ class HmBookingController extends GetxController{
   fnEnd(context){
     Get.back();
     Get.back();
-
   }
 
 

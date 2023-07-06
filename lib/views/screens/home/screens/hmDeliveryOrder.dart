@@ -314,26 +314,25 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 50,right: 50,bottom: 10),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
-                              decoration: boxDecoration(nearlyWhite, 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
 
-                                children: [
-                                  tc('Net Amount', txtColor, 16),
-                                  gapWC(40),
-                                  tc(hmDelivryOrderController.txtNetAmt.text,Colors.black,15)
-                                ],
-                              ),
-                            ),
-                          )
                         ],
                       ),
                     ),
                   ),
+                  gapHC(10),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                    decoration: boxDecoration(nearlyWhite, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+                      children: [
+                        tcn('Net Amount', txtColor, 16),
+                        gapWC(40),
+                        tc(hmDelivryOrderController.txtNetAmt.text,Colors.black,15)
+                      ],
+                    ),
+                  )
                 ],
               ),
             )),
