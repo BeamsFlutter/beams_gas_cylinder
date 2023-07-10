@@ -22,6 +22,7 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
   void initState() {
     assignmentController.pageController = PageController();
     assignmentController.lstrSelectedPage.value = "IT";
+    assignmentController.selectedPage.value=0;
     dprint("empcooooooooooode  ${assignmentController.g.wstrempcode}");
     Future.delayed(const Duration(
       seconds: 3
@@ -186,7 +187,7 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
-            child: tcn("No Assignmnet List", txtColor, 12),
+            child: tcn("Assignmnet List is Empty", txtColor, 12),
           ),
         ],
       ): SingleChildScrollView(

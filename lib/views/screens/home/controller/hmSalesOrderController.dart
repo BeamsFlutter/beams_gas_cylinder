@@ -20,7 +20,7 @@ class HmSalesOrderController extends GetxController{
   Rx<DateTime> delivryDate = DateTime.now().obs;
 
   RxString frDocno="".obs;
-  RxString frDocType="".obs;
+  RxString frDocType="SO".obs;
   var g  = Global();
   var wstrPageMode = "VIEW".obs;
   late Future <dynamic> futureform;
@@ -30,7 +30,7 @@ class HmSalesOrderController extends GetxController{
   RxString cstmrName = "".obs;
   var pageIndex = 0.obs;
   late PageController pageController;
-  RxList lstrDeliveredList =[].obs;
+  RxList lstrSalesOrderList =[].obs;
   RxList lstrStockDetailList =[].obs;
   RxInt rqty = 0.obs;
   RxInt nqty = 0.obs;
@@ -91,23 +91,23 @@ class HmSalesOrderController extends GetxController{
   fnCancel() {
     fnClear();
     wstrPageMode.value = "VIEW";
-    apiViewDeliveryOrder('', 'LAST');
+   // apiViewDeliveryOrder('', 'LAST');
   }
 
   fnPage(mode) {
 
     switch (mode) {
       case 'FIRST':
-        apiViewDeliveryOrder('', mode);
+       // apiViewDeliveryOrder('', mode);
         break;
       case 'LAST':
-        apiViewDeliveryOrder('', mode);
+      //  apiViewDeliveryOrder('', mode);
         break;
       case 'NEXT':
-        apiViewDeliveryOrder(frDocno.value, mode);
+      //  apiViewDeliveryOrder(frDocno.value, mode);
         break;
       case 'PREVIOUS':
-        apiViewDeliveryOrder(frDocno.value, mode);
+    //    apiViewDeliveryOrder(frDocno.value, mode);
         break;
     }
   }
@@ -125,8 +125,10 @@ class HmSalesOrderController extends GetxController{
     cstmrName.value="";
     cstmrCode.value="";
     delivryDate.value=DateTime.now();
-    lstrDeliveredList.value=[];
+    lstrSalesOrderList.value=[];
     txtDriver.clear();
+    txtContactNo.clear();
+    txtContactNo.text="";
     cstmrCode.value="";
     cstmrName.value="";
     txtCustomerName.clear();
@@ -214,7 +216,7 @@ class HmSalesOrderController extends GetxController{
 
     if(g.fnValCheck(detList)){
       int i = 1;
-      lstrDeliveredList.value = [];
+      lstrSalesOrderList.value = [];
 
 
       var totalAmount = 0.0;
@@ -293,7 +295,7 @@ class HmSalesOrderController extends GetxController{
         });
 
 
-        lstrDeliveredList.value.add(datas);
+        lstrSalesOrderList.value.add(datas);
         i++;
         update();
       }
@@ -308,32 +310,32 @@ class HmSalesOrderController extends GetxController{
   }
 
   fnSave(context){
-    if(lstrDeliveredList.isEmpty){
+    if(lstrSalesOrderList.isEmpty){
       errorMsg(context, "Choose Items");
       return;
-
     }
     if(txtCustomerName.value.text.isEmpty){
       errorMsg(context, "Choose Customer");
       return;
     }
-    if(txtBuildingCode.text.isEmpty){
-      errorMsg(context, "Choose Building");
-      return;
-    }
-    //
-    if(txtApartmentCode.text.isEmpty){
-      errorMsg(context, "Choose Apartment");
-      return;
-    }
+    // if(txtBuildingCode.text.isEmpty){
+    //   errorMsg(context, "Choose Building");
+    //   return;
+    // }
+    // //
+    // if(txtApartmentCode.text.isEmpty){
+    //   errorMsg(context, "Choose Apartment");
+    //   return;
+    // }
 
     if(txtlocation.text.isEmpty){
       errorMsg(context, "Choose Location");
       return;
     }
     var taxincldYN = lstrStockDetailList[0]["Column1"];
-    List tableDoDet=[];
-    List tableDo =[];
+    List invAdditional=[];
+    List header =[];
+    List details =[];
 
     var totalAmount = 0.0;
     var totalGrAmt = 0.0;
@@ -353,10 +355,7 @@ class HmSalesOrderController extends GetxController{
     var vatAmount=0.0;
     var vatB=0.0;
 
-
-
-
-    for(var e in lstrDeliveredList.value){
+    for(var e in lstrSalesOrderList.value){
       var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
       var price =  g.mfnDbl(e["RATE"]);
@@ -373,9 +372,9 @@ class HmSalesOrderController extends GetxController{
     }
 
     int i=1;
-    for(var e in lstrDeliveredList.value){
+    for(var e in lstrSalesOrderList.value){
 
-      dprint("******************* lstrDeliveredList ${lstrDeliveredList}");
+      dprint("******************* lstrSalesOrderList ${lstrSalesOrderList}");
       dprint("******************* txtBuildingCode ${txtBuildingCode.text}");
       dprint("******************* txtdelivryDate ${delivryDate}");
       dprint("******************* txtlocation.text ${txtlocation.text}");
@@ -386,13 +385,12 @@ class HmSalesOrderController extends GetxController{
       var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
       var vat = g.mfnDbl(e["VAT_PERC"]);
       var disc  = 0.0;
-      var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+      var unitCf = g.mfnDbl(e["CATWEIGHT"]) == 0?1:g.mfnDbl(e["CATWEIGHT"]);
+
 
       var qty1 = qty2 * unitCf;
-
       var rate2 = price;
-      var rate1 = price*unitCf;
-
+      var rate1 = price/unitCf;
       var unit1 = e["UNIT"];
       var unit2 = e["UNIT2"];
       var grAmount =  0.0;
@@ -433,164 +431,514 @@ class HmSalesOrderController extends GetxController{
       netAmount = netAmount + net ;
 
 
-      tableDoDet.add({
-        "COMPANY" : g.wstrCompany,
-        "YEARCODE" :g.wstrYearcode,
-        "DOCNO" : frDocno.value,
-        "DOCTYPE" : "CCD",
-        "DOCDATE":  setDate(2,docDate.value),
+      details.add({
+        "COMPANY": g.wstrCompany,
+        "YEARCODE": g.wstrYearcode,
+        "DOCNO": frDocno.value,
+        "DOCTYPE": frDocType.value,
         "SRNO": i,
-        "REMARKS":txtRemark.text,
-        "STKCODE" : e["STKCODE"],
-        "STKDESCP" : e["STKDESCP"],
-        "MATERIAL_CODE": e["MATERIAL_CODE"],
+        "DOCNO_RPT": "",
+        "DOCDATE": setDate(2, docDate.value),
+        "DUEDATE": "",
+        "STKCODE": e["STKCODE"],
+        "STKDESCP":  e["STKDESCP"],
+        "RETURNED_YN": "",
+        "FOC_YN": "",
         "LOC": txtlocation.text,
-        "VEHICLE_NO": txtVehiclenumber.text,
+        "UNIT1": unit1,
         "QTY1": qty1,
+        "UNIT2": unit2,
         "QTY2": qty2,
+        "QTY3": 0,
+        "UNITCF": unitCf,
         "RATE": rate1,
         "RATEFC": rate1*currRate,
+        "GRAMT": gramt,
+        "GRAMTFC": gramt*currRate,
         "RATE2": rate2,
-        "QTYRET":returnQty,
         "RATEFC2": rate2*currRate,
+        "RATE3": 0,
+        "RATEFC3": 0,
+        "DISC_AMT": totalDiscountAmt,
+        "DISC_AMTFC": totalDiscountAmt*currRate,
+        "DISCPERCENT": 0,
         "AMT": amt,
         "AMTFC": amt*currRate,
-        "RETURN_QTY": returnQty,
-        "SOLD_QTY": soldQty,
-        "SOLD_RATE": soldRate,
-        "SOLD_RATEFC": soldRate*currRate,
-        "SOLD_AMT": soldAmount,
-        "SOLD_AMTFC": soldAmount*currRate,
-        "NETAMT": gramt,
-        "NETAMTFC": gramt,
+        "ADDL_AMT": 0,
+        "ADDL_AMTFC": 0,
+        "AC_AMT": 0,
+        "AC_AMTFC": 0,
         "PRVDOCTABLE": "",
         "PRVYEARCODE": "",
         "PRVDOCNO": "",
         "PRVDOCTYPE": "",
-        "PRVDOCSRNO": 0,
+        "PRVDOCSRNO": i,
         "PRVDOCQTY": 0,
+        "PRVDOCPENDINGQTY": 0,
+        "PENDINGQTY": 0,
+        "CLEARED_QTY": 0,
+        "JOBNO": "",
+        "JOBCAT": "",
+        "BATCHNO": "",
+        "EXPIRYDATE": "",
+        "REF1": "",
+        "REF2": "",
+        "REF3": "",
+        "BINNO": "",
         "DBACCODE": "",
         "CRACCODE": "",
         "DBCOSTSALE": "",
-        "BUILDING_CODE":txtBuildingCode.text??"",
         "DBINVENTORY": "",
         "CRCOSTSALE": "",
         "CRINVENTORY": "",
-        "CYL_DBACCODE": "",
-        "CYL_CRACCODE": "",
-        "CYL_DBCOSTSALE": "",
-        "CYL_DBINVENTORY": "",
-        "CYL_CRCOSTSALE": "",
-        "CYL_CRINVENTORY": "",
-        "CYLINDER_CAT":e["CYLINDER_TYPE"],
-        "UNIT1": unit1,
-        "UNITCF": unitCf,
-        "UNIT2": unit2,
-        "CYLINDER_STKCODE":  e["STKCODE"],
-        "CYLINDER_CODE":  e["STKCODE"],
-        "CYLINDER_STKDESCP": e["STKDESCP"],
-        "CYLINDER_QTY1": qty2,
-        "CYLINDER_UNIT": unit2,
-        "DRIVER": txtDriver.text,
-        "SMAN": "",
-        "PARTYCODE" : cstmrCode.value,
-        "PARTYNAME" : cstmrName.value,
-        "DUEDATE": "",
-        "AM": "",
-        "DELIVERY_DATE" : setDate(2,delivryDate.value),
-        "ACTUAL_DELIVERY_DATE" : setDate(2,docDate.value),
-        "HEADER_DISC_AMT":headerDiscount,
-        "HEADER_DISC_AMTFC":headerDiscount*currRate,
-        "VAT_PERC" : vat,
-        "VAT_AMTFC" : taxAmount*currRate,
-        "VAT_AMT" : taxAmount,
-        "TOT_TAX_AMTFC" : taxAmount*currRate,
-        "TOT_TAX_AMT" : taxAmount,
-        "CRCURR" : "AED",
-        "CRCURRATE" : currRate,
-        "CASH_CREDIT" : "CR",
-        "CURR" : "AED",
-        "CREATE_USER":g.wstrUsername,
-        "EDIT_USER":g.wstrUsername,
+        "MOVINAVGCOST": 0,
+        "MOVINAVGCOSTFC": 0,
+        "AVGCOST": 0,
+        "AVGCOSTFC": 0,
+        "LASTCOST": 0,
+        "LASTCOSTFC": 0,
+        "FIFO": 0,
+        "FIFOFC": 0,
+        "STCOST": 0,
+        "STCOSTFC": 0,
+        "SUBITEM_YN": "",
+        "MULTIPLEENTRY_YN": "",
+        "SUBTYPE1": "",
+        "SUBTYPE2": "",
+        "SUBTYPE3": "",
+        "SUBQTY1": 0,
+        "SUBQTY2": 0,
+        "SUBQTY3": 0,
+        "STKBARCODE": "",
+        "HEADER_DISC_AMT": 0,
+        "HEADER_DISC_AMTFC": 0,
+        "TASK_CODE": "",
+        "PHASE_CODE": "",
+        "STKDETAIL": "",
+        "SUBCONTRACT_NO": "",
+        "JOBSUBCAT": "",
+        "WEIGHT_PER_METER": 0,
+        "LENGTH_IN_METER": 0,
+        "ALLOY": "",
+        "TEMPER": "",
+        "FINISH": "",
+        "COLOR": "",
+        "TOTAL_ESTIMATED_WEIGHT": 0,
+        "TOTAL_ACTUAL_WEIGHT": 0,
+        "PRICE_PER_MT": 0,
+        "PRICE_PER_MTFC": 0,
+        "REMARKS": txtRemark.text,
+        "DELIVERY_DATE": setDate(2, delivryDate.value),
+        "DELIVERED_QTY": 0,
+        "DELIVERED_WEIGHT": 0,
+        "CLEARED_WEIGHT": 0,
+        "BUILDING_CODE": txtBuildingCode.text,
+        "PROPERTY_CODE": txtApartmentCode.text,
+        "PLANNED_EXT_QTY": 0,
+        "PLANNED_EXT_WEIGHT": 0,
+        "PLANNED_AGEING_QTY": 0,
+        "PLANNED_AGEING_WEIGHT": 0,
+        "AGEING_QCP_QTY": 0,
+        "AGEING_QCP_WEIGHT": 0,
+        "AGEING_QCJ_QTY": 0,
+        "AGEING_QCJ_WEIGHT": 0,
+        "AGEING_QCW_QTY": 0,
+        "AGEING_QCW_WEIGHT": 0,
+        "FINISH_QCP_QTY": 0,
+        "FINISH_QCP_WEIGHT": 0,
+        "FINISH_QCJ_QTY": 0,
+        "FINISH_QCJ_WEIGHT": 0,
+        "FINISH_QCW_QTY": 0,
+        "FINISH_QCW_WEIGHT": 0,
+        "PRD_FINISH_QTY": 0,
+        "PRD_FINISH_WEIGHT": 0,
+        "PRD_CR_QTY": 0,
+        "PRD_CR_WEIGHT": 0,
+        "CR_QCP_QTY": 0,
+        "CR_QCP_WEIGHT": 0,
+        "CR_QCJ_QTY": 0,
+        "CR_QCJ_WEIGHT": 0,
+        "CR_QCW_QTY": 0,
+        "CR_QCW_WEIGHT": 0,
+        "WO_CR_QTY": 0,
+        "WO_CR_WEIGHT": 0,
+        "EXT_QCC_QTY": 0,
+        "EXT_QCC_WEIGHT": 0,
+        "AGEING_QCC_QTY": 0,
+        "AGEING_QCC_WEIGHT": 0,
+        "FINISH_QCC_QTY": 0,
+        "FINISH_QCC_WEIGHT": 0,
+        "CR_QCC_QTY": 0,
+        "CR_QCC_WEIGHT": 0,
+        "PRD_WO_CLEARED_QTY": 0,
+        "STK_WIDTH": 0,
+        "STK_LENGTH": 0,
+        "STK_HEIGHT": 0,
+        "STK_THICKNESS": 0,
+        "STK_WEIGHT": 0,
+        "ACCODE": "",
+        "SLCODE": txtCustomerCode.text,
+        "ACDESCP": "",
+        "SLDESCP": txtCustomerName.text,
+        "CLEARED_QTY2": 0,
+        "SVC_CODE": "",
+        "SVC_DESCP": "",
+        "SVC_TYPE": "",
+        "OPTION1": "",
+        "ACCESSORIES": "",
+        "PRINTER": "",
+        "WIDTH": 0,
+        "LENGTH": 0,
+        "SIZE1": 0,
+        "TOTAL_SIZE": 0,
+        "DBSLCODE": "",
+        "CRSLCODE": "",
+        "STK_VOLUME":0,
+        "STK_SQUARE_METER": 0,
+        "STK_WIDTH1": 0,
+        "STK_LENGTH1": 0,
+        "STK_HEIGHT1": 0,
+        "STK_VOLUME1": 0,
+        "STK_SQUARE_METER1": 0,
+        "STK_WIDTH2": 0,
+        "STK_LENGTH2": 0,
+        "STK_HEIGHT2": 0,
+        "STK_VOLUME2": 0,
+        "STK_SQUARE_METER2": 0,
+        "STK_WIDTH3": 0,
+        "STK_LENGTH3": 0,
+        "STK_HEIGHT3": 0,
+        "FOC_UNIT": 0,
+        "FOC_QTY": 0,
+        "FOC_CONVFACTOR": 0,
+        "DRT_QTY": 0,
+        "DRT_QTY2": 0,
+        "GROUPITEM_YN": "",
+        "GROUPITEM_CODE": "",
+        "GROUPITEMSRNO": i,
+        "GROUPITEM_PRVQTY1": 0,
+        "GROUPITEM_PRVQTY2": 0,
+        "TOT_TAX_AMT": totalTaxAmt,
+        "TOT_TAX_AMTFC": totalTaxAmt*currRate,
+        "TOTAL_WEIGHT": 0,
+        "UNIT_VOLUME": 0,
+        "VOULUME": 0,
+        "SERIALNO_YN": ""
 
       });
+
+      // header.add({
+      //   "COMPANY": g.wstrCompany,
+      //   "YEARCODE": g.wstrYearcode,
+      //   "DOCNO": frDocno.value,
+      //   "DOCTYPE": frDocType.value,
+      //   "DOCNO_RPT": "",
+      //   "DOCDATE":setDate(16,docDate.value),
+      //   "CRDAYS": 0,
+      //   "DUEDATE": "",
+      //   "PARTYCODE": txtCustomerCode.text,
+      //   "PARTYNAME": txtCustomerName.text,
+      //   "PRVDOCNO": 0,
+      //   "PRVDOCTYPE": "",
+      //   "PRVMULTIDOCNO": "",
+      //   "BRNCODE": "",
+      //   "DIVCODE": "",
+      //   "CCCODE": "",
+      //   "JOBNO": "",
+      //   "JOBCAT": "",
+      //   "SMAN": "",
+      //   "LOC": txtlocation.text,
+      //   "CASH_CREDIT": "",
+      //   "CURR": "AED",
+      //   "CURRATE": currRate,
+      //   "GRAMT": totalGrAmt,
+      //   "GRAMTFC": totalGrAmt*currRate,
+      //   "ADDL_AMT": 0,
+      //   "ADDL_AMTFC": 0,
+      //   "PAID_MOD1": 0,
+      //   "PAID_AMT1": 0,
+      //   "PAID_AMT1FC": 0,
+      //   "PAID_MOD2": 0,
+      //   "PAID_AMT2": 0,
+      //   "PAID_AMT2FC": 0,
+      //   "DISC_AMT": totalDiscountAmt,
+      //   "DISC_AMTFC": totalDiscountAmt*currRate,
+      //   "CHG_CODE": 0,
+      //   "CHG_AMT": 0,
+      //   "CHG_AMTFC": 0,
+      //   "EXHDIFF_AMT": 0,
+      //   "NETAMT": netAmount,
+      //   "NETAMTFC": netAmount*currRate,
+      //   "PAID_AMT": paidAmount,
+      //   "PAID_AMTFC": paidAmount*currRate,
+      //   "BAL_AMT": balanceAmount,
+      //   "BAL_AMTFC": balanceAmount*currRate,
+      //   "AC_AMT": 0,
+      //   "AC_AMTFC": 0,
+      //   "REMARKS": txtRemark.text,
+      //   "REF1": "",
+      //   "REF2": "",
+      //   "REF3": "",
+      //   "REF4": "",
+      //   "REF5": "",
+      //   "REF6": "",
+      //   "RPTFOOTER1": "",
+      //   "RPTFOOTER2": "",
+      //   "RPTFOOTER3": "",
+      //   "PRINT_YN": "",
+      //   "POST_YN": "",
+      //   "POSTDATE": "",
+      //   "POST_FLAG": "",
+      //   "AUTH_YN": "",
+      //   "CLOSED_YN": "",
+      //   "ALLOC_YEARCODE": "",
+      //   "ALLOC_DOCNO": "",
+      //   "ALLOC_DOCTYPE": "",
+      //   "SHIFTNO": "",
+      //   "BATCHNO": "",
+      //   "TASK_CODE": "",
+      //   "PHASE_CODE": "",
+      //   "SUBCONTRACT_NO": "",
+      //   "JOBSUBCAT": "",
+      //   "CONDITION1": "",
+      //   "CONDITION2": "",
+      //   "CONDITION3": "",
+      //   "CONDITION4": "",
+      //   "CONDITION5": "",
+      //   "CONDITION6": "",
+      //   "DELIVERY_DATE": setDate(16,delivryDate.value),
+      //   "BUILDING_CODE": txtBuildingCode.text,
+      //   "PROPERTY_CODE": txtApartmentCode.text,
+      //   "PAYMENT_TERMS": "",
+      //   "PAYMENT_TERMS_DESCP": "",
+      //   "REF_DOCNO": "",
+      //   "REF_DOCDATE": "",
+      //   "BILL_TO": "",
+      //   "SHIP_TO": "",
+      //   "VALID_UPTO": "",
+      //   "PRICE_VALID_UPTO": "",
+      //   "CONTACT_PERSON": "",
+      //   "PLACE_OF_DELIVERY": "",
+      //   "DOCUMENT_STATUS": "",
+      //   "RPTFOOTER1DESCP": "",
+      //   "RPTFOOTER2DESCP": "",
+      //   "RPTFOOTER3DESCP": "",
+      //   "DOCUMENT_NAME": "",
+      //   "AMENDMENT_YN": "",
+      //   "ORGINAL_DOC_COMPANY": "",
+      //   "ORGINAL_YEARCODE": "",
+      //   "ORGINAL_DOCTYPE": "",
+      //   "ORGINAL_DOCNO": "",
+      //   "ORGINAL_DOCDATE": "",
+      //   "AMENDED_DOC_COMPANY": "",
+      //   "AMENDED_YEARCODE": "",
+      //   "AMENDED_DOCTYPE": "",
+      //   "AMENDED_DOCNO": "",
+      //   "AMENDED_DOCDATE": "",
+      //   "ORGINAL_DOCUMENT_STATUS": "",
+      //   "AMEND_SRNO": 0,
+      //   "MAIN_DOCNO": "",
+      //   "MAIN_DOCTYPE": "",
+      //   "AUTHORISE_STATUS": "",
+      //   "PRINT_AUTH_YN": "",
+      //   "STOCK_UPDATE_SELECTFIELD_YN": "",
+      //   "AUTH_USER_LEVEL1": "",
+      //   "AUTH_USER_LEVEL2": "",
+      //   "AUTH_USER_LEVEL3": "",
+      //   "AUTH_USER_LEVEL4": "",
+      //   "AUTH_USER_LEVEL5": "",
+      //   "AUTH_USER_LEVEL6": "",
+      //   "DETAILS": "",
+      //   "DISCPERCENT": 0,
+      //   "DOC_DELIVERY_YN": "",
+      //   "CREATE_USER": "",
+      //   "CREATE_DATE": "",
+      //   "EDIT_USER": "",
+      //   "EDIT_DATE": "",
+      //   "PRINT_COUNT": 0,
+      //   "GUEST_CODE": "",
+      //   "GUEST_NAME": "",
+      //   "PRINTING_COUNT": 0,
+      //   "TOT_WEIGHT": 0,
+      //   "TOT_VOLUME": 0,
+      //   "VOLUMETRIC_WEIGHT": 0,
+      //   "VAT_PERC": 0,
+      //   "TINNO": "",
+      //   "ROUND_OFF_AMT": roundOfAmount,
+      //   "ROUND_OFF_AMTFC": roundOfAmount*currRate,
+      //   "ROUND_OFF_ACCODE": "",
+      //   "ROUND_OFF_SLCODE": "",
+      //   "TAX_RETURN_SUBMITTED_YN": "",
+      //   "TOTAL_TAXAMT": taxAmount,
+      //   "TOTAL_TAXAMTFC":  taxAmount*currRate,
+      //   "DELIVERY_EMIRATE": "",
+      //   "MRQ_BOM_GENERATE_YN": "",
+      //   "CREATE_MACHINE": "",
+      //   "EDIT_MACHINE": ""
+      // });
+
       i++;
 
 
     }
+
     netAmount =  netAmount +  roundOfAmount;
     balanceAmount =netAmount-paidAmount;
     dprint("NETAMOUNT>>>>>>>>>>>>>>>>> ${netAmount}");
     dprint("BALANCEAMOUNT>>>>>>>>>>>>>>>>> ${balanceAmount}");
 
-    tableDo.add({
-      ApiParams.company : g.wstrCompany,
-      ApiParams.yearcode  : g.wstrYearcode,
-      "DOCNO" : frDocno.value,
-      "DOCTYPE" : "CCD",
-      "DOCDATE" : setDate(2,docDate.value),
-      "BRNCODE" : "",
-      "DIVCODE" : "",
-      "CCCODE" : "",
-      "CRDAYS" : 0,
-      "DUEDATE" : "",
-      "PARTYCODE" : cstmrCode.value,
-      "PARTYNAME" : cstmrName.value,
-      "PRVDOCNO" : "",
-      "PRVDOCTYPE" : "",
-      "SMAN" : "",
-      "VEHICLE_NO" :txtVehiclenumber.text,
-      "LOC" : txtlocation.text,
-      "CASH_CREDIT" : "CR",
-      "CURR" : "AED",
-      "CURRATE" : currRate,
-      "GRAMT" : totalGrAmt,
-      "GRAMTFC" : totalGrAmt*currRate,
-      "DISC_AMT" : totalDiscountAmt,
-      "DISC_AMTFC" : totalDiscountAmt*currRate,
-      "CHG_CODE" : "",
-      "CHG_AMT" : 0,
-      "CHG_AMTFC" : 0,
-      "NETAMT" : netAmount,
-      "NETAMTFC" : netAmount*currRate,
-      "PAID_AMT" : paidAmount,
-      "PAID_AMTFC" : paidAmount*currRate,
-      "BAL_AMT" : balanceAmount,
-      "BAL_AMTFC" :balanceAmount*currRate,
-      "REMARKS" : txtRemark.text,
-      "PRINT_YN" : "",
-      "CLOSED_YN" : "",
-      "BUILDING_CODE" : txtBuildingCode.text,
-      "PROPERTY_CODE" : txtApartmentCode.text,
-      "PLACE_OF_DELIVERY" : "",
-      "DELIVERY_DATE" :setDate(2,delivryDate.value) ,
-      "DOCUMENT_STATUS" : "",
-      "DRIVER" : txtDriver.text,
-      "DELIVERY_TIME" : "",
-      "CREATE_USER" : g.wstrUserCD,
-      "CREATE_DATE" : "",
-      "EDIT_USER" : "",
-      "EDIT_DATE" : "",
-      "DELIVERED_YN" : "",
-      "ACTUAL_DELIVERY_DATE" : "",
-      "ADDL_AMT" : 0.0,
-      "ADDL_AMTFC" : 0.0,
-      "DISCPERCENT" : 0,
-      "TAX_AMT" : totalTaxAmt,
-      "TAX_AMTFC" : totalTaxAmt*currRate,
-      "ROUND_OFF_AMT" : roundOfAmount,
-      "ROUND_OFF_AMTFC" :roundOfAmount*currRate,
-      "PRVMULTIDOCNO" : "",
-      "VAT_PERC" : 0,
-      "TOTAL_TAXAMTFC" : totalTaxAmt*currRate,
-      "TOTAL_TAXAMT" : totalTaxAmt
+
+    header.add({
+      "COMPANY": g.wstrCompany,
+      "YEARCODE": g.wstrYearcode,
+      "DOCNO": frDocno.value,
+      "DOCTYPE": frDocType.value,
+      "DOCNO_RPT": "",
+      "DOCDATE":setDate(2,docDate.value),
+      "CRDAYS": 0,
+      "DUEDATE": "",
+      "PARTYCODE": txtCustomerCode.text,
+      "PARTYNAME": txtCustomerName.text,
+      "PRVDOCNO": 0,
+      "PRVDOCTYPE": "",
+      "PRVMULTIDOCNO": "",
+      "BRNCODE": "",
+      "DIVCODE": "",
+      "CCCODE": "",
+      "JOBNO": "",
+      "JOBCAT": "",
+      "SMAN": "",
+      "LOC": txtlocation.text,
+      "CASH_CREDIT": "",
+      "CURR": "AED",
+      "CURRATE": currRate,
+      "GRAMT": totalGrAmt,
+      "GRAMTFC": totalGrAmt*currRate,
+      "ADDL_AMT": 0,
+      "ADDL_AMTFC": 0,
+      "PAID_MOD1": 0,
+      "PAID_AMT1": 0,
+      "PAID_AMT1FC": 0,
+      "PAID_MOD2": 0,
+      "PAID_AMT2": 0,
+      "PAID_AMT2FC": 0,
+      "DISC_AMT": totalDiscountAmt,
+      "DISC_AMTFC": totalDiscountAmt*currRate,
+      "CHG_CODE": 0,
+      "CHG_AMT": 0,
+      "CHG_AMTFC": 0,
+      "EXHDIFF_AMT": 0,
+      "NETAMT": netAmount,
+      "NETAMTFC": netAmount*currRate,
+      "PAID_AMT": paidAmount,
+      "PAID_AMTFC": paidAmount*currRate,
+      "BAL_AMT": balanceAmount,
+      "BAL_AMTFC": balanceAmount*currRate,
+      "AC_AMT": 0,
+      "AC_AMTFC": 0,
+      "REMARKS": txtRemark.text,
+      "REF1": "",
+      "REF2": "",
+      "REF3": "",
+      "REF4": "",
+      "REF5": "",
+      "REF6": "",
+      "RPTFOOTER1": "",
+      "RPTFOOTER2": "",
+      "RPTFOOTER3": "",
+      "PRINT_YN": "",
+      "POST_YN": "",
+      "POSTDATE": "",
+      "POST_FLAG": "",
+      "AUTH_YN": "",
+      "CLOSED_YN": "",
+      "ALLOC_YEARCODE": "",
+      "ALLOC_DOCNO": "",
+      "ALLOC_DOCTYPE": "",
+      "SHIFTNO": "",
+      "BATCHNO": "",
+      "TASK_CODE": "",
+      "PHASE_CODE": "",
+      "SUBCONTRACT_NO": "",
+      "JOBSUBCAT": "",
+      "CONDITION1": "",
+      "CONDITION2": "",
+      "CONDITION3": "",
+      "CONDITION4": "",
+      "CONDITION5": "",
+      "CONDITION6": "",
+      "DELIVERY_DATE": setDate(2,delivryDate.value),
+      "BUILDING_CODE": txtBuildingCode.text,
+      "PROPERTY_CODE": txtApartmentCode.text,
+      "PAYMENT_TERMS": "",
+      "PAYMENT_TERMS_DESCP": "",
+      "REF_DOCNO": "",
+      "REF_DOCDATE": "",
+      "BILL_TO": "",
+      "SHIP_TO": "",
+      "VALID_UPTO": "",
+      "PRICE_VALID_UPTO": "",
+      "CONTACT_PERSON": "",
+      "PLACE_OF_DELIVERY": "",
+      "DOCUMENT_STATUS": "",
+      "RPTFOOTER1DESCP": "",
+      "RPTFOOTER2DESCP": "",
+      "RPTFOOTER3DESCP": "",
+      "DOCUMENT_NAME": "",
+      "AMENDMENT_YN": "",
+      "ORGINAL_DOC_COMPANY": "",
+      "ORGINAL_YEARCODE": "",
+      "ORGINAL_DOCTYPE": "",
+      "ORGINAL_DOCNO": "",
+      "ORGINAL_DOCDATE": "",
+      "AMENDED_DOC_COMPANY": "",
+      "AMENDED_YEARCODE": "",
+      "AMENDED_DOCTYPE": "",
+      "AMENDED_DOCNO": "",
+      "AMENDED_DOCDATE": "",
+      "ORGINAL_DOCUMENT_STATUS": "",
+      "AMEND_SRNO": 0,
+      "MAIN_DOCNO": "",
+      "MAIN_DOCTYPE": "",
+      "AUTHORISE_STATUS": "",
+      "PRINT_AUTH_YN": "",
+      "STOCK_UPDATE_SELECTFIELD_YN": "",
+      "AUTH_USER_LEVEL1": "",
+      "AUTH_USER_LEVEL2": "",
+      "AUTH_USER_LEVEL3": "",
+      "AUTH_USER_LEVEL4": "",
+      "AUTH_USER_LEVEL5": "",
+      "AUTH_USER_LEVEL6": "",
+      "DETAILS": "",
+      "DISCPERCENT": 0,
+      "DOC_DELIVERY_YN": "",
+      "CREATE_USER": "",
+      "CREATE_DATE": "",
+      "EDIT_USER": "",
+      "EDIT_DATE": "",
+      "PRINT_COUNT": 0,
+      "GUEST_CODE": "",
+      "GUEST_NAME": "",
+      "PRINTING_COUNT": 0,
+      "TOT_WEIGHT": 0,
+      "TOT_VOLUME": 0,
+      "VOLUMETRIC_WEIGHT": 0,
+      "VAT_PERC": 0,
+      "TINNO": "",
+      "ROUND_OFF_AMT": roundOfAmount,
+      "ROUND_OFF_AMTFC": roundOfAmount*currRate,
+      "ROUND_OFF_ACCODE": "",
+      "ROUND_OFF_SLCODE": "",
+      "TAX_RETURN_SUBMITTED_YN": "",
+      "TOTAL_TAXAMT": taxAmount,
+      "TOTAL_TAXAMTFC":  taxAmount*currRate,
+      "DELIVERY_EMIRATE": "",
+      "MRQ_BOM_GENERATE_YN": "",
+      "CREATE_MACHINE": "",
+      "EDIT_MACHINE": ""
     });
 
-
-
-
-
-    apiSaveDeliverOrder( tableDoDet, tableDo, context);
+    apiSaveSalesOrder(header,details,invAdditional,context,frDocType.value);
 
   }
 
@@ -718,7 +1066,7 @@ class HmSalesOrderController extends GetxController{
 
                                           var rate = g.mfnDbl(lstrProductItemDetailList[index]["PRICE1"].toString());
                                           var sellRate = g.mfnDbl(lstrProductItemDetailList[index]["CYL_SELL_RATE"].toString());
-                                          var item = lstrDeliveredList.value.where((element) => element["STKCODE"] == itemCode).toList()
+                                          var item = lstrSalesOrderList.value.where((element) => element["STKCODE"] == itemCode).toList()
                                           ;
                                           rqty.value = item.isNotEmpty
                                               ? g.mfnDbltoInt(item[0]["RQTY"].toString())
@@ -1024,7 +1372,7 @@ class HmSalesOrderController extends GetxController{
           child: StatefulBuilder(
             builder:(context,setstate){
 
-              var item = lstrDeliveredList.where((el) => el["STKCODE"]==itemCodee).toList()??[];
+              var item = lstrSalesOrderList.where((el) => el["STKCODE"]==itemCodee).toList()??[];
               if(item.isEmpty){
                 Get.back();
                 return Container();
@@ -1328,7 +1676,7 @@ class HmSalesOrderController extends GetxController{
           child: StatefulBuilder(
             builder:(context,setstate){
 
-              var item = lstrDeliveredList.where((el) => el["STKCODE"]==itemCodee).toList()??[];
+              var item = lstrSalesOrderList.where((el) => el["STKCODE"]==itemCodee).toList()??[];
               if(item.isEmpty){
                 Get.back();
                 return Container();
@@ -1391,7 +1739,7 @@ class HmSalesOrderController extends GetxController{
                                 Bounce(
                                     onPressed: () {
 
-                                      lstrDeliveredList.removeWhere((element) =>element["STKCODE"]==itemCodee);
+                                      lstrSalesOrderList.removeWhere((element) =>element["STKCODE"]==itemCodee);
                                       Get.back();
 
                                     },
@@ -1429,11 +1777,11 @@ class HmSalesOrderController extends GetxController{
 
 
   }
-  List<Widget> wDeliverItemList(context){
+  List<Widget> wSalesOrderItemList(context){
     List<Widget> rtnList =[];
 
-    for(var e  in lstrDeliveredList.value){
-      dprint("LSTR DELIVERLIS>>>>>>>>>>>>>>>>>  ${e}");
+    for(var e  in lstrSalesOrderList.value){
+      dprint("LSTR Salesssssssssss>>>>>>>>>>>>>>>>>  ${e}");
 
 
       var itemName  = (e["STKDESCP"]??"").toString();
@@ -1444,91 +1792,88 @@ class HmSalesOrderController extends GetxController{
       var total = qty*rate;
 
       rtnList.add( Padding(
-        padding: const EdgeInsets.only(left: 5,bottom: 2),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 3),
-          child: InkWell(
-            onLongPress: (){
-              wDeletItemSelect(context,itemCode);
+        padding: const EdgeInsets.only(bottom: 2),
+        child: InkWell(
+          onLongPress: (){
+            wDeletItemSelect(context,itemCode);
 
-            },
+          },
 
 
-            onTap: (){
+          onTap: (){
 
-              wItemSelect(context,itemCode,qty);
-            },
-            child: Container(
-              decoration: boxBaseDecoration(
-                  bGreyLight, 0),
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Flexible(
-                      flex: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: tcn(itemName.toString(),
-                                  Colors.black, 10),
-                            )
-                          ],
-                        ),
-                      )),
-                  // Flexible(
-                  //     flex: 1,
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment
-                  //           .end,
-                  //       children: [
-                  //         tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"", Colors.black, 10),
-                  //         gapWC(10)
-                  //       ],
-                  //     )),
-                  Flexible(
-                      flex: 1,
+            wItemSelect(context,itemCode,qty);
+          },
+          child: Container(
+            decoration: boxBaseDecoration(
+                bGreyLight, 0),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Flexible(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .end,
                         children: [
-                          tcn(rate.toString(), Colors.black, 10)
+                          Expanded(
+                            child: tcn(itemName.toString(),
+                                Colors.black, 10),
+                          )
                         ],
-                      )),
-                  Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .end,
-                        children: [
-                          tcn(qty.toString(),
-                              Colors.black, 10)
-                        ],
-                      )),
-                  Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .end,
-                        children: [
-                          tcn(returnQty.toString(),
-                              Colors.black, 10)
-                        ],
-                      )),
-                  Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .end,
-                        children: [
-                          tcn(total.toString(), Colors.black, 10)
-                        ],
-                      )),
-                ],
-              ),
-
+                      ),
+                    )),
+                // Flexible(
+                //     flex: 1,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment
+                //           .end,
+                //       children: [
+                //         tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"", Colors.black, 10),
+                //         gapWC(10)
+                //       ],
+                //     )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(rate.toString(), Colors.black, 10)
+                      ],
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(qty.toString(),
+                            Colors.black, 10)
+                      ],
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(returnQty.toString(),
+                            Colors.black, 10)
+                      ],
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(total.toString(), Colors.black, 10)
+                      ],
+                    )),
+              ],
             ),
+
           ),
         ),
       ));
@@ -1546,7 +1891,7 @@ class HmSalesOrderController extends GetxController{
     dprint("ITEMmUNU>>>>>>>>>>>> ${itemMenu}");
 
     if(mode == "A"){
-      if(lstrDeliveredList.where((e) => e["STKCODE"] == itemCode).isEmpty){
+      if(lstrSalesOrderList.where((e) => e["STKCODE"] == itemCode).isEmpty){
         dprint(">>>>>>>>>>>AAAAAAAAAAAAAAAAempty");
         var lQty = 0.0;
         var nQty = 0.0;
@@ -1568,7 +1913,7 @@ class HmSalesOrderController extends GetxController{
 
 
         var datas = Map<String, Object>.from({
-          "STKCODE": itemCode,
+          "STKCODE": itemMenu[0]["STKCODE"],
           "STKDESCP": itemMenu[0]["STKDESCP"],
           "QTY": lQty,
           "RETURN_QTY": lReturnQty,
@@ -1590,11 +1935,11 @@ class HmSalesOrderController extends GetxController{
           "CYLINDER_TYPE":itemMenu[0]["PRODUCT_TYPE1"],
 
         });
-        lstrDeliveredList.add(datas);
+        lstrSalesOrderList.add(datas);
       }
       else{
         dprint(">>>>>>>>>>>AAAAAAAAAAAAAAAAnotempty");
-        var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode).toList();
+        var item = lstrSalesOrderList.where((element) => element["STKCODE"] == itemCode).toList();
         if(item.isNotEmpty){
 
 
@@ -1630,7 +1975,7 @@ class HmSalesOrderController extends GetxController{
       }
     }else{
 
-      var item = lstrDeliveredList.where((element) => element["STKCODE"] == itemCode ).toList();
+      var item = lstrSalesOrderList.where((element) => element["STKCODE"] == itemCode ).toList();
       if(item.isNotEmpty){
         var lQty = item[0]["QTY"];
         var nQty = item[0]["NQTY"];
@@ -1656,8 +2001,8 @@ class HmSalesOrderController extends GetxController{
         item[0]["RQTY"] = rQty< 0?0.0:rQty;
       }
     }
-    lstrDeliveredList.removeWhere((element) => g.mfnDbl(element["QTY"])+g.mfnDbl(element["RETURN_QTY"]) <= 0);
-    dprint("lstrDeliveredList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrDeliveredList.value}");
+    lstrSalesOrderList.removeWhere((element) => g.mfnDbl(element["QTY"])+g.mfnDbl(element["RETURN_QTY"]) <= 0);
+    dprint("lstrSalesOrderList>>>>>>>>>>>>>>>>>>>>>>>> ${lstrSalesOrderList.value}");
     fnPaymntCalc();
 
   }
@@ -1682,19 +2027,19 @@ class HmSalesOrderController extends GetxController{
         txtApartmentCode.text =data["APARTMENT_CODE"]??"";
         //   apiGetCustomerDetails();
       }
-      else if(mode  ==  "GUESTMASTER"){
+      else if(mode  ==  "SLMAST"){
         dprint("RRRRRRRRRR ${data}");
-        txtCustomerCode.text  = data["GUEST_CODE"]??"";
-        txtCustomerName.text  = data["GUEST_NAME"]??"";
+        txtCustomerCode.text  = data["SLCODE"]??"";
+        txtCustomerName.text  = data["SLDESCP"]??"";
         txtContactNo.text  = data["MOBILE"]??"";
         // frEmail.value  = data["EMAIL"]??"";
-        cstmrCode.value=data["GUEST_CODE"]??"";
-        cstmrName.value= data["GUEST_NAME"]??"";
+        cstmrCode.value=data["SLCODE"]??"";
+        cstmrName.value= data["SLDESCP"]??"";
         txtContactNo.text  = data["MOBILE"]??"";
         txtApartmentCode.text = data["APARTMENT_CODE"]??"";
-        txtAreaCode.text = data["AREA_CODE"]??"";
-        txtLandmark.text = data["LANDMARK"]??"";
-        txtAddress.text = data["CUST_ADDRESS"]??"";
+        // txtAreaCode.text = data["AREA_CODE"]??"";
+        // txtLandmark.text = data["LANDMARK"]??"";
+        txtAddress.text = data["ADDRESS1"]??"";
         txtRemark.text = data["REMARKS"]??"";
         txtBuildingCode.text = data["BUILDING_CODE"]??"";
         g.wstrBuildingCode  = data["BUILDING_CODE"]??"";
@@ -1718,11 +2063,11 @@ class HmSalesOrderController extends GetxController{
 
         //   apiGetCustomerDetails();
       }
-      else if(mode  ==  "GCYLINDER_DO"){
+      else if(mode  ==  "SO"){
         dprint("11111111111SDAS11111111111>> ${data}" );
         frDocno.value = data["DOCNO"]??"";
         frDocType.value = data["DOCTYPE"]??"";
-        apiViewDeliveryOrder(frDocno.value,"");
+    //    apiViewDeliveryOrder(frDocno.value,"");
 
 
         //   apiGetCustomerDetails();
@@ -1784,7 +2129,7 @@ class HmSalesOrderController extends GetxController{
     var paidAmount =  g.mfnDbl(txtPaidAmt.text);
 
 
-    for(var e in lstrDeliveredList.value){
+    for(var e in lstrSalesOrderList.value){
       var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
       var price =  g.mfnDbl(e["RATE"]);
@@ -1803,7 +2148,7 @@ class HmSalesOrderController extends GetxController{
 
     }
 
-    for(var e in lstrDeliveredList){
+    for(var e in lstrSalesOrderList){
       var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
       var price =  g.mfnDbl(e["RATE"]);
@@ -1860,53 +2205,12 @@ class HmSalesOrderController extends GetxController{
 
   fnLookup(mode){
     dprint(mode);
-    if(mode == "GCYLINDER_CALL_LOGIN"){
-
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'DOCNO', 'Display': 'Code'},
-        {'Column': 'PARTY_CODE', 'Display': 'PCode'},
-        {'Column': 'PARTY_NAME', 'Display': 'Name'},
-        {'Column': 'MOBILE_NO', 'Display': 'Mobile'},
-        {'Column': 'DOCTYPE', 'Display': 'Doctype'},
-        {'Column': 'YEARCODE', 'Display': 'Yearcode'},
-
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
-
-      // if(frBuildingCode.isNotEmpty){
-      //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
-      // }
-      // if(frApartmentCode.isNotEmpty){
-      //   lstrFilter.add({'Column': "APARTMENT_CODE", 'Operator': '=', 'Value': frApartmentCode, 'JoinType': 'AND'});
-      // }
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'GCYLINDER_CALL_LOGIN',
-            title: 'Booking Details',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'DOCNO',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "CRDELIVERYMANMASTER") {
+    if(mode == "CRDELIVERYMANMASTER") {
 
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
         {'Column': 'NAME', 'Display': 'Name'},
-        {'Column': 'VEHICLE_NO', 'Display': 'VEHICLE_NO'},
+        {'Column': 'VEHICLE_NO', 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -2000,94 +2304,9 @@ class HmSalesOrderController extends GetxController{
           )
       );
     }
-    else if(mode == "GPRIORITYMASTER"){
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'CODE', 'Display': 'CODE'},
-        {'Column': "DESCP", 'Display': 'Priority'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[];
 
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'GPRIORITYMASTER',
-            title: 'Building',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'DESCP',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "CRDELIVERYMANMASTER"){
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
-        {'Column': 'NAME', 'Display': 'Name'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
 
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'CRDELIVERYMANMASTER',
-            title: 'Driver Details',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "CRVEHICLEMASTER"){
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'VEHICLE_NO', 'Display': 'Code'},
-        {'Column': "DESCP", 'Display': 'Name'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [
-      ];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
 
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'CRVEHICLEMASTER',
-            title: 'Building',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'VEHICLE_NO',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
     else if(mode == "AREAMASTER"){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'CODE', 'Display': 'Code'},
@@ -2118,10 +2337,10 @@ class HmSalesOrderController extends GetxController{
           )
       );
     }
-    else   if(mode == "GUESTMASTER"){
+    else   if(mode == "SLMAST"){
       final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'GUEST_CODE', 'Display': 'Code'},
-        {'Column': 'GUEST_NAME', 'Display': 'Name'},
+        {'Column': 'SLCODE', 'Display': 'Code'},
+        {'Column': 'SLDESCP', 'Display': 'Name'},
         {'Column': 'MOBILE', 'Display': 'Mobile'},
         {'Column': 'EMAIL', 'Display': 'Email'},
         {'Column': 'BUILDING_CODE', 'Display': 'Building'},
@@ -2129,10 +2348,13 @@ class HmSalesOrderController extends GetxController{
         // {'Column': 'LANDMARK', 'Display': ''},
         // {'Column': 'REMARKS', 'Display': ''},
         // {'Column': 'AREA_CODE', 'Display': ''},
-        {'Column': 'ADD1', 'Display': ''},
+        {'Column': 'ADDRESS1', 'Display': ''},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+      var lstrFilter =[
+        {'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'},
+        {'Column': "ACTYPE", 'Operator': '=', 'Value': 'AR', 'JoinType': 'AND'},
+      ];
 
       // if(frBuildingCode.isNotEmpty){
       //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
@@ -2144,14 +2366,14 @@ class HmSalesOrderController extends GetxController{
           Lookup(
             txtControl: txtController,
             oldValue: "",
-            lstrTable: 'GUESTMASTER',
+            lstrTable: 'SLMAST',
             title: 'Customer Details',
             lstrColumnList: lookup_Columns,
             lstrFilldata: lookup_Filldata,
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
+            keyColumn: 'SLCODE',
             mode: "S",
             layoutName: "PARTY",
             callback: (data){
@@ -2251,7 +2473,7 @@ class HmSalesOrderController extends GetxController{
           )
       );
     }
-    else if(mode == "GCYLINDER_DO" ){
+    else if(mode == "SO" ){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DOCNO', 'Display': 'DOCNO'},
         {'Column': "DOCTYPE", 'Display': 'DOCTYPE'},
@@ -2263,8 +2485,8 @@ class HmSalesOrderController extends GetxController{
           Lookup(
             txtControl: txtController,
             oldValue: "",
-            lstrTable: 'GCYLINDER_DO',
-            title: 'cylinder doc',
+            lstrTable: 'SO',
+            title: 'salesOrder doc',
             lstrColumnList: lookup_Columns,
             lstrFilldata: lookup_Filldata,
             lstrPage: '0',
@@ -2286,24 +2508,24 @@ class HmSalesOrderController extends GetxController{
 
   //====================API====================
 
-  apiViewDeliveryOrder(docno,mode){
-    futureform = ApiCall().apiViewDeliveryOrder(docno,mode);
-    futureform.then((value) => apiViewDeliveryOrderRes(value));
-  }
-  apiViewDeliveryOrderRes(value){
-    if(g.fnValCheck(value)){
-      fnClear();
-      fnFill(value);
-    }
+  // apiViewSalesOrder(docno,mode){
+  //   futureform = ApiCall().apiViewDeliveryOrder(docno,mode);
+  //   futureform.then((value) => apiViewSalesOrderRes(value));
+  // }
+  // apiViewSalesOrderRes(value){
+  //   if(g.fnValCheck(value)){
+  //     fnClear();
+  //     fnFill(value);
+  //   }
+  //
+  // }
 
+  apiSaveSalesOrder(header,details,invAdditional,context,doctype){
+    futureform = ApiCall().saveSalesOrder(wstrPageMode.value,header,details,invAdditional,doctype);
+    futureform.then((value) => apiSaveSalesOrderRes(value,context));
   }
-
-  apiSaveDeliverOrder( tableDoDet, tableDo,context){
-    dprint("save deliiiiiii");
-    futureform = ApiCall().saveDeliveryOrder(wstrPageMode.value,tableDoDet,tableDo);
-    futureform.then((value) => apiSaveDeliverOrderRes(value,context));
-  }
-  apiSaveDeliverOrderRes(value,context){
+  apiSaveSalesOrderRes(value,context){
+    dprint("SALESSORDEVALUE>>>>>>  ${value}");
 
     if(g.fnValCheck(value)){
 
@@ -2311,9 +2533,9 @@ class HmSalesOrderController extends GetxController{
       var msg  =  value[0]["MSG"]??"";
       if(sts == "1"){
         frDocno.value = value[0]["DOCNO"];
-        var doctype = value[0]["DOCTYPE"];
+         frDocType.value = value[0]["DOCTYPE"];
         wstrPageMode.value ="VIEW";
-        apiViewDeliveryOrder(frDocno.value, "LAST");
+       // apiViewSalesOrderRes(frDocno.value, "LAST");
         successMsg(context, msg);
 
       }else{

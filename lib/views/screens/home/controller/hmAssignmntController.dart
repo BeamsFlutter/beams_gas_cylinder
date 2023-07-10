@@ -460,6 +460,7 @@ class HmAssignmentController extends GetxController{
       else if(mode  ==  "GCYLINDER_ASSIGNMENT"){
         dprint("GCYLINDER_ASSIGNMENT>>>>>>>>>>> ${data.toString()}");
         frDocno.value = data["DOCNO"]??"";
+        frDocType.value = data["DOCTYPE"]??"";
 
         apiViewAssignment(frDocno.value , "");
       }
@@ -589,7 +590,7 @@ class HmAssignmentController extends GetxController{
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
         {'Column': 'NAME', 'Display': 'Name'},
-        {'Column': 'VEHICLE_NO', 'Display': 'VEHICLE_NO'},
+        {'Column': 'VEHICLE_NO', 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -611,7 +612,7 @@ class HmAssignmentController extends GetxController{
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
+            keyColumn: 'DEL_MAN_CODE',
             mode: "S",
             layoutName: "B",
             callback: (data){
@@ -622,11 +623,12 @@ class HmAssignmentController extends GetxController{
       );
     }
     else if(mode == "GCYLINDER_ASSIGNMENT") {
-      if(wstrPageMode.value  != "VIEW"){
-        return;
-      }
+      // if(wstrPageMode.value  != "VIEW"){
+      //   return;
+      // }
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DOCNO', 'Display': 'Code'},
+        {'Column': 'DOCTYPE', 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -708,35 +710,6 @@ class HmAssignmentController extends GetxController{
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
             keyColumn: 'DESCP',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "CRDELIVERYMANMASTER"){
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
-        {'Column': 'NAME', 'Display': 'Name'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
-
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'CRDELIVERYMANMASTER',
-            title: 'Driver Details',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
             mode: "S",
             layoutName: "B",
             callback: (data){

@@ -279,7 +279,7 @@ class _LookupState extends State<Lookup> {
                 children: [
                   Icon(Icons.account_circle_outlined,color: Colors.black,size: 15,),
                   gapWC(5),
-                  Expanded(child: tc("${(e["GUEST_NAME"]??"").toString()} | ${(e["GUEST_CODE"]??"").toString()}", Colors.black, 10),)
+                  Expanded(child: tc("${(e["SLDESCP"]??"").toString()} | ${(e["SLCODE"]??"").toString()}", Colors.black, 10),)
                 ],
               ),
               Divider(),
@@ -402,14 +402,17 @@ class _LookupState extends State<Lookup> {
     for(var f in widget.lstrColumnList){
       var value = e[f["Column"]]??"";
       var caption = f["Display"]??"";
-      rtnList.add(Row(
+      rtnList.add(
+     f["Display"]!="N"?
+          Row(
 
         children: [
           tc(caption+":" , Colors.black , 8),
           gapWC(2),
           Flexible(flex: 2,child: tcn(value.toString(), Colors.black , 10)),
         ],
-      ));
+      ):gapHC(0));
+
     }
     return rtnList;
   }

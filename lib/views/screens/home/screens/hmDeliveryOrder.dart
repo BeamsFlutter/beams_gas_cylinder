@@ -136,18 +136,22 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                     child:     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.account_circle_outlined,
-                                            color: Colors.black,
-                                            size: 15,
-                                          ),
-                                          gapWC(5),
-                                          tc(hmDelivryOrderController.cstmrName.value,
-                                              Colors.black, 12)
-                                        ],
-                                      ),
+                        Expanded(
+                          child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.account_circle_outlined,
+                                              color: Colors.black,
+                                              size: 15,
+                                            ),
+                                            gapWC(5),
+                                            Expanded(
+                                              child: tc(hmDelivryOrderController.cstmrName.value,
+                                                  Colors.black, 12),
+                                            )
+                                          ],
+                                        ),
+                        ),
                         Row(
                           children: [
                             const Icon(
@@ -470,8 +474,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
     );
   }
 
-  wAddBuildAprtmntCode(heading, codetxt, nametxt, codetxtController,
-      nametxtController, prefixIcon, onTap) {
+  wAddBuildAprtmntCode(heading, codetxt, nametxt, codetxtController,nametxtController, prefixIcon, onTap) {
     return Get.bottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -794,7 +797,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                 if(hmDelivryOrderController.wstrPageMode=="VIEW"){
                   return;
                 }
-                hmDelivryOrderController.fnLookup("GUESTMASTER");
+                hmDelivryOrderController.fnLookup("SLMAST");
 
               },
               duration: const Duration(milliseconds: 110),
@@ -844,7 +847,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
+                        Expanded(child: tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12)),
                         tcn("Credit Balance", Colors.black, 10),
 
                       ],
@@ -876,13 +879,13 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             wRoundedInputField(
                 hmDelivryOrderController.txtAreaCode, "Area Code", "N",enable: false,
                 prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-              hmDelivryOrderController.txtLandmark,
-              "Landmark",
-              "N",
-              prefixicon: Icons.apartment,enable: false,
-            ),
+            // gapHC(10),
+            // wRoundedInputField(
+            //   hmDelivryOrderController.txtLandmark,
+            //   "Landmark",
+            //   "N",
+            //   prefixicon: Icons.apartment,enable: false,
+            // ),
             gapHC(10),
             wRoundedInputField(
               hmDelivryOrderController.txtAddress,enable: false,

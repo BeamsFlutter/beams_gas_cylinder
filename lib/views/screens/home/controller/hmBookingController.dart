@@ -138,6 +138,7 @@ class HmBookingController extends GetxController{
   }
 
   fnClear(){
+    dprint("###################### clear>>>>>>>>>>>>");
     fnCustomerClear();
     txtdelivryDate.text =setDate(15,DateTime.now());
     lstrBookedList.value =[];
@@ -156,10 +157,9 @@ class HmBookingController extends GetxController{
 
 
   fnSave(context) {
-    dprint("sssssssssaaaveeeeee");
-    if (customerformKey.value.currentState!.validate()) {
 
-      dprint("11111111111111111111111111");
+    if (customerformKey.value.currentState!.validate()) {
+      dprint("lstrBookedList.value>>>>  ${lstrBookedList.value}");
       List header =[];
       List det=[];
       List assignmnt =[];
@@ -248,9 +248,9 @@ class HmBookingController extends GetxController{
     dprint(mode);
     dprint(g.wstrCompany);
     if(mode == "GCYLINDER_BOOKING"){
-      if(wstrPageMode.value  != "VIEW"){
-        return;
-      }
+      // if(wstrPageMode.value  != "VIEW"){
+      //   return;
+      // }
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DOCNO', 'Display': 'Code'},
         {'Column': 'PARTY_CODE', 'Display': 'PCode'},
@@ -285,20 +285,23 @@ class HmBookingController extends GetxController{
           )
       );
     }
-    else   if(mode == "GUESTMASTER"){
+    else   if(mode == "SLMAST"){
       final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'GUEST_CODE', 'Display': 'Code'},
-        {'Column': 'GUEST_NAME', 'Display': 'Name'},
+        {'Column': 'SLCODE', 'Display': 'Code'},
+        {'Column': 'SLDESCP', 'Display': 'Name'},
         {'Column': 'MOBILE', 'Display': 'Mobile'},
         {'Column': 'EMAIL', 'Display': 'Email'},
         {'Column': 'BUILDING_CODE', 'Display': 'Building'},
         {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
-        {'Column': 'ADD1', 'Display': 'Address'},
-        // {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
+        {'Column': 'ADDRESS1', 'Display': 'Address'},
+        {'Column': 'REMARKS', 'Display': ''},
         // {'Column': 'APARTMENT_CODE', 'Display': 'Apartment'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+      var lstrFilter =[
+        {'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'},
+        {'Column': "ACTYPE", 'Operator': '=', 'Value': 'AR', 'JoinType': 'AND'},
+      ];
 
       // if(frBuildingCode.isNotEmpty){
       //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
@@ -310,14 +313,14 @@ class HmBookingController extends GetxController{
           Lookup(
             txtControl: txtController,
             oldValue: "",
-            lstrTable: 'GUESTMASTER',
+            lstrTable: 'SLMAST',
             title: 'Customer Details',
             lstrColumnList: lookup_Columns,
             lstrFilldata: lookup_Filldata,
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
+            keyColumn: 'SLCODE',
             mode: "S",
             layoutName: "PARTY",
             callback: (data){
@@ -392,6 +395,7 @@ class HmBookingController extends GetxController{
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
         {'Column': 'NAME', 'Display': 'Name'},
+        {'Column': 'VEHICLE_NO', 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -407,7 +411,7 @@ class HmBookingController extends GetxController{
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
+            keyColumn: 'DEL_MAN_CODE',
             mode: "S",
             layoutName: "B",
             callback: (data){
@@ -504,17 +508,17 @@ cstmrCode.value="";
         txtApartmentCode.text =data["APARTMENT_CODE"]??"";
         //   apiGetCustomerDetails();
       }
-      else if(mode  ==  "GUESTMASTER"){
+      else if(mode  ==  "SLMAST"){
         dprint("GUSTMSSTER DATTTS ${data}");
-        txtCustomerCode.text  = data["GUEST_CODE"]??"";
-        txtCustomerName.text  = data["GUEST_NAME"]??"";
-        // frEmail.value  = data["EMAIL"]??"";
+        txtCustomerCode.text  = data["SLCODE"]??"";
+        txtCustomerName.text  = data["SLDESCP"]??"";
+
         txtContactNo.text  = data["MOBILE"]??"";
         txtApartmentCode.text = data["APARTMENT_CODE"]??"";
-        // txtAreaCode.text=data["APARTMENT_CODE"]??"";
-        // txtRemark.text=data["APARTMENT_CODE"]??"";
-        txtAddress.text=data["ADD1"]??"";
-        // txtLandmark.text=data["APARTMENT_CODE"]??"";
+
+        txtAddress.text=data["ADDRESS1"]??"";
+        txtRemark.text=data["REMARKS"]??"";
+
         txtBuildingCode.text = data["BUILDING_CODE"]??"";
         g.wstrBuildingCode  = data["BUILDING_CODE"]??"";
         g.wstrApartmentCode  = data["APARTMENT_CODE"]??"";
@@ -523,6 +527,7 @@ cstmrCode.value="";
       else if(mode  ==  "CRDELIVERYMANMASTER"){
         dprint("1111111111111111111111");
         txtdriver.text = data["DEL_MAN_CODE"]??"";
+        txtvehicleNumber.text = data["VEHICLE_NO"]??"";
 
       }
       else if(mode  ==  "CRVEHICLEMASTER"){
@@ -542,7 +547,7 @@ cstmrCode.value="";
         dprint("Booking dataaaaaaaaaaa ${data}");
         frDocno.value = data["DOCNO"];
         apiViewBooking(frDocno.value,"");
-        update();
+        // update();
       }
 
     }
@@ -551,11 +556,9 @@ cstmrCode.value="";
 
   fnFill(data){
     dprint("Values>>>>>>>  ${data}");
-    if(wstrPageMode != "VIEW"){
-      return;
-    }
-
     fnClear();
+
+
 
     var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
     var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
@@ -693,6 +696,8 @@ cstmrCode.value="";
     lstrBookedList.removeWhere((element) => element["QTY"] <= 0);
 
   }
+
+
 
   var selectedproduct="".obs;
 
@@ -963,6 +968,18 @@ cstmrCode.value="";
       }
 
 
+    }
+
+  }
+
+
+  apiGetCustomerDetails(slcode){
+    futureform = ApiCall().apiViewCustomerDetails(slcode);
+    futureform.then((value) => apiGetCustomerDetailsRes(value));
+  }
+  apiGetCustomerDetailsRes(value){
+    if(g.fnValCheck(value)){
+   //   fnFillCustomerDetails(value);
     }
 
   }

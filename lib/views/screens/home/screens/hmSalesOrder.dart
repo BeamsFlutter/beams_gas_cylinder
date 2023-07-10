@@ -35,7 +35,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
 
     }
     hmSalesOrderController.apiProductType();
-    hmSalesOrderController.apiViewDeliveryOrder("", "LAST");
+ //   hmSalesOrderController.apiViewDeliveryOrder("", "LAST");
     hmSalesOrderController.apiGetStockDetails("CCD");
 
     // TODO: implement initState
@@ -79,9 +79,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
-
-
-                          hmSalesOrderController.fnLookup("GCYLINDER_DO");
+                          hmSalesOrderController.fnLookup("SO");
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
@@ -136,19 +134,24 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                     ),
                     child:     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.account_circle_outlined,
-                              color: Colors.black,
-                              size: 15,
-                            ),
-                            gapWC(5),
-                            tc(hmSalesOrderController.cstmrName.value,
-                                Colors.black, 12)
-                          ],
-                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.account_circle_outlined,
+                                color: Colors.black,
+                                size: 15,
+                              ),
+                              gapWC(5),
+                             Expanded(
+                               child: tc(hmSalesOrderController.cstmrName.value,
+                                   Colors.black, 12),
+                             )
+                            ],
+                          ),
+                        ), 
                         Row(
                           children: [
                             const Icon(
@@ -315,26 +318,25 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 50,right: 50,bottom: 10),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
-                              decoration: boxDecoration(nearlyWhite, 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
 
-                                children: [
-                                  tc('Net Amount', txtColor, 16),
-                                  gapWC(40),
-                                  tc(hmSalesOrderController.txtNetAmt.text,Colors.black,15)
-                                ],
-                              ),
-                            ),
-                          )
                         ],
                       ),
                     ),
                   ),
+                  gapHC(10),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                    decoration: boxDecoration(nearlyWhite, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+                      children: [
+                        tcn('Net Amount', txtColor, 16),
+                        gapWC(40),
+                        tc(hmSalesOrderController.txtNetAmt.text,Colors.black,15)
+                      ],
+                    ),
+                  )
                 ],
               ),
             )),
@@ -432,7 +434,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
 
 //===============================================WIDGETS
 
-  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup, {maxLine, prefixicon,enable}) {
+  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup, {maxLine, prefixicon,enable=false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -626,11 +628,11 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                 ],
               ),
             ),
-            hmSalesOrderController.lstrDeliveredList.isEmpty?gapHC(10):gapHC(0),
+            hmSalesOrderController.lstrSalesOrderList.isEmpty?gapHC(10):gapHC(0),
             Column(
               children: [
                 Column(
-                  children: hmSalesOrderController.wDeliverItemList(context),
+                  children: hmSalesOrderController.wSalesOrderItemList(context),
                 ),
               ],
             ),
@@ -779,7 +781,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                 if(hmSalesOrderController.wstrPageMode=="VIEW"){
                   return;
                 }
-                hmSalesOrderController.fnLookup("GUESTMASTER");
+                hmSalesOrderController.fnLookup("SLMAST");
 
               },
               duration: const Duration(milliseconds: 110),
@@ -829,7 +831,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc(hmSalesOrderController.cstmrName.value, Colors.black, 12),
+                        Expanded(child: tc(hmSalesOrderController.cstmrName.value, Colors.black, 12)),
                         tcn("Credit Balance", Colors.black, 10),
 
                       ],
@@ -862,13 +864,13 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                 hmSalesOrderController.txtAreaCode, "Area Code", "N",enable: false,
                 prefixicon: Icons.apartment),
             gapHC(10),
-            wRoundedInputField(
-              hmSalesOrderController.txtLandmark,
-              "Landmark",
-              "N",
-              prefixicon: Icons.apartment,enable: false,
-            ),
-            gapHC(10),
+            // wRoundedInputField(
+            //   hmSalesOrderController.txtLandmark,
+            //   "Landmark",
+            //   "N",
+            //   prefixicon: Icons.apartment,enable: false,
+            // ),
+            // gapHC(10),
             wRoundedInputField(
               hmSalesOrderController.txtAddress,enable: false,
               "Address",
@@ -878,7 +880,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
             ),
             gapHC(10),
             wRoundedInputField(
-              hmSalesOrderController.txtRemark,enable: hmSalesOrderController.wstrPageMode=="VIEW"?false:true,
+              hmSalesOrderController.txtRemark,enable: hmSalesOrderController.wstrPageMode.value=="VIEW"?false:true,
               "Remark",
               "N",
               maxLine: 5,

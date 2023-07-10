@@ -124,6 +124,7 @@ class HmSalesController extends GetxController{
     lstrSalesList.value=[];
     txtTotalAmt.text="";
     txtDriver.clear();
+    txtContactNo.clear();
     cstmrCode.value="";
     cstmrName.value="";
     txtCustomerName.clear();
@@ -228,7 +229,7 @@ class HmSalesController extends GetxController{
       for(var e in detList){
         var qty = g.mfnDbl(e["QTY2"]);
         var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
-        var price =  g.mfnDbl(e["RATE"]);
+        var price =  g.mfnDbl(e["RATE2"]);
         var soldrate =g.mfnDbl(e["CYL_SELL_RATE"]);
         var disc  =0.0;
 
@@ -245,7 +246,7 @@ class HmSalesController extends GetxController{
         dprint("##########gg##########  ${e}");
         var qty2 = g.mfnDbl(e["QTY2"]);
         var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
-        var price =  g.mfnDbl(e["RATE"]);
+        var price =  g.mfnDbl(e["RATE2"]);
         var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
         var vat = g.mfnDbl(e["VAT_PERC"]);
         var disc  = 0.0;
@@ -268,7 +269,7 @@ class HmSalesController extends GetxController{
           "QTY": qty2,
           "RETURN_QTY": returnQty,
           "DISC_AMT": e["DISC_AMT"],
-          "RATE": e["RATE"],
+          "RATE": e["RATE2"],
           "VAT_PERC":e["VAT_PERC"],
           "NQTY":e["QTY2"],
           "EQTY":e["RETURN_QTY"],
@@ -314,15 +315,15 @@ class HmSalesController extends GetxController{
       errorMsg(context, "Choose Customer");
       return;
     }
-    if(txtBuildingCode.text.isEmpty){
-      errorMsg(context, "Choose Building");
-      return;
-    }
-    //
-    if(txtApartmentCode.text.isEmpty){
-      errorMsg(context, "Choose Apartment");
-      return;
-    }
+    // if(txtBuildingCode.text.isEmpty){
+    //   errorMsg(context, "Choose Building");
+    //   return;
+    // }
+    // //
+    // if(txtApartmentCode.text.isEmpty){
+    //   errorMsg(context, "Choose Apartment");
+    //   return;
+    // }
 
     if(txtlocation.text.isEmpty){
       errorMsg(context, "Choose Location");
@@ -333,8 +334,7 @@ class HmSalesController extends GetxController{
     List tableInvDet =[];
 
     var taxincldYN = lstrStockDetailList[0]["Column1"];
-    List tableDoDet=[];
-    List tableDo =[];
+
 
     var totalAmount = 0.0;
     var totalGrAmt = 0.0;
@@ -389,22 +389,21 @@ class HmSalesController extends GetxController{
       var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
       var vat = g.mfnDbl(e["VAT_PERC"]);
       var disc  = 0.0;
-      var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+      var unitCf = g.mfnDbl(e["CATWEIGHT"]) == 0?1:g.mfnDbl(e["CATWEIGHT"]);
       var grAmount =  0.0;
+
       var qty1 = qty2 * unitCf;
-
       var rate2 = price;
-      var rate1 = price*unitCf;
-
+      var rate1 = price/unitCf;
       var unit1 = e["UNIT"];
       var unit2 = e["UNIT2"];
-
       var soldQty = qty2 - returnQty;
       var gasAmount  =  qty2 * price ;
       var soldAmount =  soldQty * soldRate;
-
       var gramt =  gasAmount + soldAmount;
       var amt = gramt - disc;
+
+
       dprint("AMTTTT ${amt}");
       dprint("totalllllll ${totalAmount}");
 
@@ -466,8 +465,8 @@ class HmSalesController extends GetxController{
         "SOLD_RATEFC": soldRate*currRate,
         "SOLD_AMT": soldAmount,
         "SOLD_AMTFC": soldAmount*currRate,
-        "NETAMT": gramt,
-        "NETAMTFC": gramt,
+        "NETAMT": netAmount,
+        "NETAMTFC": netAmount*currRate,
         "PRVDOCTABLE": "",
         "PRVYEARCODE": "",
         "PRVDOCNO": "",
@@ -688,52 +687,12 @@ class HmSalesController extends GetxController{
   fnLookup(mode){
     dprint(mode);
 
-    if(mode == "GCYLINDER_CALL_LOGIN"){
 
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'DOCNO', 'Display': 'Code'},
-        {'Column': 'PARTY_CODE', 'Display': 'PCode'},
-        {'Column': 'PARTY_NAME', 'Display': 'Name'},
-        {'Column': 'MOBILE_NO', 'Display': 'Mobile'},
-        {'Column': 'DOCTYPE', 'Display': 'Doctype'},
-        {'Column': 'YEARCODE', 'Display': 'Yearcode'},
-
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
-
-      // if(frBuildingCode.isNotEmpty){
-      //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
-      // }
-      // if(frApartmentCode.isNotEmpty){
-      //   lstrFilter.add({'Column': "APARTMENT_CODE", 'Operator': '=', 'Value': frApartmentCode, 'JoinType': 'AND'});
-      // }
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'GCYLINDER_CALL_LOGIN',
-            title: 'Booking Details',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'DOCNO',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "CRDELIVERYMANMASTER") {
+    if(mode == "CRDELIVERYMANMASTER") {
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
         {'Column': 'NAME', 'Display': 'Name'},
-        {'Column': 'VEHICLE_NO', 'Display': 'VEHICLE_NO'},
+        {'Column': 'VEHICLE_NO', 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -755,39 +714,7 @@ class HmSalesController extends GetxController{
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "GCYLINDER_ASSIGNMENT") {
-      if(wstrPageMode.value  == "VIEW"){
-        return;
-      }
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'DOCNO', 'Display': 'Code'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[];
-
-
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'GCYLINDER_ASSIGNMENT',
-            title: 'Assignment Details',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'DOCNO',
+            keyColumn: 'DEL_MAN_CODE',
             mode: "S",
             layoutName: "B",
             callback: (data){
@@ -856,65 +783,7 @@ class HmSalesController extends GetxController{
           )
       );
     }
-    else if(mode == "CRDELIVERYMANMASTER"){
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
-        {'Column': 'NAME', 'Display': 'Name'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
 
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'CRDELIVERYMANMASTER',
-            title: 'Driver Details',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
-    else if(mode == "CRVEHICLEMASTER"){
-      final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'VEHICLE_NO', 'Display': 'Code'},
-        {'Column': "DESCP", 'Display': 'Name'},
-      ];
-      final List<Map<String, dynamic>> lookup_Filldata = [
-      ];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
-
-      Get.to(
-          Lookup(
-            txtControl: txtController,
-            oldValue: "",
-            lstrTable: 'CRVEHICLEMASTER',
-            title: 'Building',
-            lstrColumnList: lookup_Columns,
-            lstrFilldata: lookup_Filldata,
-            lstrPage: '0',
-            lstrPageSize: '100',
-            lstrFilter: lstrFilter,
-            keyColumn: 'VEHICLE_NO',
-            mode: "S",
-            layoutName: "B",
-            callback: (data){
-              fnFillCustomerData(data,mode);
-            },
-            searchYn: 'Y',
-          )
-      );
-    }
     else if(mode == "AREAMASTER"){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'CODE', 'Display': 'Code'},
@@ -945,10 +814,10 @@ class HmSalesController extends GetxController{
           )
       );
     }
-    else   if(mode == "GUESTMASTER"){
+    else   if(mode == "SLMAST"){
       final List<Map<String, dynamic>> lookup_Columns = [
-        {'Column': 'GUEST_CODE', 'Display': 'Code'},
-        {'Column': 'GUEST_NAME', 'Display': 'Name'},
+        {'Column': 'SLCODE', 'Display': 'Code'},
+        {'Column': 'SLDESCP', 'Display': 'Name'},
         {'Column': 'MOBILE', 'Display': 'Mobile'},
         {'Column': 'EMAIL', 'Display': 'Email'},
         {'Column': 'BUILDING_CODE', 'Display': 'Building'},
@@ -956,10 +825,13 @@ class HmSalesController extends GetxController{
         // {'Column': 'LANDMARK', 'Display': ''},
         // {'Column': 'REMARKS', 'Display': ''},
         // {'Column': 'AREA_CODE', 'Display': ''},
-        {'Column': 'ADD1', 'Display': ''},
+        {'Column': 'ADDRESS1', 'Display': ''},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
-      var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
+      var lstrFilter =[
+        {'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'},
+        {'Column': "ACTYPE", 'Operator': '=', 'Value': 'AR', 'JoinType': 'AND'},
+      ];
 
       // if(frBuildingCode.isNotEmpty){
       //   lstrFilter.add({'Column': "BUILDING_CODE", 'Operator': '=', 'Value': frBuildingCode, 'JoinType': 'AND'});
@@ -971,14 +843,14 @@ class HmSalesController extends GetxController{
           Lookup(
             txtControl: txtController,
             oldValue: "",
-            lstrTable: 'GUESTMASTER',
+            lstrTable: 'SLMAST',
             title: 'Customer Details',
             lstrColumnList: lookup_Columns,
             lstrFilldata: lookup_Filldata,
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
+            keyColumn: 'SLCODE',
             mode: "S",
             layoutName: "PARTY",
             callback: (data){
@@ -1081,7 +953,7 @@ class HmSalesController extends GetxController{
     else if(mode == "Gcylinder_inv" ){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DOCNO', 'Display': 'DOCNO'},
-        {'Column': "DOCTYPE", 'Display': 'DOCTYPE'},
+        {'Column': "DOCTYPE", 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [
       ];
@@ -1119,20 +991,16 @@ class HmSalesController extends GetxController{
 
         //   apiGetCustomerDetails();
       }
-      else if (mode == "GUESTMASTER") {
+      else if (mode == "SLMAST") {
         dprint("RRRRRRRRRR ${data}");
-        txtCustomerCode.text = data["GUEST_CODE"] ?? "";
-        txtCustomerName.text = data["GUEST_NAME"] ?? "";
+        txtCustomerCode.text = data["SLCODE"] ?? "";
+        txtCustomerName.text = data["SLDESCP"] ?? "";
         txtContactNo.text = data["MOBILE"] ?? "";
         // frEmail.value  = data["EMAIL"]??"";
-        cstmrCode.value = data["GUEST_CODE"] ?? "";
-        cstmrName.value = data["GUEST_NAME"] ?? "";
-        txtContactNo.text = data["MOBILE"] ?? "";
+        cstmrCode.value = data["SLCODE"] ?? "";
+        cstmrName.value = data["SLDESCP"] ?? "";
         txtApartmentCode.text = data["APARTMENT_CODE"] ?? "";
-        txtAreacode.text = data["AREA_CODE"] ?? "";
-        txtLandmark.text = data["LANDMARK"] ?? "";
-        txtAddress.text = data["CUST_ADDRESS"] ?? "";
-        txtRemark.text = data["REMARKS"] ?? "";
+        txtAddress.text = data["ADDRESS1"] ?? "";
         txtBuildingCode.text = data["BUILDING_CODE"] ?? "";
         g.wstrBuildingCode = data["BUILDING_CODE"] ?? "";
         g.wstrApartmentCode = data["APARTMENT_CODE"] ?? "";

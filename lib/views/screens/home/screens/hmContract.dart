@@ -1,3 +1,4 @@
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmContractRecipt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
@@ -25,6 +26,9 @@ class _HmeContractState extends State<HmeContract> {
   void initState() {
     hmContractController.pageController = PageController();
     hmContractController.apiProductType();
+    hmContractController.lstrSelectedPage.value = "DT";
+    hmContractController.wstrPageMode.value = "VIEW";
+    hmContractController.apiViewContarct("","LAST");
     // TODO: implement initState
     super.initState();
   }
@@ -65,9 +69,7 @@ class _HmeContractState extends State<HmeContract> {
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
-
-
-                          // hmDelivryOrderController.fnLookup("GCYLINDER_DO");
+                         hmContractController.fnLookup("gcylinder_contract");
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
@@ -86,7 +88,7 @@ class _HmeContractState extends State<HmeContract> {
                                     weight: 100,
                                     size: 15,
                                   ),
-                                  tc(hmContractController.frDocno.value, txtColor, 12)
+                                  tc(hmContractController.frContractno.value, txtColor, 12)
                                 ],
                               ),
                               gapWC(5),
@@ -104,7 +106,7 @@ class _HmeContractState extends State<HmeContract> {
                           ),
                           gapWC(3),
                           tcn(
-                              setDate(7, hmContractController.docDate.value)
+                              setDate(7, hmContractController.contractDate.value)
                                   .toString()
                                   .toUpperCase(),
                               txtColor,
@@ -212,32 +214,76 @@ class _HmeContractState extends State<HmeContract> {
                     child: Container(
                       width: size.width,
                       decoration: boxDecoration(white, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: PageView(
-                              onPageChanged: (int page) {
-                                hmContractController.selectedPage.value =
-                                    page;
-                              },
-                              controller:
-                              hmContractController.pageController,
-                              children: [
-                                // 1st page design ------ Choose Item
-                                wDetailScreen(MediaQuery.of(context).size),
+                      child: Form(
+                              key: hmContractController.customerformKey.value,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: PageView(
+                                onPageChanged: (int page) {
+                                  hmContractController.selectedPage.value =
+                                      page;
+                                },
+                                controller:
+                                hmContractController.pageController,
+                                children: [
+                                  // 1st page design ------ Choose Item
+                                  wDetailScreen(MediaQuery.of(context).size),
 
-                                //2nd Page  design -----------------------------------
-                                wItemScreen(MediaQuery.of(context).size),
-                                wPaymentScreen( MediaQuery.of(context).size)
+                                  //2nd Page  design -----------------------------------
+                                  wItemScreen(MediaQuery.of(context).size),
+                                  wPaymentScreen( MediaQuery.of(context).size)
 
-                                // 3rd Page for Delivery Details
-                                // Container for  1st page   design -----------------------------------
-                              ],
+                                  // 3rd Page for Delivery Details
+                                  // Container for  1st page   design -----------------------------------
+                                ],
+                              ),
                             ),
-                          ),
+                            hmContractController.wstrPageMode.value=="VIEW" ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Bounce(
+                                      onPressed: () {
+                                         Get.to(()=>HmeContractRecipt(
+                                             contractNumber: hmContractController.frContractno.value,
+                                           //   customerName: hmContractController.txtCustomerName.text,
+                                           // apartmntCode:hmContractController.txtApartmentCode.text ,
+                                           // buildingCode:hmContractController.txtBuildingCode.text ,
+                                           // contactNumber:hmContractController.txtContactNo.text ,
 
-                        ],
+                                         ));
+
+                                        //  hmContractController.fnSave(context);
+                                      },
+                                      duration: const Duration(milliseconds: 110),
+                                      child: Container(
+                                        decoration: boxDecoration(primaryColor, 30),
+                                        padding:
+                                        const EdgeInsets.symmetric(vertical: 10),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(
+                                              Icons.task_alt,
+                                              color: Colors.white,
+                                              size: 15,
+                                            ),
+                                            gapWC(5),
+                                            tcn('PayNow', Colors.white, 15)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ):gapHC(0)
+
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -362,119 +408,135 @@ class _HmeContractState extends State<HmeContract> {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Bounce(
-              onPressed: () {
-                if(hmContractController.wstrPageMode=="VIEW"){
-                  return;
-                }
-                 hmContractController.fnLookup("GUESTMASTER");
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Bounce(
+                  onPressed: () {
+                    if(hmContractController.wstrPageMode=="VIEW"){
+                      return;
+                    }
+                     hmContractController.fnLookup("SLMAST");
 
-              },
-              duration: const Duration(milliseconds: 110),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  },
+                  duration: const Duration(milliseconds: 110),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
 
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(
-                              Icons.account_circle_outlined,
-                              color: Colors.black,
-                              size: 15,
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.account_circle_outlined,
+                                  color: Colors.black,
+                                  size: 15,
+                                ),
+                                gapWC(5),
+                                tc(hmContractController.cstmrCode.value,
+                                    Colors.black, 12)
+                              ],
                             ),
-                            gapWC(5),
-                            tc(hmContractController.cstmrCode.value,
-                                Colors.black, 12)
+
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                margin: const EdgeInsets.symmetric(horizontal:0),
+                                width: size.width-95,
+                                child: const Divider(thickness:1)),
+
+                            const Icon(
+                              Icons.search,
+                              color: txtColor,
+                              size: 25,
+                            )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: tc(hmContractController.cstmrName.value, Colors.black, 12)),
+                            tcn("Credit Balance", Colors.black, 10),
+
                           ],
                         ),
 
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                            margin: const EdgeInsets.symmetric(horizontal:0),
-                            width: size.width-95,
-                            child: const Divider(thickness:1)),
-
-                        const Icon(
-                          Icons.search,
-                          color: txtColor,
-                          size: 25,
-                        )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        tc(hmContractController.cstmrName.value, Colors.black, 12),
-                        tcn("Credit Balance", Colors.black, 10),
-
-                      ],
-                    ),
-
-                  ],
+                  ),
                 ),
-              ),
+                gapHC(5),
+
+
+                wRoundedInputField(
+                    hmContractController.txtCustomerName, "Customer Name", "N",enable: false,
+                    prefixicon: Icons.drive_file_rename_outline),
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtContactNo, "Contact No", "N",enable: false,
+                    prefixicon: Icons.phone_android_outlined),
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtWhatsappNumber, "WhatsApp No", "N",  enable: hmContractController.wstrPageMode.value=="VIEW"?false:true,
+                    prefixicon: Icons.phone_android_outlined),
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtEmail, "Email", "N",  enable: hmContractController.wstrPageMode.value=="VIEW"?false:true,
+                    prefixicon: Icons.email_outlined),
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtBuildingCode, "Building Code", "N",enable: false,
+                    prefixicon: Icons.apartment),
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtApartmentCode, "Apartment Code", "N",enable: false,
+                    prefixicon: Icons.apartment),
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtAreaCode, "Area Code", "N",enable: false,
+                    prefixicon: Icons.apartment),
+                gapHC(10),
+                // wRoundedInputField(
+                //   hmContractController.txtLandmark,
+                //   "Landmark",
+                //   "N",
+                //   prefixicon: Icons.apartment,enable: false,
+                // ),
+                // gapHC(10),
+                wRoundedInputField(
+                  hmContractController.txtAddress,enable: false,
+                  "Address",
+                  "N",
+                  maxLine: 5,
+                  prefixicon: Icons.abc_outlined,
+                ),
+                gapHC(10),
+                wRoundedInputField(hmContractController.txtRemark, "Remark", "N",maxLine: 5,   enable: hmContractController.wstrPageMode.value=="VIEW"?false:true,
+                  prefixicon:   Icons.note_alt_outlined,),
+
+                gapHC(10),
+                wRoundedInputField(
+                    hmContractController.txtFrqDeliveryDays, "Frequency Of Delivery Days", "N",enable: hmContractController.wstrPageMode.value=="VIEW"?false:true,
+                    prefixicon: Icons.calendar_month_outlined,
+                     keybordType: TextInputType.number),
+
+
+                gapHC(15),
+
+              ],
             ),
-            gapHC(5),
-
-
-            wRoundedInputField(
-                hmContractController.txtCustomerName, "Customer Name", "N",enable: false,
-                prefixicon: Icons.drive_file_rename_outline),
-            gapHC(10),
-            wRoundedInputField(
-                hmContractController.txtContactNo, "Contact No", "N",enable: false,
-                prefixicon: Icons.phone_android_outlined),
-            gapHC(10),
-
-            wRoundedInputField(
-                hmContractController.txtBuildingCode, "Building Code", "N",enable: false,
-                prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-                hmContractController.txtApartmentCode, "Apartment Code", "N",enable: false,
-                prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-                hmContractController.txtAreaCode, "Area Code", "N",enable: false,
-                prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-              hmContractController.txtLandmark,
-              "Landmark",
-              "N",
-              prefixicon: Icons.apartment,enable: false,
-            ),
-            gapHC(10),
-            wRoundedInputField(
-              hmContractController.txtAddress,enable: false,
-              "Address",
-              "N",
-              maxLine: 5,
-              prefixicon: Icons.abc_outlined,
-            ),
-            gapHC(10),
-            wRoundedInputField(
-                hmContractController.txtFrqDeliveryDays, "Frequency Of Delivery Days", "N",enable: hmContractController.wstrPageMode.value=="VIEW"?false:true,
-                prefixicon: Icons.calendar_month_outlined,
-                 keybordType: TextInputType.number),
-
-
-            gapHC(15),
 
           ],
         ),
@@ -496,7 +558,7 @@ class _HmeContractState extends State<HmeContract> {
                     child: tcn('Item', Colors.white, 10)),
 
                 Padding(
-                  padding: const EdgeInsets.only(right: 22),
+                  padding:  EdgeInsets.only(right:22),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [tcn('Qty', Colors.white, 10)],
@@ -522,13 +584,13 @@ class _HmeContractState extends State<HmeContract> {
         children: [
           tc('Deposit Amount',txtColor, 12),
           gapHC(5),
-          CommonTextField(obscureY: false,txtController: hmContractController.txtAmount,prefixIcon: Icons.attach_money,
+          CommonTextField(obscureY: false,txtController: hmContractController.txtDepositAmount,prefixIcon: Icons.attach_money,
               keybordType: TextInputType.number,enableY:hmContractController.wstrPageMode.value=="VIEW"? false:true,
               inputformate: mfnInputDecFormatters(),textStyle: TextStyle(
                   color: txtColor
               ),prefixIconColor: txtColor,
               textAlignment: TextAlign.right,fnClear:(){
-                hmContractController.txtAmount.clear();
+                hmContractController.txtDepositAmount.clear();
               } ),
         ],
       ),
@@ -615,7 +677,10 @@ class _HmeContractState extends State<HmeContract> {
                             ))),
                   ):gapHC(0),
                   gapWC(5),
-                  tcn(qty.toString(), Colors.black, 10),
+                  Padding(
+                    padding:  EdgeInsets.only(right: hmContractController.wstrPageMode.value=="VIEW"?20:0),
+                    child: tcn(qty.toString(), Colors.black, 10),
+                  ),
                   gapWC(5),
                   hmContractController.wstrPageMode!="VIEW"?   Bounce(
                     onPressed: () {

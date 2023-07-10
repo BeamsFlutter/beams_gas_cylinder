@@ -10,7 +10,10 @@ import '../../../styles/colors.dart';
 import '../controller/hmContractReciptController.dart';
 
 class HmeContractRecipt extends StatefulWidget {
-  const HmeContractRecipt({super.key});
+  final String contractNumber;
+
+
+  const HmeContractRecipt({super.key,  required this.contractNumber});
 
   @override
   State<HmeContractRecipt> createState() => _HmeContractReciptState();
@@ -18,8 +21,28 @@ class HmeContractRecipt extends StatefulWidget {
 
 class _HmeContractReciptState extends State<HmeContractRecipt> {
   final HmContractReciptController hmContractReciptController =   Get.put(HmContractReciptController());
+@override
+  void initState() {
+    // TODO: implement initState
+
+  if(widget.contractNumber.isEmpty){
+    dprint("contractNumber EMPTY");
+    hmContractReciptController.apiViewContarctRecipt("", "LAST",hmContractReciptController.frDocType.value);
+  }else{
+    dprint("contractNumber NotEMPTY");
+    hmContractReciptController.wstrPageMode.value ="ADD";
+    hmContractReciptController.frContractNumber.value = widget.contractNumber;
+    hmContractReciptController.apiViewContarctBalance(hmContractReciptController.frContractNumber.value);
+
+  }
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -55,7 +78,7 @@ class _HmeContractReciptState extends State<HmeContractRecipt> {
                   onPressed: () {
 
 
-                    // hmDelivryOrderController.fnLookup("GCYLINDER_DO");
+                     hmContractReciptController.fnLookup("gcylinder_contractrec");
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
@@ -114,15 +137,15 @@ class _HmeContractReciptState extends State<HmeContractRecipt> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    tc("Contract Number :", txtColor, 12),
+                    tc("Contract Number : ${   hmContractReciptController.frContractNumber.value}", txtColor, 12),
                     gapHC(5),
-                    tc("Customer Name    :", txtColor, 12),
+                    tc("Customer Name    : ${hmContractReciptController.frCustomerName.value}", txtColor, 12),
                     gapHC(5),
-                    tc("Building Code        :", txtColor, 12),
+                    tc("Building Code        : ${hmContractReciptController.frBuildingCode.value}", txtColor, 12),
                     gapHC(5),
-                    tc("Apartment Code  :", txtColor, 12),
+                    tc("Apartment Code  : ${hmContractReciptController.frAprtmntCode.value}", txtColor, 12),
                     gapHC(5),
-                    tc("Contact No             :", txtColor, 12),
+                    tc("Contact No             : ${hmContractReciptController.frContactNo.value}", txtColor, 12),
                   ],
                 ),
               ),

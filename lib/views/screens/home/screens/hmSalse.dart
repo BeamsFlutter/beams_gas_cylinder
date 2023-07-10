@@ -151,17 +151,21 @@ class _HmeSalesState extends State<HmeSales> {
                   child:     Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.account_circle_outlined,
-                            color: Colors.black,
-                            size: 15,
-                          ),
-                          gapWC(5),
-                          tc(hmSalescontroller.cstmrName.value,
-                              Colors.black, 12)
-                        ],
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.account_circle_outlined,
+                              color: Colors.black,
+                              size: 15,
+                            ),
+                            gapWC(5), 
+                            Expanded(
+                              child: tc(hmSalescontroller.cstmrName.value,
+                                  Colors.black, 12),
+                            )
+                          ],
+                        ),
                       ),
                       Row(
                         children: [
@@ -329,26 +333,25 @@ class _HmeSalesState extends State<HmeSales> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 50,right: 50,bottom: 10),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
-                            decoration: boxDecoration(nearlyWhite, 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
 
-                              children: [
-                                tc('Net Amount', txtColor, 16),
-                                gapWC(40),
-                                tc(hmSalescontroller.txtNetAmt.text,Colors.black,15)
-                              ],
-                            ),
-                          ),
-                        )
                       ],
                     ),
                   ),
                 ),
+                gapHC(10),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                  decoration: boxDecoration(nearlyWhite, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      tcn('Net Amount', txtColor, 16),
+                      gapWC(40),
+                      tc(hmSalescontroller.txtNetAmt.text,Colors.black,15)
+                    ],
+                  ),
+                )
               ],
             )),
         bottomNavigationBar: Obx(
@@ -814,7 +817,7 @@ class _HmeSalesState extends State<HmeSales> {
                 if(hmSalescontroller.wstrPageMode=="VIEW"){
                   return;
                 }
-                hmSalescontroller.fnLookup("GUESTMASTER");
+                hmSalescontroller.fnLookup("SLMAST");
 
               },
               duration: const Duration(milliseconds: 110),
@@ -864,7 +867,7 @@ class _HmeSalesState extends State<HmeSales> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc(hmSalescontroller.cstmrName.value, Colors.black, 12),
+                        Expanded(child: tc(hmSalescontroller.cstmrName.value, Colors.black, 12)),
                         tcn("Credit Balance", Colors.black, 10),
 
                       ],
@@ -896,13 +899,13 @@ class _HmeSalesState extends State<HmeSales> {
             wRoundedInputField(
                 hmSalescontroller.txtApartmentCode, "Area Code", "N",enable: false,
                 prefixicon: Icons.apartment),
-            gapHC(10),
-            wRoundedInputField(
-              hmSalescontroller.txtLandmark,
-              "Landmark",
-              "N",
-              prefixicon: Icons.apartment,enable: false,
-            ),
+            // gapHC(10),
+            // wRoundedInputField(
+            //   hmSalescontroller.txtLandmark,
+            //   "Landmark",
+            //   "N",
+            //   prefixicon: Icons.apartment,enable: false,
+            // ),
             gapHC(10),
             wRoundedInputField(
               hmSalescontroller.txtAddress,enable: false,

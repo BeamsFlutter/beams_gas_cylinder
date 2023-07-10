@@ -497,8 +497,8 @@ List<Widget> wHomeButtons(context){
     rtnList.add(
 
         wMenuCard(buttonName,
-            (buttonCode=="B")?Icons.calendar_month_outlined:(buttonCode=="C")?Icons.confirmation_num_outlined:(buttonCode=="CR")?Icons.receipt:(buttonCode=="SO")?Icons.point_of_sale:
-            (buttonCode=="A")?Icons.assignment:(buttonCode=="DO")?Icons.delivery_dining:Icons.point_of_sale_sharp,
+            (buttonCode=="B")?Icons.calendar_month_outlined:(buttonCode=="C")?Icons.handshake:(buttonCode=="CR")?Icons.receipt:(buttonCode=="SO")?Icons.point_of_sale:
+            (buttonCode=="A")?Icons.assignment:(buttonCode=="DO")?Icons.delivery_dining:(buttonCode=="CB")?Icons.account_balance_wallet_outlined:Icons.point_of_sale_sharp,
             55.0,
               (buttonCode=="B")?(){
                 Get.to(()=>HmeBooking());
@@ -506,7 +506,7 @@ List<Widget> wHomeButtons(context){
               }:(buttonCode=="CN")?(){
                 Get.to(()=>HmeCollections());
               }:(buttonCode=="CR")?(){
-                Get.to(()=> HmeContractRecipt());
+               Get.to(()=> HmeContractRecipt(contractNumber: "",));
 
                 dprint("Contract recipt");
               }:(buttonCode=="SO")?(){
@@ -525,6 +525,10 @@ List<Widget> wHomeButtons(context){
               (buttonCode=="S")?(){
 
                  Get.to(()=>HmeSales());
+              }:
+              (buttonCode=="CB")?(){
+
+                Get.to(()=>RepCustomerBalanceScreen());
               }:
                   (){
                 // Get.to(()=>HmeBooking());
@@ -553,7 +557,7 @@ List<Widget> wReportButtons(context){
 
         wMenuCard(buttonName,
             (buttonCode=="DS")?Icons.calendar_month_outlined:(buttonCode=="CN")?Icons.featured_play_list_outlined:(buttonCode=="A")?Icons.assignment:(buttonCode=="B")?Icons.calendar_month_outlined:
-            (buttonCode=="CB")?Icons.balance:Icons.more_horiz,
+            (buttonCode=="CB")?Icons.account_balance_wallet_outlined:Icons.more_horiz,
             55.0,  (buttonCode=="B")?(){
               Get.to(()=>RepBookingScreen());
 

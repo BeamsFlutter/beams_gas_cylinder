@@ -148,7 +148,7 @@ class HmPreviousSalesController extends GetxController{
             lstrPage: '0',
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
-            keyColumn: 'GUEST_CODE',
+            keyColumn: 'DEL_MAN_CODE',
             mode: "S",
             layoutName: "B",
             callback: (data){

@@ -341,13 +341,7 @@ class ApiCall  with BaseController{
 
   //============================================  DELIVERY ORDER
   Future saveDeliveryOrder(mode,tableDoDet,tableDo)async{
-    dprint("MODE>>>>> ${mode}");
-    dprint("tableDoDet>>>>> ${tableDoDet}");
-    dprint("**************************************************************");
-    dprint("tableDo>>>>> ${tableDo}");
-    dprint("**************************************************************");
-    dprint("g.wstrUserCD>>>>> ${g.wstrUserCD}");
-    dprint("g.g.wstrDeivceId>>>>> ${g.wstrDeivceId}");
+
 
     var request = jsonEncode(<dynamic, dynamic>{
       ApiParams.mode:mode,
@@ -384,6 +378,153 @@ class ApiCall  with BaseController{
     dprint('api/GetDeliveryOrder');
     dprint(request);
     var response = await ApiManager().post('api/GetDeliveryOrder',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
+
+
+  //============================================  CONTRACT
+  Future saveContract(mode,tableContractDet,tableContract)async{
+
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      ApiParams.mode:mode,
+      "TABLE_CONTRACT":tableContract,
+      "TABLE_CONTRACTDET":tableContractDet,
+    });
+    dprint('api/SaveContract');
+    dprint(request);
+    var response = await ApiManager().post('api/SaveContract',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+
+  }
+  Future<dynamic> apiViewContract(contarctNo,mode) async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      'CONTRACT_NO':contarctNo,
+      ApiParams.company:g.wstrCompany,
+      ApiParams.yearcode:g.wstrYearcode,
+      'DOCTYPE':"GCC",
+      'MODE':mode,
+
+    });
+    dprint('api/GetContract');
+    dprint(request);
+    var response = await ApiManager().post('api/GetContract',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
+
+  //============================================  CUSTOMER DETAILS
+  Future<dynamic> apiViewCustomerDetails(slcode) async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+
+      ApiParams.company:g.wstrCompany,
+      "SLCODE":slcode
+
+
+    });
+    dprint('api/getCustomerDetails');
+    dprint(request);
+    var response = await ApiManager().post('api/getCustomerDetails',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
+
+
+  //============================================  CONTRACT Recipt
+  Future saveContractRecipt(mode,tableContractRec)async{
+
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      ApiParams.mode:mode,
+      "TABLE_CONTRACTREC":tableContractRec,
+    });
+    dprint('api/SaveContractRec');
+    dprint(request);
+    var response = await ApiManager().post('api/SaveContractRec',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+
+  }
+  Future<dynamic> apiViewContractRecipt(docNo,mode,docType) async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      'DOCNO':docNo,
+      ApiParams.company:g.wstrCompany,
+      ApiParams.yearcode:g.wstrYearcode,
+      'DOCTYPE':docType,
+      'MODE':mode,
+
+    });
+    dprint('api/GetContractRec');
+    dprint(request);
+    var response = await ApiManager().post('api/GetContractRec',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
+ //==============================================  Contract Balance
+  Future<dynamic> apiViewContractBalance(contractNo) async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      'CONTRACT_NO':contractNo,
+      ApiParams.company:g.wstrCompany,
+
+
+    });
+    dprint('api/GetContractBalance');
+    dprint(request);
+    var response = await ApiManager().post('api/GetContractBalance',request).catchError((error){
       if (error is BadRequestException) {
       } else {
         handleError(error);
@@ -447,6 +588,56 @@ class ApiCall  with BaseController{
 
 
   }
+
+  //============================================  SALES ORDER
+  Future saveSalesOrder(mode,header,details,invAdditional,doctype)async{
+    var request = jsonEncode(<dynamic, dynamic>{
+      ApiParams.mode:mode,
+      "DETAILS_TABLE":details,
+      "HEADER_TABLE":header,
+      "INV_ADDITIONAL":invAdditional,
+      "DOCTYPE": doctype,
+    });
+    dprint('api/saveVoucher');
+    dprint(request);
+    var response = await ApiManager().post('api/saveVoucher',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+
+  }
+  Future<dynamic> apiViewSalesOrder(docno,mode) async{
+
+    var request = jsonEncode(<dynamic, dynamic>{
+      'DOCNO':docno,
+      ApiParams.company:g.wstrCompany,
+      ApiParams.yearcode:g.wstrYearcode,
+      'DOCTYPE':"CCD",
+      'MODE':mode,
+
+    });
+    dprint('api/GetDeliveryOrder');
+    dprint(request);
+    var response = await ApiManager().post('api/GetDeliveryOrder',request).catchError((error){
+      if (error is BadRequestException) {
+      } else {
+        handleError(error);
+      }
+    });
+    dprint(response);
+    if (response == null) return;
+
+    return response;
+
+  }
+
 
 
 }

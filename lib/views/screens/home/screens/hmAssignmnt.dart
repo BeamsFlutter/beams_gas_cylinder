@@ -28,6 +28,8 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
     hmAssignmnt.pageController = PageController();
     hmAssignmnt.wstrPageMode.value = 'VIEW';
     hmAssignmnt.apiViewAssignment('',"LAST");
+    hmAssignmnt.lstrSelectedPage.value = "CB";
+    hmAssignmnt.selectedPage.value=1;
     // TODO: implement initState
     super.initState();
   }
@@ -356,9 +358,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       pageNumber: 0,
                       selectedPage: hmAssignmnt.selectedPage.value,
                       onPressed: () {
-                        hmAssignmnt.lstrSelectedPage.value = "AT";
+                        hmAssignmnt.lstrSelectedPage.value = "CB";
                         changePage(0);
                       },
+
                       icon: Icons.calendar_month),
                   TabButton(
                       width: 0.3,

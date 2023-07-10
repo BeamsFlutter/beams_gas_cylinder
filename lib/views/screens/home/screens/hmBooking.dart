@@ -393,7 +393,7 @@ class _HmeBookingState extends State<HmeBooking> {
             hmBookingController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
             hmBookingController.wstrPageMode.value!="VIEW"?   Bounce(
               onPressed: () {
-                hmBookingController.fnLookup("GUESTMASTER");
+                hmBookingController.fnLookup("SLMAST");
 
               },
               duration: const Duration(milliseconds: 110),
@@ -443,7 +443,7 @@ class _HmeBookingState extends State<HmeBooking> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        tc(hmBookingController.txtCustomerName.text, Colors.black, 12),
+                        Expanded(child: tc(hmBookingController.txtCustomerName.text, Colors.black, 12)),
                         tcn("Credit Balance", Colors.black, 10),
 
                       ],
@@ -518,50 +518,40 @@ class _HmeBookingState extends State<HmeBooking> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        if(hmBookingController.wstrPageMode.value=="VIEW"){
-                          return;
-                        }
-
-                        hmBookingController.fnLookup("GBUILDINGMASTER");
-                      },
-                      child: CommonTextField(
+                    child: CommonTextField(
                   txtController: hmBookingController.txtBuildingCode,
                   obscureY: false,textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                        prefixIconColor: txtColor,
-                        enableY: false,
-                        prefixIcon: Icons.apartment,
-                        lookupY: true,
-                        sufixIconColor: txtColor,
-                        suffixIcon: Icons.search,
-                ),
-                    )),
-                hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
-                hmBookingController.wstrPageMode.value != 'VIEW'
-                    ? Bounce(
-                      duration: const Duration(milliseconds: 110),
-                        onPressed: () {
-                          wAddBuildAprtmntCode("Add Building", "Building Code", "Building Name", hmBookingController.txtBuildingCode, hmBookingController.txtBuildingName, Icons.apartment,
-                              (){
-                                hmBookingController.apiAddBuilding(hmBookingController.txtBuildingCode.text,hmBookingController.txtBuildingName.text,context);
+                      prefixIconColor: txtColor,
+                      enableY: false,
+                      prefixIcon: Icons.apartment,
+                      lookupY: false,
 
-                              });
-                        },
-                        child: Container(
-                          height: 40,
-                          width: size.width * 0.12,
-                          decoration: boxDecoration(primaryColor, 10),
-                          child: const Center(
-                            child: Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      )
-                    : gapHC(0)
+                )
+                ),
+                // hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
+                // hmBookingController.wstrPageMode.value != 'VIEW'
+                //     ? Bounce(
+                //       duration: const Duration(milliseconds: 110),
+                //         onPressed: () {
+                //           wAddBuildAprtmntCode("Add Building", "Building Code", "Building Name", hmBookingController.txtBuildingCode, hmBookingController.txtBuildingName, Icons.apartment,
+                //               (){
+                //                 hmBookingController.apiAddBuilding(hmBookingController.txtBuildingCode.text,hmBookingController.txtBuildingName.text,context);
+                //
+                //               });
+                //         },
+                //         child: Container(
+                //           height: 40,
+                //           width: size.width * 0.12,
+                //           decoration: boxDecoration(primaryColor, 10),
+                //           child: const Center(
+                //             child: Icon(
+                //               Icons.add,
+                //               color: Colors.white,
+                //             ),
+                //           ),
+                //         ),
+                //       )
+                //     : gapHC(0)
               ],
             ),
             gapHC(10),
@@ -571,48 +561,38 @@ class _HmeBookingState extends State<HmeBooking> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        if(hmBookingController.wstrPageMode.value=="VIEW"){
-                          return;
-                        }
+                    child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
+                      prefixIcon:   Icons.apartment,
+                      enableY:false,
 
-                        hmBookingController.fnLookup("GAPARTMENTMASTER");
-                      },
-                      child: CommonTextField(textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
-                        prefixIcon:   Icons.apartment,
-                        enableY:false,
-
-                  suffixIcon: Icons.search,
-                  sufixIconColor: txtColor,
+                  // suffixIcon: Icons.search,
+                  // sufixIconColor: txtColor,
                   txtController: hmBookingController.txtApartmentCode,
                   obscureY: false,prefixIconColor: txtColor,
-                ),
-                    )),
-                hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
-                hmBookingController.wstrPageMode.value != 'VIEW'
-                    ? Bounce(
-                  duration: const Duration(milliseconds: 110),
-                  onPressed: () {
-                    wAddBuildAprtmntCode("Add Apartment", "Apartment Code", "Apartment Name", hmBookingController.txtApartmentCode, hmBookingController.txtApartmentName, Icons.apartment,
-                            (){
-                              hmBookingController.apiAddApartment(hmBookingController.txtApartmentCode.text,hmBookingController.txtBuildingCode.text,context);
-
-                        });
-                  },
-                child: Container(
-                  height: 40,
-                  width: size.width * 0.12,
-                  decoration: boxDecoration(primaryColor, 10),
-                  child: const Center(
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),)
-                    : gapHC(0)
+                )),
+                // hmBookingController.wstrPageMode.value != 'VIEW'?   gapWC(10):gapWC(0),
+                // hmBookingController.wstrPageMode.value != 'VIEW'
+                //     ? Bounce(
+                //   duration: const Duration(milliseconds: 110),
+                //   onPressed: () {
+                //     wAddBuildAprtmntCode("Add Apartment", "Apartment Code", "Apartment Name", hmBookingController.txtApartmentCode, hmBookingController.txtApartmentName, Icons.apartment,
+                //             (){
+                //               hmBookingController.apiAddApartment(hmBookingController.txtApartmentCode.text,hmBookingController.txtBuildingCode.text,context);
+                //
+                //         });
+                //   },
+                // child: Container(
+                //   height: 40,
+                //   width: size.width * 0.12,
+                //   decoration: boxDecoration(primaryColor, 10),
+                //   child: const Center(
+                //     child: Icon(
+                //       Icons.add,
+                //       color: Colors.white,
+                //     ),
+                //   ),
+                // ),)
+                //     : gapHC(0)
               ],
             ),
             gapHC(10),
@@ -633,26 +613,26 @@ class _HmeBookingState extends State<HmeBooking> {
               ],
             ),
             gapHC(10),
-            wRoundedInputField(
-                hmBookingController.txtLandmark, "Landmark", "N",        prefixicon:   Icons.apartment,),
+            // wRoundedInputField(
+            //     hmBookingController.txtLandmark, "Landmark", "N",        prefixicon:   Icons.apartment,),
+            // gapHC(10),
+            wRoundedInputField(hmBookingController.txtAddress, "Address", "N",maxLine: 5, enable: false,       prefixicon:   Icons.abc_outlined,),
             gapHC(10),
-            wRoundedInputField(hmBookingController.txtAddress, "Address", "N",maxLine: 5,        prefixicon:   Icons.abc_outlined,),
-            gapHC(10),
-            wRoundedInputField(hmBookingController.txtRemark, "Remark", "N",maxLine: 5,        prefixicon:   Icons.apartment,),
+            wRoundedInputField(hmBookingController.txtRemark, "Remark", "N",maxLine: 5,   enable: hmBookingController.wstrPageMode.value=="VIEW"?false:true,     prefixicon:   Icons.apartment,),
           ],
         ),
       )),
     );
   }
 
-  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup, {maxLine,prefixicon,inputType,validate}) {
+  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup, {maxLine,prefixicon,inputType,enable,validate}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         tc(hintTxt, txtColor, 12),
         gapHC(5),
         CommonTextField(prefixIcon:prefixicon ,
-          enableY: hmBookingController.wstrPageMode.value=="VIEW"?false:true,
+          enableY: enable,
           txtController: contrlr,
           textStyle: GoogleFonts.poppins(fontSize: 12,color: txtColor),
           validate: validate,

@@ -3,6 +3,7 @@
 
 
 import 'package:beams_gas_cylinder/servieces/app_exception.dart';
+import 'package:beams_gas_cylinder/views/screens/ErrorScreen.dart';
 import 'package:get/get.dart';
 
 import '../views/components/common/common.dart';
@@ -12,7 +13,7 @@ class BaseController {
     if (error is BadRequestException) {
       var message = error.message;
       dprint(message);
-      Get.off(() =>  Error());
+      Get.off(() =>  ErrorScreen());
 
     } else if (error is FetchDataException) {
       var message = error.message;
