@@ -1,6 +1,7 @@
 import 'package:beams_gas_cylinder/views/components/common/commonButton.dart';
 import 'package:beams_gas_cylinder/views/screens/assignmnets/controller/assignmnet_controller.dart';
 import 'package:beams_gas_cylinder/views/screens/home/screens/hmDeliveryOrder.dart';
+import 'package:beams_gas_cylinder/views/screens/home/screens/hmSalse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,7 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
     dprint("empcooooooooooode  ${assignmentController.g.wstrempcode}");
     Future.delayed(const Duration(
       seconds: 3
-    ),assignmentController.apiGetAssignment("HLP0945")
+    ),assignmentController.apiGetAssignment()
     );
 
    // assignmentController.apiGetAssignment("HLP0945");
@@ -181,7 +182,7 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
   allAssignmnt() {
     return Obx(() => Padding(
       padding: const EdgeInsets.all(8.0),
-      child: assignmentController.upComingAssignedList.value.isEmpty || assignmentController.upComingAssignedList.value==[]?
+      child: assignmentController.allAssignedList.value.isEmpty || assignmentController.allAssignedList.value==[]?
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -277,7 +278,7 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
     return rtnList;
   }
   List<Widget> wAllAssignedList() {
-    var allAssignList = assignmentController.upComingAssignedList.value;
+    var allAssignList = assignmentController.allAssignedList.value;
     List<Widget> rtnList = [] ;
     for(var e in allAssignList){
       var name = e["PARTY_NAME"]??"";
@@ -321,12 +322,14 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person,size: 14),
-                        gapWC(2),
-                        tc(name, txtColor, 12),
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(Icons.person,size: 14),
+                          gapWC(4),
+                          Expanded(child: tc(name, txtColor, 12)),
+                        ],
+                      ),
                     ),
                     Row(
                       children: [
@@ -344,14 +347,14 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
                     Row(
                       children: [
                         Icon(Icons.apartment,size: 14),
-                        gapWC(1),
+                        gapWC(4),
                         tcn(buildcode, txtColor, 12),
                       ],
                     ),
                     Row(
                       children: [
                         Icon(Icons.apartment,size: 14),
-                        gapWC(1),
+                        gapWC(4),
                         tcn(apartment, txtColor, 12),
                       ],
                     ),
@@ -360,7 +363,7 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
                 Row(
                   children: [
                     Icon(Icons.phone_android_rounded,size: 14),
-                    gapWC(1),
+                    gapWC(4),
                     tcn(mobile, txtColor, 12),
                   ],
                 ),
@@ -459,17 +462,19 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.person,size: 14),
-                          gapWC(2),
-                          tcn(name, txtColor, 12),
-                        ],
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(Icons.person,size: 14),
+                            gapWC(5),
+                            Expanded(child: tcn(name, txtColor, 12)),
+                          ],
+                        ),
                       ),
                       Row(
                         children: [
                           Icon(Icons.phone_android_rounded,size: 14),
-                          gapWC(1),
+                          gapWC(3),
                           tcn(mobile.toString(), txtColor, 12),
                         ],
                       ),
@@ -482,14 +487,14 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
                       Row(
                         children: [
                           Icon(Icons.apartment,size: 14),
-                          gapWC(1),
+                          gapWC(5),
                           tcn(buildcode.toString(), txtColor, 12),
                         ],
                       ),
                       Row(
                         children: [
                           Icon(Icons.apartment,size: 14),
-                          gapWC(1),
+                          gapWC(3),
                           tcn(apartment.toString(), txtColor, 12),
                         ],
                       ),
@@ -507,10 +512,12 @@ class _AssignmentSCreenState extends State<AssignmentScreen> {
                     Get.back();
                     Get.to(()=>HmeDeliveryOrder(bookingNumber: bookingNumb,) );
 
+
                   },btnColor: subColor,txtColor: white),
                   gapHC(5),
                   CommonButton(btnName: "Sales Invoice", onTap: (){
                     Get.back();
+                    Get.to(()=>HmeSales(bookingNumber: bookingNumb,) );
                   },btnColor: subColor,txtColor: white,)
 
 

@@ -20,7 +20,7 @@ class HmSalesOrderController extends GetxController{
   Rx<DateTime> delivryDate = DateTime.now().obs;
 
   RxString frDocno="".obs;
-  RxString frDocType="SO".obs;
+  var frDocType="SOC".obs;
   var g  = Global();
   var wstrPageMode = "VIEW".obs;
   late Future <dynamic> futureform;
@@ -67,9 +67,10 @@ class HmSalesOrderController extends GetxController{
 
   var lstrProductTypeList = [].obs;
   var lstrProductItemDetailList =[].obs;
-  var bookingList =[].obs;
 
-
+ // var lstrbookingList =[].obs;
+  RxString bookingNumber="".obs;
+  RxString bookingDocType="".obs;
   //***********************************************************MENU
 
   fnAdd() {
@@ -91,23 +92,23 @@ class HmSalesOrderController extends GetxController{
   fnCancel() {
     fnClear();
     wstrPageMode.value = "VIEW";
-   // apiViewDeliveryOrder('', 'LAST');
+    apiViewSalesOrder('', 'LAST');
   }
 
   fnPage(mode) {
 
     switch (mode) {
       case 'FIRST':
-       // apiViewDeliveryOrder('', mode);
+        apiViewSalesOrder('', mode);
         break;
       case 'LAST':
-      //  apiViewDeliveryOrder('', mode);
+        apiViewSalesOrder('', mode);
         break;
       case 'NEXT':
-      //  apiViewDeliveryOrder(frDocno.value, mode);
+        apiViewSalesOrder(frDocno.value, mode);
         break;
       case 'PREVIOUS':
-    //    apiViewDeliveryOrder(frDocno.value, mode);
+        apiViewSalesOrder(frDocno.value, mode);
         break;
     }
   }
@@ -116,7 +117,9 @@ class HmSalesOrderController extends GetxController{
 
     dprint("######################   clear #####################");
     frDocno.value="";
-    frDocType.value="";
+    bookingNumber.value="";
+
+
     txtLandmark.clear();
     txtRemark.clear();
     txtAddress.clear();
@@ -178,14 +181,14 @@ class HmSalesOrderController extends GetxController{
       txtDriver.text = (headerList["DRIVER"]??"").toString();
       txtRoundAmt.text =(headerList["ROUND_OFF_AMT"]??"").toString();
       txtAddlAmt.text =(headerList["ADDL_AMT"]??"").toString();
-      txtTaxAmt.text =(headerList["TOTAL_TAXAMT"]??"").toString();
+      txtTaxAmt.text =(headerList["TOTAL_TAXAMTFC"]??"").toString();
       txtBalanceAmt.text =(headerList["BAL_AMT"]??"").toString();
       txtPaidAmt.text =(headerList["PAID_AMT"]??"").toString();
       txtNetAmt.text =(headerList["NETAMT"]??"").toString();
       txtDiscountAmt.text =(headerList["DISC_AMT"]??"").toString();
       txtBuildingCode.text = (headerList["BUILDING_CODE"]??"").toString();
       txtRemark.text = (headerList["REMARKS"]??"").toString();
-      txtAddress.text = (headerList["CUST_ADDRESS"]??"").toString();
+      txtAddress.text = (headerList["ADDRESS1"]??"").toString();
       txtLandmark.text = (headerList["LANDMARK"]??"").toString();
       txtContactNo.text = (headerList["MOBILE"]??"").toString();
       txtAreaCode.text = (headerList["AREA_CODE"]??"").toString();
@@ -250,7 +253,7 @@ class HmSalesOrderController extends GetxController{
         var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
         var price =  g.mfnDbl(e["RATE"]);
         var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
-        var vat = g.mfnDbl(e["VAT_PERC"]);
+        var vat = g.mfnDbl(e["VAT"]);
         var disc  = 0.0;
         var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
 
@@ -261,13 +264,6 @@ class HmSalesOrderController extends GetxController{
 
         var unit1 = e["UNIT"];
         var unit2 = e["UNIT2"];
-
-
-
-
-
-
-
         dprint("##########qty1##########  ${qty1}");
         dprint("##########qty2##########  ${qty2}");
 
@@ -278,7 +274,7 @@ class HmSalesOrderController extends GetxController{
           "RETURN_QTY": returnQty,
           "DISC_AMT": e["DISC_AMT"],
           "RATE": e["RATE2"],
-          "VAT_PERC":e["VAT_PERC"],
+          "VAT_PERC":e["VAT"],
           "NQTY":e["QTY2"],
           "EQTY":e["RETURN_QTY"],
           "RQTY":0,
@@ -310,7 +306,11 @@ class HmSalesOrderController extends GetxController{
   }
 
   fnSave(context){
-    if(lstrSalesOrderList.isEmpty){
+    //var itemList = g.wstrCylinderContractYN=="Y"?lstrbookingList.value:lstrSalesOrderList.value;
+    var itemList = lstrSalesOrderList.value;
+
+    dprint("sssssssssssave  ${frDocType.value.toString()} mm");
+    if(itemList.isEmpty){
       errorMsg(context, "Choose Items");
       return;
     }
@@ -355,7 +355,7 @@ class HmSalesOrderController extends GetxController{
     var vatAmount=0.0;
     var vatB=0.0;
 
-    for(var e in lstrSalesOrderList.value){
+    for(var e in itemList){
       var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
       var price =  g.mfnDbl(e["RATE"]);
@@ -372,9 +372,9 @@ class HmSalesOrderController extends GetxController{
     }
 
     int i=1;
-    for(var e in lstrSalesOrderList.value){
+    for(var e in itemList){
 
-      dprint("******************* lstrSalesOrderList ${lstrSalesOrderList}");
+      dprint("******************* itemList>>>>>>>>>>>>> ${itemList}");
       dprint("******************* txtBuildingCode ${txtBuildingCode.text}");
       dprint("******************* txtdelivryDate ${delivryDate}");
       dprint("******************* txtlocation.text ${txtlocation.text}");
@@ -386,6 +386,7 @@ class HmSalesOrderController extends GetxController{
       var vat = g.mfnDbl(e["VAT_PERC"]);
       var disc  = 0.0;
       var unitCf = g.mfnDbl(e["CATWEIGHT"]) == 0?1:g.mfnDbl(e["CATWEIGHT"]);
+
 
 
       var qty1 = qty2 * unitCf;
@@ -469,9 +470,9 @@ class HmSalesOrderController extends GetxController{
         "AC_AMT": 0,
         "AC_AMTFC": 0,
         "PRVDOCTABLE": "",
-        "PRVYEARCODE": "",
-        "PRVDOCNO": "",
-        "PRVDOCTYPE": "",
+        "PRVYEARCODE": e["YEARCODE"],
+        "PRVDOCNO": e["DOCNO"],
+        "PRVDOCTYPE": e["DOCTYPE"],
         "PRVDOCSRNO": i,
         "PRVDOCQTY": 0,
         "PRVDOCPENDINGQTY": 0,
@@ -786,6 +787,12 @@ class HmSalesOrderController extends GetxController{
     balanceAmount =netAmount-paidAmount;
     dprint("NETAMOUNT>>>>>>>>>>>>>>>>> ${netAmount}");
     dprint("BALANCEAMOUNT>>>>>>>>>>>>>>>>> ${balanceAmount}");
+    dprint("frDocType.value>>>>>>>>>>>>>>>>> ${frDocType.value}");
+    dprint("txtBuildingCode.value>>>>>>>>>>>>>>>>> ${txtBuildingCode.text}");
+    dprint("txtApartmentCode.value>>>>>>>>>>>>>>>>> ${txtApartmentCode.text}");
+    dprint("txtContactNo.value>>>>>>>>>>>>>>>>> ${txtContactNo.text}");
+    dprint("txtdriver.value>>>>>>>>>>>>>>>>> ${txtDriver.text}");
+    dprint("txtVehiclenumber.value>>>>>>>>>>>>>>>>> ${txtVehiclenumber.text}");
 
 
     header.add({
@@ -799,7 +806,7 @@ class HmSalesOrderController extends GetxController{
       "DUEDATE": "",
       "PARTYCODE": txtCustomerCode.text,
       "PARTYNAME": txtCustomerName.text,
-      "PRVDOCNO": 0,
+      "PRVDOCNO": "",
       "PRVDOCTYPE": "",
       "PRVMULTIDOCNO": "",
       "BRNCODE": "",
@@ -937,6 +944,11 @@ class HmSalesOrderController extends GetxController{
       "CREATE_MACHINE": "",
       "EDIT_MACHINE": ""
     });
+
+    dprint("docttttyyyypeeeeeeeeeeeeee ${frDocType.value}");
+    dprint("HEADERR>>>> ${header}");
+    dprint("DETAILLL ${details}");
+    dprint("INVADDDD ${invAdditional}");
 
     apiSaveSalesOrder(header,details,invAdditional,context,frDocType.value);
 
@@ -1777,11 +1789,14 @@ class HmSalesOrderController extends GetxController{
 
 
   }
+
   List<Widget> wSalesOrderItemList(context){
     List<Widget> rtnList =[];
+   // var itemList = g.wstrCylinderContractYN=="Y"?lstrbookingList.value:lstrSalesOrderList.value;
+    var itemList = lstrSalesOrderList.value;
 
-    for(var e  in lstrSalesOrderList.value){
-      dprint("LSTR Salesssssssssss>>>>>>>>>>>>>>>>>  ${e}");
+    for(var e  in itemList){
+
 
 
       var itemName  = (e["STKDESCP"]??"").toString();
@@ -1852,16 +1867,7 @@ class HmSalesOrderController extends GetxController{
                             Colors.black, 10)
                       ],
                     )),
-                Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .end,
-                      children: [
-                        tcn(returnQty.toString(),
-                            Colors.black, 10)
-                      ],
-                    )),
+
                 Flexible(
                     flex: 1,
                     child: Row(
@@ -1882,7 +1888,102 @@ class HmSalesOrderController extends GetxController{
 
     return rtnList;
   }
+  List<Widget> wBookingItemList(context){
+    List<Widget> rtnList =[];
 
+    for(var e  in lstrSalesOrderList.value){
+      dprint("LSTR lstrbookingList>>>>>>>>>>>>>>>>>  ${e}");
+
+
+      var itemName  = (e["STKDESCP"]??"").toString();
+      var itemCode  = (e["STKCODE"]??"").toString();
+      var rate  = g.mfnDbl(e["RATE"].toString());
+      var qty  = g.mfnDbl(e["QTY"].toString());
+      var returnQty  = g.mfnDbl(e["RETURN_QTY"].toString());
+      var total = qty*rate;
+
+      rtnList.add( Padding(
+        padding: const EdgeInsets.only(bottom: 2),
+        child: InkWell(
+          onLongPress: (){
+            wDeletItemSelect(context,itemCode);
+
+          },
+
+
+          onTap: (){
+
+            wItemSelect(context,itemCode,qty);
+          },
+          child: Container(
+            decoration: boxBaseDecoration(
+                bGreyLight, 0),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Flexible(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: tcn(itemName.toString(),
+                                Colors.black, 10),
+                          )
+                        ],
+                      ),
+                    )),
+                // Flexible(
+                //     flex: 1,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment
+                //           .end,
+                //       children: [
+                //         tcn((type=="E")?"Empty":(type=="N")?"New":(type=="R")?"Refill":"", Colors.black, 10),
+                //         gapWC(10)
+                //       ],
+                //     )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(rate.toString(), Colors.black, 10)
+                      ],
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(qty.toString(),
+                            Colors.black, 10)
+                      ],
+                    )),
+
+                Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .end,
+                      children: [
+                        tcn(total.toString(), Colors.black, 10)
+                      ],
+                    )),
+              ],
+            ),
+
+          ),
+        ),
+      ));
+
+    }
+
+    return rtnList;
+  }
   //====================FUNCTION====================
   fnChngeQty(itemCode,type,mode) {
     var taxAmount = ''.obs;
@@ -2006,9 +2107,7 @@ class HmSalesOrderController extends GetxController{
     fnPaymntCalc();
 
   }
-  fnFillData(data,mode){
 
-  }
   fnFillCustomerData(data,mode){
     if(g.fnValCheck(data)){
       if(mode  ==  "GBUILDINGMASTER"){
@@ -2067,10 +2166,19 @@ class HmSalesOrderController extends GetxController{
         dprint("11111111111SDAS11111111111>> ${data}" );
         frDocno.value = data["DOCNO"]??"";
         frDocType.value = data["DOCTYPE"]??"";
-    //    apiViewDeliveryOrder(frDocno.value,"");
+        apiViewSalesOrder(frDocno.value,"");
 
 
         //   apiGetCustomerDetails();
+      }
+      else if(mode == 'GCYLINDER_BOOKING'){
+        dprint("Booking dataaaaaaaaaaa ${data}");
+        bookingNumber.value = data["DOCNO"];
+
+        apiGetBooking(bookingNumber.value,"");
+        fnPaymntCalc();
+
+
       }
     }
 
@@ -2092,22 +2200,71 @@ class HmSalesOrderController extends GetxController{
 
   fnFillBookingDetails(data){
     var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
-    var detList  = g.fnValCheck(data["DET"])?data["DET"][0]:[];
+    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
     var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"][0]:[];
     dprint("hhhhhhhhhh${headerList}");
-    txtCustomerCode.text = headerList["PARTY_CODE"].toString();
-    cstmrCode.value = headerList["PARTY_CODE"].toString();
-    cstmrName.value = headerList["PARTY_NAME"].toString();
-    txtCustomerName.text = headerList["PARTY_NAME"].toString();
-    txtContactNo.text = headerList["MOBILE_NO"].toString();
-    txtBuildingCode.text = headerList["BLDG_NO"].toString();
-    txtApartmentCode.text = headerList["APARTMENT_NO"].toString();
-    txtAreaCode.text = headerList["AREA_CODE"].toString();
-    txtLandmark.text = headerList["LANDMARK"].toString();
-    txtAddress.text = headerList["CUST_ADDRESS"].toString();
-    txtRemark.text = headerList["REMARKS"].toString();
-    txtDriver.text =detList["DEL_MAN_CODE"].toString();
-    txtVehiclenumber.text =detList["VEHICLE_NO"].toString();
+    if(g.fnValCheck(headerList)){
+      bookingNumber.value =headerList["DOCNO"].toString();
+      bookingDocType.value =headerList["DOCTYPE"].toString();
+      txtCustomerCode.text = headerList["PARTY_CODE"].toString();
+      cstmrCode.value = headerList["PARTY_CODE"].toString();
+      cstmrName.value = headerList["PARTY_NAME"].toString();
+      txtCustomerName.text = headerList["PARTY_NAME"].toString();
+      txtContactNo.text = headerList["MOBILE_NO"].toString();
+      txtBuildingCode.text = headerList["BLDG_NO"].toString();
+      txtApartmentCode.text = headerList["APARTMENT_NO"].toString();
+      txtAreaCode.text = headerList["AREA_CODE"].toString();
+      txtLandmark.text = headerList["LANDMARK"].toString();
+      txtAddress.text = headerList["CUST_ADDRESS"].toString();
+      txtRemark.text = headerList["REMARKS"].toString();
+      txtDriver.text =detList[0]["DEL_MAN_CODE"].toString();
+      txtVehiclenumber.text =detList[0]["VEHICLE_NO"].toString();
+      txtlocation.text=headerList["LOCATION"].toString();
+    }
+
+    if(g.fnValCheck(detList)){
+      int i = 1;
+     // lstrbookingList.value = [];
+      lstrSalesOrderList.value = [];
+      for (var e in detList) {
+        dprint("########sssss##dd##########  ${e}");
+        // var qty2 = g.mfnDbl(e["QTY2"]);
+        // var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        // var price =  g.mfnDbl(e["RATE"]);
+        // var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+        // var vat = g.mfnDbl(e["VAT_PERC"]);
+        // var disc  = 0.0;
+        // var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+        //
+        // var qty1 = qty2 * unitCf;
+        // var rate2 = price;
+        // var rate1 = price*unitCf;
+        // var unit1 = e["UNIT"];
+        // var unit2 = e["UNIT2"];
+
+        var datas =Map<String,dynamic>.from({
+          "STKCODE": e["STOCK_CODE"],
+          "STKDESCP": e["STOCK_DESC"],
+          "QTY": e["QTY1"],
+          "RATE": e["RATE"],
+          "DOCNO":e["DOCNO"],
+          "DOCTYPE":e["DOCTYPE"],
+          "VAT_PERC":e["VAT"],
+          "YEARCODE":e["YEARCODE"]
+        });
+
+
+     //   lstrbookingList.value.add(datas);
+        lstrSalesOrderList.value.add(datas);
+        i++;
+        update();
+      }
+
+      // txtTotalAmt.text =  totalAmount.toStringAsFixed(2);
+      fnPaymntCalc();
+
+
+    }
 
 
   }
@@ -2128,8 +2285,10 @@ class HmSalesOrderController extends GetxController{
     var addlAmount =  0.0;
     var paidAmount =  g.mfnDbl(txtPaidAmt.text);
 
-
-    for(var e in lstrSalesOrderList.value){
+  //  var itemList = g.wstrCylinderContractYN=="Y"?lstrbookingList.value:lstrSalesOrderList.value;
+    var itemList =lstrSalesOrderList.value;
+    dprint("ITEM_____________LIST>>>>>>>>>>> ${itemList} ");
+    for(var e in itemList){
       var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
       var price =  g.mfnDbl(e["RATE"]);
@@ -2148,7 +2307,7 @@ class HmSalesOrderController extends GetxController{
 
     }
 
-    for(var e in lstrSalesOrderList){
+    for(var e in itemList){
       var qty = g.mfnDbl(e["QTY"]);
       var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
       var price =  g.mfnDbl(e["RATE"]);
@@ -2304,9 +2463,6 @@ class HmSalesOrderController extends GetxController{
           )
       );
     }
-
-
-
     else if(mode == "AREAMASTER"){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'CODE', 'Display': 'Code'},
@@ -2476,7 +2632,7 @@ class HmSalesOrderController extends GetxController{
     else if(mode == "SO" ){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'DOCNO', 'Display': 'DOCNO'},
-        {'Column': "DOCTYPE", 'Display': 'DOCTYPE'},
+        {'Column': "DOCTYPE", 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [
       ];
@@ -2503,22 +2659,65 @@ class HmSalesOrderController extends GetxController{
       );
     }
 
+    else if(mode == "GCYLINDER_BOOKING"){
+      // if(wstrPageMode.value  != "VIEW"){
+      //   return;
+      // }
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DOCNO', 'Display': 'Code'},
+        {'Column': 'PARTY_CODE', 'Display': 'PCode'},
+        {'Column': 'PARTY_NAME', 'Display': 'Name'},
+        {'Column': 'MOBILE_NO', 'Display': 'Mobile'},
+        {'Column': 'ASSIGNMENT_STATUS', 'Display': 'N'},
+        // {'Column': 'EMAIL', 'Display': 'Email'},
+        // {'Column': 'BLDG_NO', 'Display': 'Building'},
+        // {'Column': 'APARTMENT_NO', 'Display': 'Apartment'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[
+        {'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'},
+        {'Column': "SO_STS", 'Operator': '=', 'Value': "P", 'JoinType': 'AND'},
+      ];
+
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GCYLINDER_BOOKING',
+            title: 'Booking Details',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DOCNO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+
 
   }
 
   //====================API====================
 
-  // apiViewSalesOrder(docno,mode){
-  //   futureform = ApiCall().apiViewDeliveryOrder(docno,mode);
-  //   futureform.then((value) => apiViewSalesOrderRes(value));
-  // }
-  // apiViewSalesOrderRes(value){
-  //   if(g.fnValCheck(value)){
-  //     fnClear();
-  //     fnFill(value);
-  //   }
-  //
-  // }
+  apiViewSalesOrder(docno,mode){
+    futureform = ApiCall().apiViewSalesOrder(docno,mode,frDocType.value);
+    futureform.then((value) => apiViewSalesOrderRes(value));
+  }
+  apiViewSalesOrderRes(value){
+    if(g.fnValCheck(value)){
+      fnClear();
+      fnFill(value);
+    }
+
+  }
 
   apiSaveSalesOrder(header,details,invAdditional,context,doctype){
     futureform = ApiCall().saveSalesOrder(wstrPageMode.value,header,details,invAdditional,doctype);
@@ -2533,9 +2732,8 @@ class HmSalesOrderController extends GetxController{
       var msg  =  value[0]["MSG"]??"";
       if(sts == "1"){
         frDocno.value = value[0]["DOCNO"];
-         frDocType.value = value[0]["DOCTYPE"];
         wstrPageMode.value ="VIEW";
-       // apiViewSalesOrderRes(frDocno.value, "LAST");
+        apiViewSalesOrder(frDocno.value,"LAST");
         successMsg(context, msg);
 
       }else{
@@ -2593,7 +2791,7 @@ class HmSalesOrderController extends GetxController{
   }
   apiGetBookingRes(value){
     if(g.fnValCheck(value)){
-      bookingList.value=[];
+      lstrSalesOrderList.value=[];
       fnFillBookingDetails(value);
     }
 

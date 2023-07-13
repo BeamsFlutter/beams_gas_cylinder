@@ -78,8 +78,9 @@ class AssignmentController extends GetxController{
 
 
     dprint("TODAY>>>>>>>>>>f>>>  ${todayAssignedList.value}");
-    dprint("UPCOMING>>>>>>>>>>>>>  ${upcomingAssignList}");
-    dprint("COMPLETED>>>>>>>>>>>>>  ${completedAssignList}");
+    dprint("ALL>>>>>>>>>>f>>>  ${allAssignedList.value}");
+    dprint("UPCOMING>>>>>>>>>>>>>  ${ upComingAssignedList.value}");
+    dprint("pending>>>>>>>>>>>>>  ${pendingAssignedList.value}");
   }
 
   fnFill(data){
@@ -98,8 +99,8 @@ class AssignmentController extends GetxController{
 
   //==============================================================================API
 
-  apiGetAssignment(empcode){
-    futureform = ApiCall().apiGetAssignment(empcode);
+  apiGetAssignment(){
+    futureform = ApiCall().apiGetAssignment();
     futureform.then((value) => apiGetAssignmentRes(value));
   }
   apiGetAssignmentRes(value){

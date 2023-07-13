@@ -20,8 +20,15 @@ class HmeCollections extends StatefulWidget {
 }
 
 class _CollectionScreenState extends State<HmeCollections> {
+  final HmCollectionController hmcollectionController =
+      Get.put(HmCollectionController());
+  @override
+  void initState() {
+    hmcollectionController.apiViewCollection("", "LAST");
+    // TODO: implement initState
+    super.initState();
+  }
 
-  final HmCollectionController hmcollectionController = Get.put(HmCollectionController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,280 +55,422 @@ class _CollectionScreenState extends State<HmeCollections> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: Obx(() => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Bounce(
-                      duration: const Duration(milliseconds: 110),
-                      onPressed: () {
-                        dprint("lookup>>>>>>>Booking");
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: primaryColor),
-                            borderRadius: BorderRadius.circular(30)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Bounce(
+                          duration: const Duration(milliseconds: 110),
+                          onPressed: () {
+                            dprint("lookup>>>>>>>Booking");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: primaryColor),
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Row(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.tag,
+                                      color: black,
+                                      weight: 100,
+                                      size: 15,
+                                    ),
+                                    tc(hmcollectionController.frDocno.value,
+                                        txtColor, 12)
+                                  ],
+                                ),
+                                gapWC(5),
+                                const Icon(
+                                  Icons.search,
+                                  size: 14,
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Row(
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_month,
+                              color: black,
+                              size: 15,
+                            ),
+                            gapWC(3),
+                            tcn(
+                                setDate(7, hmcollectionController.docDate.value)
+                                    .toString()
+                                    .toUpperCase(),
+                                txtColor,
+                                12)
+                          ],
+                        ),
+                      ],
+                    ),
+                    gapHC(15),
+                    tc('Party Details', black, 12.0),
+                    gapHC(10),
+                    Bounce(
+                      onPressed: () {
+                        if(hmcollectionController.wstrPageMode.value=="VIEW"){
+                          return;
+                        }
+                        hmcollectionController.fnLookup(
+                            "GCYLINDER_CONTRACT", context);
+                      },
+                      duration: const Duration(milliseconds: 110),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 7),
+                        decoration: boxDecoration(white, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Icon(
-                                  Icons.tag,
-                                  color: black,
-                                  weight: 100,
-                                  size: 15,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.person,
+                                              size: 18, color: primaryColor),
+                                          gapWC(5),
+                                          Expanded(
+                                              child: tcn(
+                                                  hmcollectionController
+                                                      .partyName.value,
+                                                  txtColor,
+                                                  13)),
+                                        ],
+                                      ),
+                                      gapHC(5),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.place,
+                                              size: 18, color: primaryColor),
+                                          gapWC(5),
+                                          tcn(
+                                              hmcollectionController
+                                                  .partyLocation.value,
+                                              txtColor,
+                                              13),
+                                        ],
+                                      ),
+                                      gapHC(10),
+                                    ],
+                                  ),
                                 ),
-                                tc(hmcollectionController.frDocno.value, txtColor, 12)
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Container(
+                                      padding: const EdgeInsets.all(7),
+                                      child: const Icon(
+                                        Icons.search,
+                                        color: txtColor,
+                                        size: 25,
+                                      )),
+                                ),
                               ],
                             ),
-                            gapWC(5),
-                            const Icon(Icons.search,size: 14,)
+                            Container(
+                              decoration: boxBaseDecoration(bgColor, 30),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  tc('BALANCE', Colors.black, 12),
+                                  tc('${hmcollectionController.g.mfnDbl(hmcollectionController.txtCollectionAmt.text).toString()}  AED',
+                                      Colors.red, 16),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_month,
-                          color: black,
-                          size: 15,
-                        ),
-                        gapWC(3),
-                        tcn(
-                            setDate(7, hmcollectionController.docDate.value)
-                                .toString()
-                                .toUpperCase(),
-                            txtColor,
-                            12)
-                      ],
+                    gapHC(10),
+                    tc('Collection Amount', black, 12.0),
+                    gapHC(5),
+                    CommonTextField(
+                      obscureY: false,
+                      txtController: hmcollectionController.txtCollectionAmt,
+                      prefixIcon: Icons.attach_money,
+                      keybordType: TextInputType.number,
+                      enableY:
+                          hmcollectionController.wstrPageMode.value == "VIEW"
+                              ? false
+                              : true,
+                      inputformate: mfnInputDecFormatters(),
+                      textAlignment: TextAlign.right,
                     ),
-                  ],
-                ),
-                gapHC(15),
-                tc('Party Details', black, 12.0),
-                gapHC(10),
-                Bounce(
-                  onPressed: () {
-                    dprint("lookupp");
+                    gapHC(10),
 
-                  },
-                  duration: const Duration(milliseconds: 110),
-                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 7),
-                    decoration: boxDecoration(white, 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.person,size: 18,color: primaryColor),
-                                    gapWC(5),
-                                    tcn('SHAJAHAN', txtColor, 13),
-                                  ],
-                                ),
-                                gapHC(5),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.place,size: 18,color: primaryColor),
-                                    gapWC(5),
-                                    tcn("ALNAHDA", txtColor, 13),
-                                  ],
-                                ),
-                                gapHC(10),
+                    tc('Payment Mode', txtColor, 12),
+                    gapHC(5),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: boxBaseDecoration(Colors.grey.shade200, 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RadioListTile<PaymentMode>(
+                            title: const Text('Cash'),
+                            value: PaymentMode.cash,
+                            activeColor: primaryColor,
+                            groupValue:
+                                hmcollectionController.paymentMode.value,
+                            onChanged: (value) {
+                              if (hmcollectionController.wstrPageMode.value ==
+                                  "VIEW") {
+                                return;
+                              }
 
-
-                              ],
-                            ),GestureDetector(
-                              onTap: (){},
-                              child: Container(
-                                  padding: const EdgeInsets.all(7),
-                                  child: const Icon(
-                                    Icons.search, color: txtColor,
-                                    size: 25,)),
-                            ),
-                          ],
-                        ),
-                        Container(decoration: boxBaseDecoration(bgColor, 30),
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              tc('BALANCE', Colors.black, 12),
-                              tc('15200 AED',Colors.red,16),
-                            ],
+                              hmcollectionController.paymentMode.value = value!;
+                              dprint(hmcollectionController.paymentMode.value);
+                            },
                           ),
-                        )
-
-                      ],
+                          RadioListTile<PaymentMode>(
+                            title: const Text('Card'),
+                            value: PaymentMode.card,
+                            activeColor: primaryColor,
+                            groupValue:
+                                hmcollectionController.paymentMode.value,
+                            onChanged: (PaymentMode? value) {
+                              if (hmcollectionController.wstrPageMode.value ==
+                                  "VIEW") {
+                                return;
+                              }
+                              hmcollectionController.paymentMode.value = value!;
+                              dprint(hmcollectionController.paymentMode.value);
+                            },
+                          ),
+                          RadioListTile<PaymentMode>(
+                            title: const Text('Cheque'),
+                            activeColor: primaryColor,
+                            value: PaymentMode.cheque,
+                            groupValue:
+                                hmcollectionController.paymentMode.value,
+                            onChanged: (PaymentMode? value) {
+                              if (hmcollectionController.wstrPageMode.value ==
+                                  "VIEW") {
+                                return;
+                              }
+                              hmcollectionController.paymentMode.value = value!;
+                              dprint(hmcollectionController.paymentMode.value);
+                            },
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                gapHC(10),
-                tc('Collection Amount', black, 12.0),
-                gapHC(5),
-                CommonTextField(obscureY: false,txtController: hmcollectionController.txtCollectionAmt,prefixIcon: Icons.attach_money,
-                  keybordType: TextInputType.number,enableY:hmcollectionController.wstrPageMode.value=="VIEW"? false:true,
-                inputformate: mfnInputDecFormatters(),
-                textAlignment: TextAlign.right,),
-                gapHC(10),
-                tc('Payment Details', black, 12),
+                    gapHC(5),
+                    paymentModeDetails(hmcollectionController.paymentMode.value)
 
-                GetBuilder<HmCollectionController>(builder: (controller){
-
-                      return  Column(
-                        children: controller.paymentList.asMap().entries.map((e) =>
-
-                            RadioListTile(contentPadding: EdgeInsets.zero,
-                                title: tcn(e.value["PDETAILS"].toString(), txtColor,12),
-                                value: e.value["PDETAILS"],
-                                activeColor: primaryColor,
-                                groupValue: controller.paymentvalue.value,
-                                onChanged: controller.onClickChoosePyment
-                            )).toList(),
-                      );
-                    }
-
-                ),
-                tc('Total', black, 12),
-                gapHC(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    tcn('Outstanding Amount', black, 12),
-                    tc("20", txtColor, 13)
-
+                    // tc('Total', black, 12),
+                    // gapHC(10),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     tcn('Outstanding Amount', black, 12),
+                    //     tc("20", txtColor, 13)
+                    //
+                    //   ],
+                    // ),
+                    // gapHC(10),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     tcn('Paid Amount', black, 12),
+                    //     tc("20", txtColor, 13)
+                    //
+                    //   ],
+                    // ),
+                    // gapHC(10),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     tcn('Balance Amount', black, 12),
+                    //     tc("20", txtColor, 13)
+                    //
+                    //   ],
+                    // ),
                   ],
-                ),
-                gapHC(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    tcn('Paid Amount', black, 12),
-                    tc("20", txtColor, 13)
-
-                  ],
-                ),
-                gapHC(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    tcn('Balance Amount', black, 12),
-                    tc("20", txtColor, 13)
-
-                  ],
-                ),
-
-
-
-
-
-
-
-
-              ],
-            )), 
+                )),
           ),
         ),
-        bottomNavigationBar: Obx(() => (hmcollectionController.wstrPageMode.value == "VIEW")
-            ? BottomNavigationItem(
-          type: "collection",
-          mode: hmcollectionController.wstrPageMode.value,
-          fnAdd: hmcollectionController.fnAdd,
-          fnEdit: hmcollectionController.fnEdit,
-          fnCancel: hmcollectionController.fnCancel,
-          fnPage: hmcollectionController.fnPage,
-          fnSave: hmcollectionController.fnSave,
-          fnDelete: hmcollectionController.fnDelete,
-        )
-            : (hmcollectionController.wstrPageMode.value == "ADD" || hmcollectionController.wstrPageMode.value == "EDIT")
-            ? Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Bounce(
-                  onPressed: () {
-                  },
-                  duration: const Duration(milliseconds: 110),
-                  child: Container(
-                    decoration: boxDecoration(primaryColor, 30),
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.task_alt,
-                          color: Colors.white,
-                          size: 15,
+        bottomNavigationBar: Obx(() =>
+            (hmcollectionController.wstrPageMode.value == "VIEW")
+                ? BottomNavigationItem(
+                    type: "collection",
+                    mode: hmcollectionController.wstrPageMode.value,
+                    fnAdd: hmcollectionController.fnAdd,
+                    fnEdit: hmcollectionController.fnEdit,
+                    fnCancel: hmcollectionController.fnCancel,
+                    fnPage: hmcollectionController.fnPage,
+                    fnSave: hmcollectionController.fnSave,
+                    fnDelete: hmcollectionController.fnDelete,
+                  )
+                : (hmcollectionController.wstrPageMode.value == "ADD" ||
+                        hmcollectionController.wstrPageMode.value == "EDIT")
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Bounce(
+                                onPressed: () {
+                                  hmcollectionController.fnSave(context);
+                                },
+                                duration: const Duration(milliseconds: 110),
+                                child: Container(
+                                  decoration: boxDecoration(primaryColor, 30),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.task_alt,
+                                        color: Colors.white,
+                                        size: 15,
+                                      ),
+                                      gapWC(5),
+                                      tcn('Save', Colors.white, 15)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Bounce(
+                              onPressed: () {
+                                hmcollectionController.fnCancel();
+                              },
+                              duration: const Duration(milliseconds: 110),
+                              child: Container(
+                                decoration: boxBaseDecoration(baseLight, 30),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.cancel_outlined,
+                                      color: Colors.black,
+                                      size: 15,
+                                    ),
+                                    gapWC(5),
+                                    tcn('Cancel', Colors.black, 12)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        gapWC(5),
-                        tcn('Save', Colors.white, 15)
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Bounce(
-                onPressed: () {
-                  hmcollectionController.fnCancel();
-                },
-                duration: const Duration(milliseconds: 110),
-                child: Container(
-                  decoration: boxBaseDecoration(baseLight, 30),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.cancel_outlined,
-                        color: Colors.black,
-                        size: 15,
-                      ),
-                      gapWC(5),
-                      tcn('Cancel', Colors.black, 12)
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ):BottomAppBar())
-
-    );
+                      )
+                    : BottomAppBar()));
   }
   //===================================WIDGET
-  List<Widget> wPriorityLIst(controller) {
-    List<Widget> rtnList = [];
-    for (var e in controller.paymentList) {
-      var code = e["CODE"];
-      var det = (e["PNAME"] ?? "");
-      rtnList.add(ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Transform.translate(
-          offset: Offset(-20, 0),
-          child: tcn(det.toString(), txtColor, 12),
-        ),
-        leading: Radio(
-            value: code.toString(),
-            activeColor: Colors.red,
-            groupValue: controller.paymentvalue,
-            onChanged: (value) => controller.onClickRadioButton(value)),
-      ));
+
+  paymentModeDetails(payment_mode) {
+    dprint("payment_mode>>> ${payment_mode}");
+    if (payment_mode == PaymentMode.cheque) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          wRoundedInputField(
+              maxLine: 1,
+              hmcollectionController.txtchequeNumber,
+              "Cheque Number",
+              "N",
+              enable: hmcollectionController.wstrPageMode.value == "VIEW"
+                  ? false
+                  : true,
+              prefixicon: Icons.apartment),
+          gapHC(10),
+          tc('Cheque Date', black, 12),
+          gapHC(5),
+          Bounce(
+            duration: const Duration(milliseconds: 110),
+            onPressed: () {
+              if (hmcollectionController.wstrPageMode.value == "VIEW") {
+                return;
+              }
+              hmcollectionController.wSelectDate(context);
+              gapHC(5);
+            },
+            child: CommonTextField(
+              obscureY: false,
+              textStyle: const TextStyle(color: txtColor),
+              txtController: hmcollectionController.txtchequeDate,
+              prefixIcon: Icons.calendar_month,
+              prefixIconColor: black,
+              sufixIconColor: Colors.black,
+              enableY: false,
+              suffixIcon: Icons.done,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return gapHC(0);
     }
-    return rtnList;
   }
 
+  wRoundedInputField(TextEditingController contrlr, hintTxt, lookup,
+      {maxLine, keybordType, prefixicon, enable}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        tc(hintTxt, txtColor, 12),
+        gapHC(5),
+        CommonTextField(
+          prefixIcon: prefixicon,
+          enableY: enable,
+          txtController: contrlr,
+          prefixIconColor: txtColor,
+          obscureY: false,
+          keybordType: keybordType,
+          textStyle: GoogleFonts.poppins(fontSize: 12, color: txtColor),
+          maxline: maxLine,
+          fnClear: () {
+            contrlr.clear();
+          },
+        )
+      ],
+    );
+  }
 
-
+  // List<Widget> wPriorityLIst(controller) {
+  //   List<Widget> rtnList = [];
+  //   for (var e in controller.paymentList) {
+  //     var code = e["CODE"];
+  //     var det = (e["PNAME"] ?? "");
+  //     rtnList.add(ListTile(
+  //       contentPadding: EdgeInsets.zero,
+  //       title: Transform.translate(
+  //         offset: Offset(-20, 0),
+  //         child: tcn(det.toString(), txtColor, 12),
+  //       ),
+  //       leading: Radio(
+  //           value: code.toString(),
+  //           activeColor: Colors.red,
+  //           groupValue: controller.paymentvalue,
+  //           onChanged: (value) => controller.onClickRadioButton(value)),
+  //     ));
+  //   }
+  //   return rtnList;
+  // }
 }

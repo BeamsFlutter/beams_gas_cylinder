@@ -25,19 +25,29 @@ class _HmeSalesState extends State<HmeSales> {
   @override
   void initState() {
     hmSalescontroller.pageController = PageController();
-    var bookingNumber = widget.bookingNumber??"";
-
-    // if(bookingNumber.isNotEmpty){
-    //   hmSalescontroller.wstrPageMode.value = "ADD";
-    //   dprint("Call Booking Detail Api");
-    //   hmSalescontroller.apiGetBooking(bookingNumber, "mode");
-    // }else{
-    //   hmSalescontroller.wstrPageMode.value = 'VIEW';
-    //
-    // }
-    hmSalescontroller.apiViewSales("","LAST");
     hmSalescontroller.apiGetStockDetails("CGI");
+
+
     hmSalescontroller.apiProductType();
+    var bookingNumber = widget.bookingNumber??"";
+    Future.delayed(const Duration(
+        seconds: 1
+    ),() {
+      if(bookingNumber.isNotEmpty){
+        hmSalescontroller.wstrPageMode.value = "ADD";
+        dprint("Call Booking Detail Api");
+        hmSalescontroller.apiGetBooking(bookingNumber, "mode");
+
+      }else{
+        hmSalescontroller.wstrPageMode.value = 'VIEW';
+        hmSalescontroller.apiViewSales("","LAST");
+
+      }
+    }
+
+
+    );
+
 
     // TODO: implement initState
     super.initState();
@@ -897,7 +907,7 @@ class _HmeSalesState extends State<HmeSales> {
                 prefixicon: Icons.apartment),
             gapHC(10),
             wRoundedInputField(
-                hmSalescontroller.txtApartmentCode, "Area Code", "N",enable: false,
+                hmSalescontroller.txtAreacode, "Area Code", "N",enable: false,
                 prefixicon: Icons.apartment),
             // gapHC(10),
             // wRoundedInputField(
@@ -920,7 +930,7 @@ class _HmeSalesState extends State<HmeSales> {
               "Remark",
               "N",
               maxLine: 5,
-              prefixicon: Icons.apartment,
+              prefixicon: Icons.note_alt_outlined,
             ),
             gapHC(15),
 
@@ -980,6 +990,31 @@ class _HmeSalesState extends State<HmeSales> {
               sufixIconColor: Colors.black,
               prefixIconColor: black,
               txtController: hmSalescontroller.txtVehiclenumber,
+              enableY:false,
+            ),
+          ),
+          gapHC(10),
+          tc('S.Man', black, 12),
+          gapHC(5),
+          Bounce(
+            duration: const Duration(milliseconds: 110),
+            onPressed: (){
+              if(hmSalescontroller.wstrPageMode.value  == "VIEW"){
+                return;
+              }else{
+                dprint(" SMANMAST Lookupp");
+                hmSalescontroller.fnLookup("SMANMAST");
+              }
+            },
+            child: CommonTextField(
+              lookupY: true,
+              obscureY: false,
+
+              textStyle: const TextStyle(color:txtColor,fontSize: 12),
+              prefixIcon: Icons.tag,
+              sufixIconColor: Colors.black,
+              prefixIconColor: black,
+              txtController: hmSalescontroller.txtsman,
               enableY:false,
             ),
           ),

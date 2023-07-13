@@ -44,7 +44,7 @@ class _BottomnavBarState extends State<BottomnavBar> {
   void initState() {
     Future.delayed(const Duration(
         seconds: 3
-    ),assignmentController.apiGetAssignment("HLP0945")
+    ),assignmentController.apiGetAssignment()
     );
 
     pages = [
@@ -197,7 +197,9 @@ class _BottomnavBarState extends State<BottomnavBar> {
         children: [
           Bounce(
             onPressed: () {
+              assignmentController.apiGetAssignment();
               hmAssignmentController.pageIndex.value = 0;
+
             },
             duration: const Duration(milliseconds: 110),
             child: hmAssignmentController.pageIndex.value == 0
@@ -497,7 +499,7 @@ List<Widget> wHomeButtons(context){
     rtnList.add(
 
         wMenuCard(buttonName,
-            (buttonCode=="B")?Icons.calendar_month_outlined:(buttonCode=="C")?Icons.handshake:(buttonCode=="CR")?Icons.receipt:(buttonCode=="SO")?Icons.point_of_sale:
+            (buttonCode=="B")?Icons.calendar_month_outlined:(buttonCode=="C")?Icons.handshake_outlined:(buttonCode=="CR")?Icons.receipt:(buttonCode=="SO")?Icons.point_of_sale:
             (buttonCode=="A")?Icons.assignment:(buttonCode=="DO")?Icons.delivery_dining:(buttonCode=="CB")?Icons.account_balance_wallet_outlined:Icons.point_of_sale_sharp,
             55.0,
               (buttonCode=="B")?(){

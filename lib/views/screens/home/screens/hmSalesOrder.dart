@@ -1,4 +1,5 @@
 import 'package:beams_gas_cylinder/views/screens/home/controller/hmSalesOrderController.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
 
     }
     hmSalesOrderController.apiProductType();
- //   hmSalesOrderController.apiViewDeliveryOrder("", "LAST");
+    hmSalesOrderController.apiViewSalesOrder("", "LAST");
     hmSalesOrderController.apiGetStockDetails("CCD");
 
     // TODO: implement initState
@@ -45,7 +46,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return Obx(() => Scaffold(
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
@@ -56,13 +57,27 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
             icon: const Icon(Icons.arrow_back),
           ),
           title: tcn('Sales Order', Colors.white, 20),
-          actions: const [
-            Padding(
+          actions:  [
+            hmSalesOrderController.wstrPageMode.value=="VIEW" && hmSalesOrderController.g.wstrCylinderContractYN=="Y"? const Padding(
               padding: EdgeInsets.all(12.0),
               child: Icon(
                 Icons.water_drop_outlined,
                 color: Colors.white,
                 size: 25,
+              ),
+            ):Bounce(
+              duration: const Duration(milliseconds: 110),
+              onPressed: (){
+               hmSalesOrderController.fnLookup("GCYLINDER_BOOKING");
+
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
+                child: Container(
+                    decoration: boxDecoration(white, 30),
+                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 9),
+                    child: Center(child: tc("Previous", txtColor, 12))),
               ),
             ),
           ],
@@ -132,38 +147,56 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                       borderRadius: BorderRadius.circular(30),
                       color: Colors.grey.shade200,
                     ),
-                    child:     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    child:     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.account_circle_outlined,
-                                color: Colors.black,
-                                size: 15,
-                              ),
-                              gapWC(5),
-                             Expanded(
-                               child: tc(hmSalesOrderController.cstmrName.value,
-                                   Colors.black, 12),
-                             )
-                            ],
-                          ),
-                        ), 
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.account_circle_outlined,
+                                    color: Colors.black,
+                                    size: 15,
+                                  ),
+                                  gapWC(5),
+                                  Expanded(
+                                    child: tc(hmSalesOrderController.cstmrName.value,
+                                        Colors.black, 12),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.tag_outlined,
+                                  color: Colors.black,
+                                  size: 15,
+                                ),
+                                gapWC(5),
+                                tc(hmSalesOrderController.cstmrCode.value,
+                                    Colors.black, 12)
+                              ],
+                            ),
+                          ],
+                        ),
+                        gapHC(3),
+                        hmSalesOrderController.bookingNumber.value.isNotEmpty&& hmSalesOrderController.g.wstrCylinderContractYN=="Y"?Row(
                           children: [
                             const Icon(
-                              Icons.tag_outlined,
+                              Icons.confirmation_num_outlined,
                               color: Colors.black,
                               size: 15,
                             ),
                             gapWC(5),
-                            tc(hmSalesOrderController.cstmrCode.value,
-                                Colors.black, 12)
+                            tcn(hmSalesOrderController.bookingNumber.value, txtColor, 12),
                           ],
-                        ),
+                        )
+                            :gapHC(0)
                       ],
                     ),
                   ),
@@ -416,7 +449,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
 
-        floatingActionButton: Obx(() => (hmSalesOrderController.wstrPageMode.value != "VIEW" )? Padding(
+        floatingActionButton: Obx(() => (hmSalesOrderController.wstrPageMode.value != "VIEW" && hmSalesOrderController.g.wstrCylinderContractYN!="Y" )? Padding(
           padding: const EdgeInsets.only(bottom: 67),
           child: FloatingActionButton(
             backgroundColor: primaryColor,
@@ -428,7 +461,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
           ),
         ):SizedBox())
 
-    );
+    ));
   }
 
 
@@ -613,12 +646,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [tcn('Qty', Colors.white, 10)],
                       )),
-                  Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [tcn('R.Qty', Colors.white, 10)],
-                      )),
+
                   Flexible(
                       flex: 1,
                       child: Row(
@@ -632,7 +660,8 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
             Column(
               children: [
                 Column(
-                  children: hmSalesOrderController.wSalesOrderItemList(context),
+                  children:
+                  hmSalesOrderController.wSalesOrderItemList(context),
                 ),
               ],
             ),
@@ -884,7 +913,7 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
               "Remark",
               "N",
               maxLine: 5,
-              prefixicon: Icons.apartment,
+              prefixicon: Icons.note_alt_outlined,
             ),
             gapHC(15),
 
@@ -899,55 +928,55 @@ class _HmeSalesOrderState extends State<HmeSalesOrder> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          tc('Driver', black, 12),
-          gapHC(5),
-          Bounce(
-            duration: const Duration(milliseconds: 110),
-            onPressed: (){
-              if(hmSalesOrderController.wstrPageMode.value  == "VIEW"){
-                return;
-              }else{
-                dprint(" Driver Lookupp");
-                hmSalesOrderController.fnLookup("CRDELIVERYMANMASTER");
-              }
-            },
-            child: CommonTextField(
-              sufixIconColor: Colors.black,
-              lookupY: true,
-              obscureY: false,
-              textStyle: const TextStyle(color:txtColor,fontSize: 12),
-              prefixIcon: Icons.directions_car_filled_outlined,
-              prefixIconColor: black,
-              txtController: hmSalesOrderController.txtDriver,
-              enableY:false,
-            ),
-          ),
-          gapHC(10),
-          tc('Vehicle Number', black, 12),
-          gapHC(5),
-          Bounce(
-            duration: const Duration(milliseconds: 110),
-            onPressed: (){
-              if(hmSalesOrderController.wstrPageMode.value  == "VIEW"){
-                return;
-              }else{
-                dprint(" VehicleNumb Lookupp");
-                hmSalesOrderController.fnLookup("CRVEHICLEMASTER");
-              }
-            },
-            child: CommonTextField(
-              lookupY: true,
-              obscureY: false,
-
-              textStyle: const TextStyle(color:txtColor,fontSize: 12),
-              prefixIcon: Icons.tag,
-              sufixIconColor: Colors.black,
-              prefixIconColor: black,
-              txtController: hmSalesOrderController.txtVehiclenumber,
-              enableY:false,
-            ),
-          ),
-          gapHC(10),
+          // tc('Driver', black, 12),
+          // gapHC(5),
+          // Bounce(
+          //   duration: const Duration(milliseconds: 110),
+          //   onPressed: (){
+          //     if(hmSalesOrderController.wstrPageMode.value  == "VIEW"){
+          //       return;
+          //     }else{
+          //       dprint(" Driver Lookupp");
+          //       hmSalesOrderController.fnLookup("CRDELIVERYMANMASTER");
+          //     }
+          //   },
+          //   child: CommonTextField(
+          //     sufixIconColor: Colors.black,
+          //     lookupY: true,
+          //     obscureY: false,
+          //     textStyle: const TextStyle(color:txtColor,fontSize: 12),
+          //     prefixIcon: Icons.directions_car_filled_outlined,
+          //     prefixIconColor: black,
+          //     txtController: hmSalesOrderController.txtDriver,
+          //     enableY:false,
+          //   ),
+          // ),
+          // gapHC(10),
+          // tc('Vehicle Number', black, 12),
+          // gapHC(5),
+          // Bounce(
+          //   duration: const Duration(milliseconds: 110),
+          //   onPressed: (){
+          //     if(hmSalesOrderController.wstrPageMode.value  == "VIEW"){
+          //       return;
+          //     }else{
+          //       dprint(" VehicleNumb Lookupp");
+          //       hmSalesOrderController.fnLookup("CRVEHICLEMASTER");
+          //     }
+          //   },
+          //   child: CommonTextField(
+          //     lookupY: true,
+          //     obscureY: false,
+          //
+          //     textStyle: const TextStyle(color:txtColor,fontSize: 12),
+          //     prefixIcon: Icons.tag,
+          //     sufixIconColor: Colors.black,
+          //     prefixIconColor: black,
+          //     txtController: hmSalesOrderController.txtVehiclenumber,
+          //     enableY:false,
+          //   ),
+          // ),
+          // gapHC(10),
           tc('Location', black, 12),
           gapHC(5),
           Bounce(

@@ -17,7 +17,7 @@ class HmSalesController extends GetxController{
   Rx<DateTime> docDate = DateTime.now().obs;
   Rx<DateTime> delivryDate = DateTime.now().obs;
   RxString frDocno="".obs;
-  RxString frDocType="".obs;
+  var frDocType="CGI".obs;
   var g  = Global();
   var wstrPageMode = "VIEW".obs;
   late Future <dynamic> futureform;
@@ -35,6 +35,8 @@ class HmSalesController extends GetxController{
   var selectedItem=''.obs;
   var selectedItemType=''.obs;
   var selectedRate=''.obs;
+  var contractNumber=''.obs;
+  var contractDocType=''.obs;
   //************************CONTROLLER
   final txtCustomerCode = TextEditingController();
   var txtContactNo = TextEditingController();
@@ -52,6 +54,7 @@ class HmSalesController extends GetxController{
   var txtVehiclenumber= TextEditingController();
   var txtController= TextEditingController();
   var txtlocation= TextEditingController();
+  var txtsman= TextEditingController();
 
   //************************PAYMENT__CONTROLLER
   var txtDiscountAmt = TextEditingController();
@@ -65,7 +68,7 @@ class HmSalesController extends GetxController{
   RxList lstrSalesList = [].obs;
   RxList lstrStockDetailList =[].obs;
   var lstrProductTypeList = [].obs;
-
+  var bookingList =[].obs;
   var lstrProductItemDetailList =[].obs;
   //***********************************************************MENU
 
@@ -112,7 +115,7 @@ class HmSalesController extends GetxController{
   fnClear(){
     dprint("######################   clear #####################");
     frDocno.value="";
-    frDocType.value="";
+    // frDocType.value="CGI";
     txtLandmark.clear();
     txtRemark.clear();
     txtAddress.clear();
@@ -147,7 +150,6 @@ class HmSalesController extends GetxController{
     txtRoundAmt.clear();
     txtTaxAmt.clear();
     txtTaxAmt.text='';
-
     txtNetAmt.clear();
 
 
@@ -183,12 +185,11 @@ class HmSalesController extends GetxController{
       txtDiscountAmt.text =(headerList["DISC_AMT"]??"").toString();
       txtBuildingCode.text = (headerList["BUILDING_CODE"]??"").toString();
       txtRemark.text = (headerList["REMARKS"]??"").toString();
-      txtAddress.text = (headerList["ADD1"]??"").toString();
-      txtLandmark.text = (headerList["LANDMARK"]??"").toString();
+      txtAddress.text = (headerList["ADDRESS1"]??"").toString();
+      txtsman.text=g.wstrSman;
       txtContactNo.text = (headerList["MOBILE"]??"").toString();
       txtAreacode.text = (headerList["AREA_CODE"]??"").toString();
       txtlocation.text = (headerList["LOC"]??"").toString();
-
       txtTotalAmt.text = (headerList["GRAMTFC"]??"").toString();
 
       txtApartmentCode.text = (headerList["PROPERTY_CODE"]??"").toString();
@@ -441,7 +442,8 @@ class HmSalesController extends GetxController{
         "COMPANY" : g.wstrCompany,
         "YEARCODE" :g.wstrYearcode,
         "DOCNO" : frDocno.value,
-        "DOCTYPE" : "CGI",
+        "DOCTYPE" : frDocType.value,
+        "AREA_CODE":txtAreacode.text,
         "DOCDATE":  setDate(2,docDate.value),
         "SRNO": i,
         "REMARKS":txtRemark.text,
@@ -496,7 +498,7 @@ class HmSalesController extends GetxController{
         "CYLINDER_QTY1": qty2,
         "CYLINDER_UNIT": unit2,
         "DRIVER": txtDriver.text,
-        "SMAN": "",
+        "SMAN": txtsman.text??g.wstrSman,
         "PARTYCODE" : cstmrCode.value,
         "PARTYNAME" : cstmrName.value,
         "DUEDATE": "",
@@ -517,6 +519,7 @@ class HmSalesController extends GetxController{
         "CREATE_USER":g.wstrUsername,
         "EDIT_USER":g.wstrUsername,
 
+
       });
       i++;
 
@@ -534,12 +537,12 @@ class HmSalesController extends GetxController{
       ApiParams.company : g.wstrCompany,
       ApiParams.yearcode  : g.wstrYearcode,
       "DOCNO" : frDocno.value,
-      "DOCTYPE" : "CGI",
+      "DOCTYPE" : frDocType.value,
       "DOCDATE" : setDate(2,docDate.value),
       "PARTYCODE" : cstmrCode.value,
       "PARTYNAME" : cstmrName.value,
-      "DRIVER" : txtDriver.text,
-      "VEHICLE_NO" :txtVehiclenumber.text,
+      "DRIVER" : txtDriver.text??g.wstrDrviverCode,
+      "VEHICLE_NO" :txtVehiclenumber.text??g.wstrVehicleNumber,
       "LOC" : txtlocation.text,
       "CASH_CREDIT" : "CR",
       "CURR" : "AED",
@@ -563,7 +566,7 @@ class HmSalesController extends GetxController{
       "ROUND_OFF_AMT" : roundOfAmount,
       "ROUND_OFF_AMTFC" :roundOfAmount*currRate,
       "PRVMULTIDOCNO" : "",
-      "VAT_PERC" : 0,
+      "VAT_PERC" : vatB,
       "TOTAL_TAXAMTFC" : totalTaxAmt*currRate,
       "TOTAL_TAXAMT" : totalTaxAmt,
       "BUILDING_CODE" : txtBuildingCode.text,
@@ -577,15 +580,15 @@ class HmSalesController extends GetxController{
       "BRNCODE": "",
       "DIVCODE": "",
       "CCCODE": "",
-      "SMAN": "",
+      "SMAN": txtsman.text??g.wstrSman,
+      "CONTRACT_NO":contractNumber.value,
+      "CONTRACT_DOCTYPE":contractDocType.value
 
     });
+    dprint("INVV>>>>>>>>>>>  ${tableInv}");
+    dprint("INVV det>>>>>>>>>>>  ${tableInvDet}");
 
-
-
-
-
-    apiSaveSales( tableInv, tableInvDet, context);
+    apiSaveSales(tableInv,tableInvDet,context);
 
   }
 
@@ -600,7 +603,7 @@ class HmSalesController extends GetxController{
   }
 
   fnPaymntCalc() {
-
+    dprint("******************************PAYMNET_CALC********************     ${lstrStockDetailList.value[0]["Column1"]}");
     var totalAmount =  0.0;
     var taxAmount =  0.0;
     var netAmount =  0.0;
@@ -754,6 +757,37 @@ class HmSalesController extends GetxController{
           )
       );
     }
+    else if(mode == "SMANMAST"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'N'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'SMANMAST',
+            title: 'sman',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'CODE',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+
     else if(mode == "GPRIORITYMASTER"){
       final List<Map<String, dynamic>> lookup_Columns = [
         {'Column': 'CODE', 'Display': 'CODE'},
@@ -1008,13 +1042,19 @@ class HmSalesController extends GetxController{
       }
       else if (mode == "CRDELIVERYMANMASTER") {
         dprint("fdfd ${data}");
-        txtDriver.text = data["DEL_MAN_CODE"];
-        txtVehiclenumber.text = data["VEHICLE_NO"]??txtVehiclenumber.text;
+        txtDriver.text = data["DEL_MAN_CODE"]??g.wstrDrviverCode;
+        txtVehiclenumber.text = data["VEHICLE_NO"]??g.wstrVehicleNumber;
         //    apiGetCustomerInfo();
       }
       else if (mode == "CRVEHICLEMASTER") {
         dprint("RRRRRRRRRR ${data}");
         txtVehiclenumber.text = data["VEHICLE_NO"];
+
+        //    apiGetCustomerInfo();
+      }
+      else if (mode == "SMANMAST") {
+        dprint("SMANMASTsssssssss ${data}");
+        txtsman.text = data["CODE"];
 
         //    apiGetCustomerInfo();
       }
@@ -1028,6 +1068,121 @@ class HmSalesController extends GetxController{
     }
   }
 
+
+  fnFillBookingDetails(data){
+    dprint("ddddddddata  ${data}");
+    var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
+    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
+    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
+    dprint("hhhhhhhhhh${headerList}");
+    txtCustomerCode.text = headerList["PARTY_CODE"].toString();
+    cstmrCode.value = headerList["PARTY_CODE"].toString();
+    cstmrName.value = headerList["PARTY_NAME"].toString();
+    txtCustomerName.text = headerList["PARTY_NAME"].toString();
+    txtContactNo.text = headerList["MOBILE_NO"].toString();
+    txtBuildingCode.text = headerList["BLDG_NO"].toString();
+    txtApartmentCode.text = headerList["APARTMENT_NO"].toString();
+    txtAreacode.text = headerList["AREA_CODE"].toString();
+    txtLandmark.text = headerList["LANDMARK"].toString();
+    txtAddress.text = headerList["CUST_ADDRESS"].toString();
+    txtRemark.text = headerList["REMARKS"].toString();
+    contractNumber.value = headerList["CONTRACT_NO"].toString();
+    contractDocType.value = headerList["CONTRACT_DOCTYPE"].toString();
+    txtDriver.text =detList[0]["DEL_MAN_CODE"].toString();
+    txtVehiclenumber.text =detList[0]["VEHICLE_NO"].toString();
+    txtsman.text=g.wstrSman;
+
+    if(g.fnValCheck(detList)){
+      int i = 1;
+      lstrSalesList.value = [];
+
+
+      var totalAmount = 0.0;
+      var totalGrAmt = 0.0;
+      var totalTaxAmt = 0.0;
+      var totalDiscountAmt = 0.0;
+      var balanceAmount = 0.0;
+      var addlAmount =  0.0;
+      var netAmount = 0.0;
+      var currRate =  1.0;
+      var srno = 0;
+      for(var e in detList){
+        var qty = g.mfnDbl(e["QTY1"]);
+        var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldrate =g.mfnDbl(e["CYL_SELL_RATE"]);
+        var disc  =0.0;
+
+        var soldQty = qty - rtnQty;
+        var gasAmount  =  qty * price ;
+        var soldAmount =  soldQty * soldrate;
+
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt - disc;
+        totalAmount = totalAmount + amt;
+      }
+
+      for (var e in detList) {
+        dprint("##########saleee##########  ${e}");
+        var qty2 = g.mfnDbl(e["QTY2"]);
+        var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+        var vat = g.mfnDbl(e["VAT"]);
+        var disc  = 0.0;
+        var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+
+        var qty1 = qty2 * unitCf;
+
+        var rate2 = price;
+        var rate1 = price*unitCf;
+
+        var unit1 = e["UNIT"];
+        var unit2 = e["UNIT2"];
+        dprint("##########qty1##########  ${qty1}");
+        dprint("##########qty2##########  ${qty2}");
+
+        var datas =Map<String,dynamic>.from({
+          "STKCODE": e["STOCK_CODE"],
+          "STKDESCP": e["STOCK_DESC"],
+          "QTY": e["QTY1"],
+          "RATE": e["RATE"],
+          "VAT_PERC":e["VAT"],
+          "RETURN_QTY": returnQty,
+          "DISC_AMT": e["DISC_AMT"],
+          "NQTY":g.mfnDbl(e["QTY2"]),
+          "EQTY":g.mfnDbl(e["RETURN_QTY"]),
+          "RQTY":0,
+          "UNIT":unit1,
+          "UNIT2":unit2,
+          "CYL_SELL_RATE":e["SOLD_RATE"],
+          "SALEUNIT":unit2,
+          "CYLINDER_YN":"Y",
+          "CATWEIGHT":e["UNITCF"],
+          "MATERIAL_CODE":e["MATERIAL_CODE"]??"",
+          "PRICE2":e["PRICE2"]??"",
+          "PRICE1":e["PRICE1"]??"",
+          "CYLINDER_TYPE":e["CYLINDER_CAT"],
+        });
+
+
+
+
+        lstrSalesList.value.add(datas);
+        i++;
+        update();
+      }
+      dprint("Calll  payment............");
+      // fnPaymntCalc();
+
+      // txtTotalAmt.text =  totalAmount.toStringAsFixed(2);
+
+
+
+    }
+
+
+  }
 
 
   //**************************************************WIDGETS
@@ -2088,7 +2243,7 @@ class HmSalesController extends GetxController{
   //**************************************************API
 
   apiViewSales(docno, mode) {
-    futureform = ApiCall().apiViewSales(docno, mode);
+    futureform = ApiCall().apiViewSales(docno, mode,frDocType.value);
     futureform.then((value) => apiViewSalesRes(value));
   }
   apiViewSalesRes(value) {
@@ -2223,6 +2378,21 @@ class HmSalesController extends GetxController{
     if(g.fnValCheck(value)){
       dprint("GetStockDetails>>>>>>>>>>>DETAILS>>>>>>>>>>> ${value}");
       fnfillStockDetails(value);
+    }
+
+  }
+
+  apiGetBooking(docno,mode){
+    futureform = ApiCall().apiViewBooking(docno,mode);
+    futureform.then((value) => apiGetBookingRes(value));
+  }
+  apiGetBookingRes(value){
+    if(g.fnValCheck(value)){
+      bookingList.value=[];
+      fnClear();
+      fnFillBookingDetails(value);
+      dprint("<<<<<<<<<<Calll  payment............>>>>>>>>>>");
+      fnPaymntCalc();
     }
 
   }

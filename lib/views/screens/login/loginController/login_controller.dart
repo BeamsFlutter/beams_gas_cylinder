@@ -30,8 +30,9 @@ class LoginController extends GetxController{
 
 
   }
-  fnLoginDone(data,mode) async{
-    dprint("*******************  ${data}");
+  fnLoginDone(data,mode,companyPara) async{
+    dprint("*********QWEWWE**********  ${data}");
+    dprint("*********companyPara**********  ${companyPara}");
 
 
     try{
@@ -42,6 +43,14 @@ class LoginController extends GetxController{
       g.wstrUserCD= data["USER_CD"]??"";
       g.wstrUsername= data["USER_NAME"]??"";
       g.wstrempcode= data["EMPCODE"]??"";
+      g.wstrCylinderContractYN=companyPara["CYLINDER_OPERATION_USING_CONTRACT"];
+      g.wstrDrviverCode=data["DEL_MAN_CODE"];
+      g.wstrVehicleNumber=data["VEHICLE_NO"];
+      g.wstrSman=data["SMAN"];
+      dprint(">>>>>> ${ g.wstrCylinderContractYN}");
+      dprint(">>>>>>VEH ${ g.wstrVehicleNumber}");
+      dprint(">>>>>>DRIVR ${ g.wstrDrviverCode}");
+      dprint(">>>>>>SMAN ${ g.wstrSman}");
       fnClear();
       fnGoHome();
 
@@ -82,8 +91,9 @@ class LoginController extends GetxController{
       if(sts == "1"){
         dprint("wqewqeqweqweqwrerrrrrr");
         var data =  value["DATA"];
+        var companyPara =  value["COMPANYPARA"];
         if(g.fnValCheck(data)){
-          fnLoginDone(data,mode);
+          fnLoginDone(data,mode,companyPara);
         }
       }else{
         lstrErrorMsg.value = "Please try again";

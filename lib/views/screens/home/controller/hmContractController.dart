@@ -18,7 +18,7 @@ class HmContractController extends GetxController{
 
 
   RxString frContractno="".obs;
-  RxString frDocType="".obs;
+  var frDocType="GCC".obs;
   var g  = Global();
   var wstrPageMode = "VIEW".obs;
   late Future <dynamic> futureform;
@@ -100,7 +100,7 @@ class HmContractController extends GetxController{
 
     dprint("######################   clear #####################");
     frContractno.value="";
-    frDocType.value="";
+    // frDocType.value="";
     contractDate.value=DateTime.now();
     cstmrName.value="";
     cstmrCode.value="";
@@ -158,7 +158,7 @@ class HmContractController extends GetxController{
 
       tableContract.add({
         "COMPANY" : g.wstrCompany,
-        "DOCTYPE" : "GCC",
+        "DOCTYPE" : frDocType.value,
         "YEARCODE" : g.wstrYearcode,
         "CONTRACT_NO" : frContractno.value,
         "CONTRACT_DATE" :  setDate(2,contractDate.value),
@@ -408,6 +408,7 @@ class HmContractController extends GetxController{
     txtRemark.text = (customerDatas["REMARKS"]??"").toString();
     txtContactNo.text = (customerDatas["MOBILE"]??"").toString();
     txtAddress.text = (customerDatas["ADDRESS1"]??"").toString();
+    txtAreaCode.text = (customerDatas["AREA"]??"").toString();
     dprint("txtEmailaaaaaaaaa ${  txtEmail.text}");
 
   }
@@ -858,7 +859,7 @@ class HmContractController extends GetxController{
   }
 
   apiViewContarct(contrNo,mode){
-    futureform = ApiCall().apiViewContract(contrNo,mode);
+    futureform = ApiCall().apiViewContract(contrNo,mode,frDocType.value);
     futureform.then((value) => apiViewContarctRes(value));
   }
   apiViewContarctRes(value){

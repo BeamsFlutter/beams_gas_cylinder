@@ -20,16 +20,20 @@ class HmeAssignmnet extends StatefulWidget {
 }
 
 class _HmeAssignmnetState extends State<HmeAssignmnet> {
-  final HmAssignmentController hmAssignmnt = Get.put(HmAssignmentController());
+  final HmAssignmentController hmAssignmntController = Get.put(HmAssignmentController());
 
 
   @override
   void initState() {
-    hmAssignmnt.pageController = PageController();
-    hmAssignmnt.wstrPageMode.value = 'VIEW';
-    hmAssignmnt.apiViewAssignment('',"LAST");
-    hmAssignmnt.lstrSelectedPage.value = "CB";
-    hmAssignmnt.selectedPage.value=1;
+    hmAssignmntController.lstrSelectedPage.value = "CB";
+    hmAssignmntController.pageController = PageController();
+    hmAssignmntController.selectedPage.value=0;
+    hmAssignmntController.wstrPageMode.value = 'VIEW';
+    hmAssignmntController.apiViewAssignment('',"LAST");
+
+
+
+
     // TODO: implement initState
     super.initState();
   }
@@ -44,7 +48,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            hmAssignmnt.fnBackPage(context);
+            hmAssignmntController.fnBackPage(context);
           },
           icon: const Icon(Icons.arrow_back),
         ),
@@ -73,7 +77,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                     Bounce(
                       duration: const Duration(milliseconds: 110),
                       onPressed: () {
-                        hmAssignmnt.fnLookup("GCYLINDER_ASSIGNMENT");
+                        hmAssignmntController.fnLookup("GCYLINDER_ASSIGNMENT");
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
@@ -92,7 +96,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                                   weight: 100,
                                   size: 15,
                                 ),
-                                tc(hmAssignmnt.frDocno.value, txtColor, 12)
+                                tc(hmAssignmntController.frDocno.value, txtColor, 12)
                               ],
                             ),
                             gapWC(5),
@@ -110,7 +114,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           size: 15,
                         ),
                         gapWC(3),
-                        tcn(hmAssignmnt.txtdocDate.text, txtColor, 12)
+                        tcn(hmAssignmntController.txtdocDate.text, txtColor, 12)
                       ],
                     ),
                   ],
@@ -131,10 +135,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                             duration: const Duration(milliseconds: 110),
                             onPressed: () {
                               dprint("lookup>>>>>>>location");
-                              if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                              if(hmAssignmntController.wstrPageMode.value  == "VIEW"){
                                 return;
                               }
-                              hmAssignmnt.fnLookup("AREAMASTER");
+                              hmAssignmntController.fnLookup("AREAMASTER");
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -150,18 +154,18 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                                   const Icon(Icons.location_on,
                                       size: 18, color: primaryColor),
                                   gapWC(3),
-                                  tcn(hmAssignmnt.frLocation.value.toString(), txtColor, 13),
+                                  tcn(hmAssignmntController.frLocation.value.toString(), txtColor, 13),
                                   gapWC(13),
 
                                 ],
                               ),
                             ),
                           ),
-                       hmAssignmnt.wstrPageMode.value!="VIEW" && hmAssignmnt.frLocation.value.isNotEmpty?   Bounce(
+                       hmAssignmntController.wstrPageMode.value!="VIEW" && hmAssignmntController.frLocation.value.isNotEmpty?   Bounce(
                             duration: const Duration(milliseconds: 110),
                             onPressed: (){
                               dprint("&&&&&&&");
-                              hmAssignmnt.frLocation.value="";
+                              hmAssignmntController.frLocation.value="";
 
                             },
                             child: Container(decoration: boxDecoration(primaryColor, 30),
@@ -174,10 +178,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
                           dprint("lookup>>>>>>>Priority");
-                          if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                          if(hmAssignmntController.wstrPageMode.value  == "VIEW"){
                             return;
                           }
-                          hmAssignmnt.fnLookup("GPRIORITYMASTER");
+                          hmAssignmntController.fnLookup("GPRIORITYMASTER");
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -191,7 +195,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                               const Icon(Icons.circle,
                                   size: 18, color: Colors.red),
                               gapWC(4),
-                              tcn( hmAssignmnt.priorityvalue.value.toString(), txtColor, 13)
+                              tcn( hmAssignmntController.priorityvalue.value.toString(), txtColor, 13)
                             ],
                           ),
                         ),
@@ -217,10 +221,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           Flexible(
                             child: Bounce(
                               onPressed: (){
-                                if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                                if(hmAssignmntController.wstrPageMode.value  == "VIEW"){
                                   return;
                                 }
-                                hmAssignmnt.fnLookup("CRDELIVERYMANMASTER");
+                                hmAssignmntController.fnLookup("CRDELIVERYMANMASTER");
                               },
                               duration: const Duration(milliseconds: 110),
                               child: Container(
@@ -242,7 +246,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                                             size: 18,
                                           ),
                                           gapWC(5),
-                                          Flexible(child: tcn(hmAssignmnt.frdriverName.value, Colors.black, 13))
+                                          Flexible(child: tcn(hmAssignmntController.frdriverName.value, Colors.black, 13))
                                         ],
                                       ),
                                     ),
@@ -257,10 +261,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           Flexible(
                             child: Bounce(
                               onPressed: (){
-                                if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                                if(hmAssignmntController.wstrPageMode.value  == "VIEW"){
                                   return;
                                 }
-                                hmAssignmnt.fnLookup("CRVEHICLEMASTER");
+                                hmAssignmntController.fnLookup("CRVEHICLEMASTER");
                               },
                               duration: const Duration(milliseconds: 110),
 
@@ -281,7 +285,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                                           size: 18,
                                         ),
                                         gapWC(5),
-                                        tcn(hmAssignmnt.frvehiclenumber.value, Colors.black, 13)
+                                        tcn(hmAssignmntController.frvehiclenumber.value, Colors.black, 13)
                                       ],
                                     ),
 
@@ -299,17 +303,17 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
-                          if(hmAssignmnt.wstrPageMode=="VIEW"){
+                          if(hmAssignmntController.wstrPageMode=="VIEW"){
                             return;
                           }
 
-                          hmAssignmnt.wSelectDate(context);
+                          hmAssignmntController.wSelectDate(context);
                           gapHC(5);
                         },
                         child:  CommonTextField(
                           obscureY: false,
                           textStyle: const TextStyle(color: txtColor),
-                          txtController: hmAssignmnt.txtdelivryDate,
+                          txtController: hmAssignmntController.txtdelivryDate,
                           prefixIcon: Icons.calendar_month,
                           prefixIconColor: black,
                           sufixIconColor: Colors.black,
@@ -356,9 +360,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       width: 0.3,
                       text: "Choose Booking",
                       pageNumber: 0,
-                      selectedPage: hmAssignmnt.selectedPage.value,
+                      selectedPage: hmAssignmntController.selectedPage.value,
                       onPressed: () {
-                        hmAssignmnt.lstrSelectedPage.value = "CB";
+                        hmAssignmntController.lstrSelectedPage.value = "CB";
                         changePage(0);
                       },
 
@@ -367,9 +371,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       width: 0.3,
                       text: "Item Details",
                       pageNumber: 1,
-                      selectedPage:hmAssignmnt.selectedPage.value,
+                      selectedPage:hmAssignmntController.selectedPage.value,
                       onPressed: () {
-                        hmAssignmnt.lstrSelectedPage .value= "ID";
+                        hmAssignmntController.lstrSelectedPage .value= "ID";
                         changePage(1);
                       },
                       icon: Icons.all_inbox),
@@ -391,10 +395,10 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                     Expanded(
                       child: PageView(
                         onPageChanged: (int page) {
-                          hmAssignmnt.selectedPage.value = page;
+                          hmAssignmntController.selectedPage.value = page;
 
                         },
-                        controller: hmAssignmnt.pageController,
+                        controller: hmAssignmntController.pageController,
                         children:  [
                           // 1st page design ------ Choose Item
                           chooseBookingScreen(MediaQuery.of(context).size),
@@ -417,19 +421,19 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
           ],
         ),
       ),
-      bottomNavigationBar: (hmAssignmnt.wstrPageMode.value ==
+      bottomNavigationBar: (hmAssignmntController.wstrPageMode.value ==
           "VIEW")
           ? BottomNavigationItem(
-        mode: hmAssignmnt.wstrPageMode.value,
-        fnAdd: hmAssignmnt.fnAdd,
-        fnEdit: hmAssignmnt.fnEdit,
-        fnCancel: hmAssignmnt.fnCancel,
-        fnPage: hmAssignmnt.fnPage,
-        fnSave: hmAssignmnt.fnSave,
-        fnDelete: hmAssignmnt.fnDelete,
+        mode: hmAssignmntController.wstrPageMode.value,
+        fnAdd: hmAssignmntController.fnAdd,
+        fnEdit: hmAssignmntController.fnEdit,
+        fnCancel: hmAssignmntController.fnCancel,
+        fnPage: hmAssignmntController.fnPage,
+        fnSave: hmAssignmntController.fnSave,
+        fnDelete: hmAssignmntController.fnDelete,
       )
-          : (hmAssignmnt.wstrPageMode.value == "ADD" ||
-          hmAssignmnt.wstrPageMode.value == "EDIT")
+          : (hmAssignmntController.wstrPageMode.value == "ADD" ||
+          hmAssignmntController.wstrPageMode.value == "EDIT")
           ? Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -439,7 +443,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                 onPressed: () {
                   // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
                   // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
-                  hmAssignmnt.fnSave(context);
+                  hmAssignmntController.fnSave(context);
                 },
                 duration: const Duration(milliseconds: 110),
                 child: Container(
@@ -463,7 +467,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
             ),
             Bounce(
               onPressed: () {
-                hmAssignmnt.fnCancel();
+                hmAssignmntController.fnCancel();
               },
               duration: const Duration(milliseconds: 110),
               child: Container(
@@ -506,16 +510,22 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-           hmAssignmnt.wstrPageMode.value!="VIEW"? Row(
+           hmAssignmntController.wstrPageMode.value!="VIEW"? Row(
               children: [
                 Expanded(
                   child: Bounce(
                     duration: const Duration(milliseconds: 110),
                     onPressed: () {
-                      if(hmAssignmnt.wstrPageMode.value  == "VIEW"){
+                      if(hmAssignmntController.wstrPageMode.value  == "VIEW"){
                         return;
                       }
-                      hmAssignmnt.fnLookup("GCYLINDER_BOOKING");
+                      if( hmAssignmntController.g.wstrCylinderContractYN=="Y"){
+                        hmAssignmntController.fnLookup("SO");
+                      }else{
+                        hmAssignmntController.fnLookup("GCYLINDER_BOOKING");
+                      }
+                      //
+                      // hmAssignmntController.fnLookup("GCYLINDER_BOOKING");
                     },
                     child: Container (
                         width: size.width,
@@ -526,7 +536,9 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                           child:  Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              tcn(hmAssignmnt.bookingNumber.value, txtColor, 12),
+                           tcn(hmAssignmntController.bookingNumber.value, txtColor, 12),
+                      //    hmAssignmntController.g.wstrCylinderContractYN=="Y"?tcn(hmAssignmntController.lstrBookedItemList.value[0]["BOOKINGNUMB"], txtColor, 12): tcn(hmAssignmntController.bookingNumber.value, txtColor, 12),
+
                               Icon(Icons.search),
                             ],
                           ),
@@ -606,14 +618,14 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   //===================================WIDGET
   List<Widget> wItemDetails() {
-    var bookedlist = hmAssignmnt.lstrBookedItemList.value;
+    var bookedlist = hmAssignmntController.lstrBookedItemList.value;
     List<Widget> rtnList = [] ;
 
     for (var e in bookedlist) {
       dprint("bookedlist........... ${e.toString()}.");
       var itemName = (e["STKDESCP"] ?? "").toString();
       var bookingNumb = (e["BOOKINGNUMB"] ?? "").toString();
-      var qty = hmAssignmnt.g.mfnDbl(e["QTY"].toString());
+      var qty = hmAssignmntController.g.mfnDbl(e["QTY"].toString());
 
       // dprint("Qty>>> ${qty}");
       // dprint("bookingNumb>>> ${bookingNumb}");
@@ -658,7 +670,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   List<Widget>  wBookingDetails() {
     List<Widget> rtnList =[];
-    for(var e  in hmAssignmnt.lstrBookedHeaderList.value){
+    for(var e  in hmAssignmntController.lstrBookedHeaderList.value){
       dprint("lstrBookedHeaderListitems>>>>>>>>>>>  ${e}");
 
       var partyname = (e["PARTY_NAME"] ?? "").toString();
@@ -667,6 +679,7 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
       var buildingCode =(e["BLDG_NO"] ?? "").toString();
       var areaCode = (e["AREA_CODE"] ?? "").toString();
       var apartmnt = (e["APARTMENT_NO"] ?? "").toString();
+      var contractNumber = (e["CONTRACT_NO"] ?? "").toString();
 
       rtnList.add(
           Container(
@@ -682,27 +695,71 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        tcn(boookingNumb.toString(), txtColor, 12),
-                        tcn(partyname.toString(), txtColor, 12),
-                        tcn(phonunumber.toString(), txtColor, 12),
-                        tcn(buildingCode.toString(), txtColor, 12),
-                        tcn(apartmnt.toString(), txtColor, 12),
-                        tcn(areaCode.toString(), txtColor, 12),
+                        boookingNumb.toString().isNotEmpty? Row(
+                          children: [
+                            Icon(Icons.confirmation_num,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(boookingNumb.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
+                        partyname.toString().isNotEmpty? Row(
+                          children: [
+                            Icon(Icons.person,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(partyname.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
+                        phonunumber.toString().isNotEmpty? Row(
+                          children: [
+                            Icon(Icons.phone_android,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(phonunumber.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
+                        buildingCode.toString().isNotEmpty? Row(
+                          children: [
+                            Icon(Icons.apartment,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(buildingCode.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
+                        apartmnt.toString().isNotEmpty? Row(
+                          children: [
+                            Icon(Icons.apartment,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(apartmnt.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
+                        areaCode.toString().isNotEmpty?  Row(
+                          children: [
+                            Icon(Icons.apartment,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(areaCode.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
+                        contractNumber.toString().isNotEmpty?  Row(
+                          children: [
+                            Icon(Icons.numbers_rounded,color:txtColor,size: 12),
+                            gapWC(3),
+                            tcn(contractNumber.toString(), txtColor, 12),
+                          ],
+                        ):gapHC(0),
 
                       ],
                     ),
                   ),
-                hmAssignmnt.wstrPageMode=="VIEW"? gapHC(0) :Bounce(
+                hmAssignmntController.wstrPageMode=="VIEW"? gapHC(0) :Bounce(
                       duration: const Duration(milliseconds: 110),
                       onPressed: (){
                         dprint("Dadadada");
-                        dprint(hmAssignmnt.lstrBookedHeaderList.value);
+                        dprint(hmAssignmntController.lstrBookedHeaderList.value);
                         dprint("------------------------");
-                        dprint(hmAssignmnt.lstrBookedItemList.value);
-                        hmAssignmnt.bookingNumber.value="";
+                        dprint(hmAssignmntController.lstrBookedItemList.value);
+                        hmAssignmntController.bookingNumber.value="";
+                        hmAssignmntController.salesOrderDocNO.value="";
 
-                        hmAssignmnt.lstrBookedHeaderList.removeWhere((element) => element["BOOKINGNUMB"] == boookingNumb);
-                        hmAssignmnt.lstrBookedItemList.value.removeWhere((element) => element["BOOKINGNUMB"] == boookingNumb);
+                        hmAssignmntController.lstrBookedHeaderList.removeWhere((element) => element["BOOKINGNUMB"] == boookingNumb);
+                        hmAssignmntController.lstrBookedItemList.value.removeWhere((element) => element["BOOKINGNUMB"] == boookingNumb);
 
                         //hmAssignmnt.lstrBookedHeaderList.value.removeWhere((element) => element["BOOKINGNUMB"]==hmAssignmnt.lstrBookedItemList.value.where((item) => item["DOCNO"]));
 
@@ -724,8 +781,8 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
   changePage(int pageNum) {
 
-    hmAssignmnt.selectedPage.value = pageNum;
-    hmAssignmnt.pageController.animateToPage(
+    hmAssignmntController.selectedPage.value = pageNum;
+    hmAssignmntController.pageController.animateToPage(
       pageNum,
       duration: const Duration(milliseconds: 1000),
       curve: Curves.fastLinearToSlowEaseIn,
@@ -733,13 +790,13 @@ class _HmeAssignmnetState extends State<HmeAssignmnet> {
 
 
     if (pageNum == 0) {
-      hmAssignmnt.lstrSelectedPage.value = "CB";
+      hmAssignmntController.lstrSelectedPage.value = "CB";
 
     }
 
     if (pageNum == 1) {
 
-      hmAssignmnt.lstrSelectedPage.value = "ID";
+      hmAssignmntController.lstrSelectedPage.value = "ID";
 
     }
 

@@ -20,13 +20,16 @@ class HmAssignmentController extends GetxController{
   RxInt selectedPage = 0.obs;
   var lstrSelectedPage = "CB".obs;
   RxString frDocno="".obs;
-  RxString frDocType="".obs;
+  var frDocType="GCA".obs;
+  var salesOrderDocNO="".obs;
+  var salesOrderDocType="".obs;
 
   RxString frLocation="".obs;
   var totalAssignedValue='56'.obs;
   var pendingAssignedValue='23'.obs;
 
   RxString frdriverName="".obs;
+  RxString frEmpCode="".obs;
   RxString frdriverCode="".obs;
   RxString frvehiclenumber="".obs;
   RxString ctmrApartmentDescp="".obs;
@@ -37,7 +40,7 @@ class HmAssignmentController extends GetxController{
   RxString ctmrphoneNumber="".obs;
   RxList lstrBookedItemList =[].obs;
   RxList lstrBookedHeaderList =[].obs;
-  RxList lstrAssignmentDetailList =[].obs;
+
 
   RxString bookingNumber = "".obs;
   RxBool checkAll = false.obs;
@@ -222,6 +225,8 @@ class HmAssignmentController extends GetxController{
     txtdelivryDate.text="";
     txtdocDate.text=setDate(15,DateTime.now());
     bookingNumber.value="";
+    salesOrderDocNO.value="";
+    salesOrderDocType.value="";
 
 
 
@@ -230,10 +235,10 @@ class HmAssignmentController extends GetxController{
   }
 
   fnFillBookedDatas(data){
-    dprint("Values>>>>>>>  ${data}");
+    dprint("Values>>>>ff>>>  ${data}");
 
     // fnClear();
-    var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"]:[];
+     var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"]:[];
      var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
 
 //    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
@@ -253,10 +258,88 @@ class HmAssignmentController extends GetxController{
           "RATE":e["RATE"],
           "QTY": e["QTY1"],
           "BOOKINGNUMB": e["DOCNO"],
-          "DOCTYPE": e["DOCTYPE"],
+          "BOOKING_DOCTYPE": e["DOCTYPE"],
           "BOOKING_YEARCODE":e["YEARCODE"],
           "AMT":  g.mfnDbl(e["QTY1"])*g.mfnDbl(e["RATE"]),
-          "STATUS":e["ASSIGN"]
+          "STATUS":e["ASSIGN"],
+
+
+        });
+
+
+        lstrBookedItemList.value.add(datas);
+        i++;
+        update();
+      }
+      update();
+
+    }
+
+    if(g.fnValCheck(headerList)){
+      int i = 1;
+
+      for (var e in headerList) {
+        var datas = Map<String,dynamic>.from({
+          "BOOKINGNUMB":e["DOCNO"],
+          "DOCNO":e["DOCNO"],
+          "DOCTYPE":e["DOCTYPE"],
+          "YEARCODE":e["YEARCODE"],
+          "MOBILE_NO":e["MOBILE_NO"],
+          "PARTY_NAME":e["PARTY_NAME"],
+          "PARTY_CODE":e["PARTY_CODE"],
+          "AREA_CODE": e["AREA_CODE"],
+          "LOCATION": e["LOCATION"],
+          "APARTMENT_NO": e["APARTMENT_NO"],
+          "BLDG_NO": e["BLDG_NO"],
+          "BOOKING_YEARCODE": e["YEARCODE"],
+          "BOOKING_DOCTYPE": e["DOCTYPE"],
+        });
+        lstrBookedHeaderList.value.add(datas);
+        i++;
+        update();
+      }
+      update();
+
+    }
+
+
+
+  }
+
+  fnFillSalesOrderDatas(data){
+    dprint("Values>>>>ff>>>  ${data}");
+
+    // fnClear();
+    var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"]:[];
+    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
+
+//    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
+    dprint("HEADERLIST>>>>>>> ${headerList}");
+    dprint("DET__LISTXXXXXXXXX>>>>>>> ${detList.toList()}");
+    bookingNumber.value=detList[0]["PRVDOCNO"]??"";
+    dprint("bookingNumber.value>>>>>> ${bookingNumber.value}");
+
+
+
+    if(g.fnValCheck(detList)){
+      int i = 1;
+
+      for (var e in detList) {
+        var datas = Map<String,dynamic>.from({
+          "STKCODE":e["STKCODE"],
+          "STKDESCP":e["STKDESCP"],
+          "RATE":e["RATE"],
+          "QTY": e["QTY1"],
+          "BOOKINGNUMB": e["PRVDOCNO"],
+          "DOCTYPE": e["DOCTYPE"],
+          "DOCNO": e["DOCNO"],
+          "YEARCODE":e["YEARCODE"],
+          "BOOKING_DOCTYPE":e["PRVDOCTYPE"],
+          "BOOKING_YEARCODE":e["PRVYEARCODE"],
+           "CONTRACT_NO":e["CONTRACT_NO"],
+          "CONTRACT_DOCTYPE":e["CONTRACT_DOCTYPE"]
+          // "AMT":  g.mfnDbl(e["QTY1"])*g.mfnDbl(e["RATE"]),
+          // "STATUS":e["ASSIGN"]
 
 
         });
@@ -277,13 +360,15 @@ class HmAssignmentController extends GetxController{
 
       for (var e in headerList) {
         var datas = Map<String,dynamic>.from({
-          "BOOKINGNUMB":e["DOCNO"],
-          "MOBILE_NO":e["MOBILE_NO"],
-          "PARTY_NAME":e["PARTY_NAME"],
+          // "BOOKINGNUMB":e["PRVDOCNO"],
+          // "BOOKING_DOCTYPE":e["PRVDOCTYPE"],
+          "MOBILE_NO":e["MOBILE"],
+          "PARTY_NAME":e["PARTYNAME"],
+          "PARTY_CODE":e["PARTYCODE"],
           "AREA_CODE": e["AREA_CODE"],
-          "LOCATION": e["LOCATION"],
-          "APARTMENT_NO": e["APARTMENT_NO"],
-          "BLDG_NO": e["BLDG_NO"],
+          "LOCATION": e["LOC"],
+          "APARTMENT_NO": e["PROPERTY_CODE"],
+          "BLDG_NO": e["BUILDING_CODE"],
         });
         lstrBookedHeaderList.value.add(datas);
         i++;
@@ -301,6 +386,9 @@ class HmAssignmentController extends GetxController{
   dprint("vehiclenu,ber>>>>>>>>>>>>>>>> ${frvehiclenumber.value}");
   dprint("priorityvalue,ber>>>>>>>>>>>>>>>> ${priorityvalue.value}");
   dprint("frdriverCode.value.,ber>>>>>>>>>>>>>>>> ${frdriverCode.value}");
+  dprint("partyCode.value.value.,ber>>>>>>>>>>>>>>>> ${partyCode.value}");
+  dprint("partyCode.value.value.,ber>>>>>>>>>>>>>>>> ${lstrBookedHeaderList[0]["PARTYCODE"]}");
+  partyCode.value = lstrBookedHeaderList[0]["PARTY_CODE"];
 
 
     List tableAssignmnt=[];
@@ -321,7 +409,8 @@ class HmAssignmentController extends GetxController{
     });
     int i=1;
     for(var e in lstrBookedItemList.value){
-      dprint("*************NNN ${e}");
+      dprint("****dd*********NNN ${e}");
+
       if(frdriverCode.value.isNotEmpty){
         tableAssignmntDetails.add({
           "COMPANY": g.wstrCompany,
@@ -336,8 +425,14 @@ class HmAssignmentController extends GetxController{
           "VEHICLE_NO": frvehiclenumber.value,
           "BOOKING_SRNO": i,
           "BOOKING_NO":e["BOOKINGNUMB"],
-          "BOOKING_DOCTYPE": e["DOCTYPE"].toString(),
-          "BOOKING_YEARCODE": e["BOOKING_YEARCODE"].toString()
+          "BOOKING_DOCTYPE": e["BOOKING_DOCTYPE"].toString(),
+          "BOOKING_YEARCODE": e["BOOKING_YEARCODE"].toString(),
+          "PRV_DOCNO":e["DOCNO"],
+          "PRV_DOCTYPE": e["DOCTYPE"].toString(),
+          "PRV_YEARCODE":e["YEARCODE"].toString(),
+          "CONTRACT_DOCTYPE":e["CONTRACT_DOCTYPE"],
+          "CONTRACT_NO":e["CONTRACT_NO"]
+
         });
       }
       i++;
@@ -413,6 +508,8 @@ class HmAssignmentController extends GetxController{
 
   fnFillData(data,mode){
     if(mode=="GCYLINDER_BOOKING"){
+      lstrBookedHeaderList.value=[];
+      lstrBookedItemList.value=[];
       dprint("FILLL DATAS>>>>>  "+data.toString());
       dprint("FILLLssssssss>>>>>  "+lstrBookedHeaderList.toString());
       // dprint(data["DOCNO"]==);
@@ -446,13 +543,15 @@ class HmAssignmentController extends GetxController{
     //Fill
     if(g.fnValCheck(data)){
       if(mode  ==  "CRDELIVERYMANMASTER"){
-
+        dprint(data);
         frdriverCode.value = data["DEL_MAN_CODE"];
         frvehiclenumber.value =data["VEHICLE_NO"]??"";
         frdriverName.value =data["NAME"]??"";
+        frEmpCode.value =data["EMPCODE"]??"";
 
       }
       else if(mode  ==  "CRVEHICLEMASTER"){
+        dprint(data);
         frvehiclenumber.value = data["VEHICLE_NO"]??"";
 
         //   apiGetCustomerDetails();
@@ -475,29 +574,37 @@ class HmAssignmentController extends GetxController{
         //   apiGetDriverDetails();
       }
 
+      else if(mode  ==  "SO"){
+        dprint("11111111111SDAaaS11111111111>> ${data}" );
+        salesOrderDocNO.value = data["DOCNO"]??"";
+        salesOrderDocType.value = data["DOCTYPE"]??"";
+        apiViewSalesOrder( salesOrderDocNO.value,"",salesOrderDocType.value);
+
+
+        //   apiGetCustomerDetails();
+      }
+
     }
 
   }
 
   fnFillAssignmntData(data) {
     fnClear();
+    dprint(data);
 
-    var assignmntList  =g.fnValCheck(data["ASSIGNMENT"])? data["ASSIGNMENT"]:[];
-    var assignmntDetailList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
-    var bookingList  = g.fnValCheck(data["BOOKING"])?data["BOOKING"]:[];
-    var bookingDetailList  = g.fnValCheck(data["BOOKINGDET"])?data["BOOKINGDET"]:[];
+    List assignmntList  =g.fnValCheck(data["ASSIGNMENT"])? data["ASSIGNMENT"]:[];
+    List assignmntDetailList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
+    List bookingList  = g.fnValCheck(data["BOOKING"])?data["BOOKING"]:[];
+    List bookingDetailList  = g.fnValCheck(data["BOOKINGDET"])?data["BOOKINGDET"]:[];
     frDocno.value = assignmntList[0]["DOCNO"]??"";
     frDocType.value = assignmntList[0]["DOCTYPE"]??"";
    // frvehiclenumber.value = assignmntList[0]["VEHICLE_NO"]??"";
     frdriverName.value = assignmntList[0]["EMP_NAME"]??"";
-
-
-    frvehiclenumber.value = assignmntDetailList[0]["VEHICLE_NO"]??"";
-    partyCode.value = assignmntDetailList[0]["PARTY_CODE"]??"";
-   //  bookingNumber.value =bookingList[0]["DOCNO"];
     frLocation.value= assignmntList[0]["AREA_CODE"]??"";
     priorityvalue.value= assignmntList[0]["PRIORITY"]??"";
 
+    frvehiclenumber.value = assignmntDetailList[0]["VEHICLE_NO"]??"";
+    partyCode.value = assignmntDetailList[0]["PARTY_CODE"]??"";
     if(assignmntList[0]["DOCDATE"] != null|| assignmntList[0]["DOCDATE"] != ""){
       try{
         dprint("dooooooooo  ${assignmntList[0]["DOCDATE"]}sdada ${assignmntList[0]["DOCDATE"].runtimeType}" );
@@ -518,25 +625,54 @@ class HmAssignmentController extends GetxController{
         dprint(e);
       }
     }
+    //bookingNumber.value =bookingList[0]["DOCNO"];
+
+
+
+    // var itemList,headerList;
+    // if(bookingDetailList.isEmpty){
+    //   dprint("trrrrr");
+    //   itemList =assignmntDetailList;
+    // }else{
+    //   dprint("fffffff");
+    //   itemList = bookingDetailList;
+    //
+    // }
+    //
+    // if(bookingList.isEmpty){
+    //   dprint("trrrrr");
+    //   headerList =assignmntList;
+    // }else{
+    //   dprint("fffffff");
+    //   headerList = bookingList;
+    //
+    // }
+
+
+    // List itemList = bookingDetailList==[]?assignmntDetailList:bookingDetailList;
+    // dprint("<<<<<<<<<<headerList>>>>>>>>>> ${headerList.toList()}");
 
 
 
 
-    if(g.fnValCheck(assignmntDetailList)) {
+
+
+    if(g.fnValCheck(bookingDetailList)) {
       int i = 1;
       lstrBookedItemList.value = [];
 
-      for (var e in assignmntDetailList) {
+      for (var e in bookingDetailList) {
 
 
         var datas = Map<String,dynamic>.from({
           "STKCODE":e["STOCK_CODE"],
           "STKDESCP":e["STOCK_DESC"],
           "RATE":e["RATE"],
-          "TYPE":"N",
           "QTY":g.mfnDbl(e["QTY1"]),
           "AMT":g.mfnDbl(e["QTY1"])*g.mfnDbl(e["RATE"]),
-          "BOOKINGNUMB":e["BOOKING_NO"]
+          "BOOKINGNUMB":e["DOCNO"],
+          "BOOKINGDOCTYPE":e["DOCTYPE"]
+
 
         });
         //
@@ -564,7 +700,10 @@ class HmAssignmentController extends GetxController{
           "BLDG_NO":e["BLDG_NO"],
           "MOBILE_NO":e["MOBILE_NO"],
           "PARTY_NAME":e["PARTY_NAME"],
-          "BOOKINGNUMB":e["DOCNO"]
+          "BOOKINGNUMB":e["DOCNO"],
+           "CONTRACT_NO":e["CONTRACT_NO"],
+          "CONTRACT_DOCTYPE":e["CONTRACT_DOCTYPE"]
+
 
         });
         //
@@ -591,6 +730,7 @@ class HmAssignmentController extends GetxController{
         {'Column': 'DEL_MAN_CODE', 'Display': 'Code'},
         {'Column': 'NAME', 'Display': 'Name'},
         {'Column': 'VEHICLE_NO', 'Display': 'N'},
+        {'Column': 'EMPCODE', 'Display': 'N'},
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'}];
@@ -791,7 +931,8 @@ class HmAssignmentController extends GetxController{
       ];
       final List<Map<String, dynamic>> lookup_Filldata = [];
       var lstrFilter =[{'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'},
-                       {'Column': "ASSIGNMENT_STATUS", 'Operator': '=', 'Value': "P", 'JoinType': 'AND'}];
+                      {'Column': "ASSIGNMENT_STATUS", 'Operator': '=', 'Value': "P", 'JoinType': 'AND'}
+      ];
       if(frLocation.isNotEmpty){
         lstrFilter.add({'Column': "AREA_CODE", 'Operator': '=', 'Value': frLocation.value, 'JoinType': 'AND'});
       }
@@ -818,7 +959,39 @@ class HmAssignmentController extends GetxController{
           )
       );
     }
+    else if(mode == "SO" ){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'DOCNO', 'Display': 'DOCNO'},
+        {'Column': "DOCTYPE", 'Display': 'N'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
 
+      ];
+      var lstrFilter =[
+        {'Column': "COMPANY", 'Operator': '=', 'Value': g.wstrCompany, 'JoinType': 'AND'},
+        {'Column': "ASSIGNMENT_STATUS", 'Operator': '=', 'Value': "P", 'JoinType': 'AND'},
+      ];
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'SO',
+            title: 'salesOrder doc',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DOCNO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
   }
 
   //***********************************************************************API
@@ -836,10 +1009,24 @@ class HmAssignmentController extends GetxController{
 
   }
 
+  apiViewSalesOrder(docno,mode,doctype){
+    futureform = ApiCall().apiViewSalesOrder(docno,mode,doctype);
+    futureform.then((value) => apiViewSalesOrderRes(value));
+  }
+  apiViewSalesOrderRes(value){
+    if(g.fnValCheck(value)){
+     // fnClear();
+      lstrBookedHeaderList.value=[];
+      lstrBookedItemList.value=[];
 
+      fnFillSalesOrderDatas(value);
+    }
+
+  }
 
   apiViewAssignment(docno,mode){
-    futureform = ApiCall().apiViewAssignment(docno,mode);
+    dprint("vv ${frDocType.value} vv");
+    futureform = ApiCall().apiViewAssignment(docno,mode,frDocType.value);
     futureform.then((value) => apiViewAssignmentRes(value));
   }
   apiViewAssignmentRes(value){

@@ -22,6 +22,8 @@ class HmBookingController extends GetxController{
   RxString frDocno="".obs;
   RxString frDocType="".obs;
   RxString frDriver="".obs;
+  RxString frContractno="".obs;
+  RxString frContractType="".obs;
   RxString frVehicleNumber="".obs;
   RxString frLocation="".obs;
   RxString frAssignmentStatus="".obs;
@@ -42,6 +44,7 @@ class HmBookingController extends GetxController{
   RxString cstmrName = "".obs;
   // RxString cstmrMobile = "".obs;
   RxList lstrBookedList =[].obs;
+  // RxList lstrContarctList =[].obs;
 
 
   //************************Customer_CONTROLLER
@@ -101,8 +104,9 @@ class HmBookingController extends GetxController{
   //***********************************************************MENU
 
   fnAdd() {
-    fnClear();
     wstrPageMode.value = 'ADD';
+      fnClear();
+
     print( wstrPageMode.value);
     update();
 
@@ -149,6 +153,9 @@ class HmBookingController extends GetxController{
     frDocno.value="";
     frDocType.value="";
     txtAreaCode.text ="";
+    // frContractType.value="";
+    frContractno.value="";
+    // lstrContarctList.value=[];
 
 
 
@@ -157,6 +164,12 @@ class HmBookingController extends GetxController{
 
 
   fnSave(context) {
+      dprint("ContractNumber ${frContractno.value}");
+      dprint("ContractType ${frContractType.value}");
+      dprint("frDocnumber ${frDocno.value}");
+      dprint("frDocType ${frDocType.value}");
+      dprint("priorityValue>>> ${priorityvalue.value}");
+      dprint("txtAreaCode.text>>> ${txtAreaCode.text}");
 
     if (customerformKey.value.currentState!.validate()) {
       dprint("lstrBookedList.value>>>>  ${lstrBookedList.value}");
@@ -179,11 +192,13 @@ class HmBookingController extends GetxController{
         ApiParams.custaddrss :txtAddress.text,
         ApiParams.remark :txtRemark.text,
         ApiParams.priorty :priorityvalue.value,
-        ApiParams.delmancode :txtdriver.text,
+        ApiParams.delmancode :txtdriver.text??"",
         ApiParams.delivrydate : txtdelivryDate.text,
         ApiParams.delivryreqdate :txtdelivryDate.text,
         "DOCNO":frDocno.value,
-        "DOCTYPE":frDocType.value
+        "DOCTYPE":frDocType.value,
+        "CONTRACT_NO":frContractno.value,
+        "CONTRACT_DOCTYPE":frContractType.value,
 
 
       });
@@ -193,11 +208,13 @@ class HmBookingController extends GetxController{
           "YEARCODE": g.wstrYearcode,
           "EMP_CODE": txtdriver.text,
           "AREA_CODE":txtAreaCode.text,
-          ApiParams.delivrydate : txtdelivryDate.text,
+           ApiParams.delivrydate : txtdelivryDate.text,
+
         });
       }
       int i=1;
       for(var e in lstrBookedList.value){
+        dprint("assssssssssssssssssssss  ${lstrBookedList.value}");
         det.add(    {
           "COMPANY": g.wstrCompany,
           "YEARCODE": g.wstrYearcode,
@@ -211,7 +228,9 @@ class HmBookingController extends GetxController{
           "REASSIGN": "",
           "DEL_MAN_CODE": txtdriver.text,
           "VEHICLE_NO": txtvehicleNumber.text,
-          "PARTY_CODE":txtCustomerCode.text
+          "PARTY_CODE":txtCustomerCode.text,
+          "RATEFC":e["RATE"].toString(),
+          "AMTFC":g.mfnDbl(e["QTY"])*g.mfnDbl(e["RATE"]),
         } );
         if(txtdriver.text.isNotEmpty){
           assignmnt_details.add({
@@ -225,11 +244,18 @@ class HmBookingController extends GetxController{
             "STOCK_DESC": e["STKDESCP"].toString(),
             "PARTY_CODE": txtCustomerCode.text,
             "VEHICLE_NO": txtvehicleNumber.text,
-            "BOOKING_SRNO": i
+            "BOOKING_SRNO": i,
+            "CONTRACT_NO":frContractno.value,
+            "CONTRACT_DOCTYPE":frContractType.value,
           });
         }
         i++;
       }
+
+      dprint("ASSIGNMN>>>> ${assignmnt}");
+      dprint("HEADER>>>> ${header}");
+      dprint("ASSIGNMN>LIST>>> ${assignmnt_details}");
+
       fnProceedToSave(context,header,det,assignmnt,assignmnt_details);
     }else{
       dprint("Not validate..........................");
@@ -256,6 +282,7 @@ class HmBookingController extends GetxController{
         {'Column': 'PARTY_CODE', 'Display': 'PCode'},
         {'Column': 'PARTY_NAME', 'Display': 'Name'},
         {'Column': 'MOBILE_NO', 'Display': 'Mobile'},
+        {'Column': 'ASSIGNMENT_STATUS', 'Display': 'N'},
         // {'Column': 'EMAIL', 'Display': 'Email'},
         // {'Column': 'BLDG_NO', 'Display': 'Building'},
         // {'Column': 'APARTMENT_NO', 'Display': 'Apartment'},
@@ -451,6 +478,102 @@ class HmBookingController extends GetxController{
           )
       );
     }
+    else if(mode == "gcylinder_contract" ){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CONTRACT_NO', 'Display': 'Contract_No'},
+        {'Column': 'DOCTYPE', 'Display': 'N'},
+        {'Column': 'SLCODE', 'Display': 'N'},
+        {'Column': 'MOBILE1', 'Display': 'N'},
+        {'Column': 'SLDESCP', 'Display': 'N'},
+        {'Column': 'BUILDING_CODE', 'Display': 'N'},
+        {'Column': 'APARTMENT_CODE', 'Display': 'N'},
+        {'Column': 'ADD1', 'Display': 'N'},
+
+
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'gcylinder_contract',
+            title: 'ContractNumber',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'CONTRACT_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "AREAMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'Name'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'AREAMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'VEHICLE_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "GPRIORITYMASTER"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'CODE'},
+        {'Column': "DESCP", 'Display': 'Priority'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [];
+      var lstrFilter =[];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'GPRIORITYMASTER',
+            title: 'Building',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'DESCP',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
 
   }
 
@@ -472,6 +595,7 @@ cstmrCode.value="";
   }
 
   fnFillCustomerData(data,mode){
+
 
     // //Clear
     // if(mode == "GBUILDINGMASTER"){
@@ -535,6 +659,29 @@ cstmrCode.value="";
 
         //   apiGetCustomerDetails();
       }
+      else if(mode  ==  "gcylinder_contract"){
+        dprint("dddddd<< DOCC >>ddddddd  ${data}");
+        frContractno.value  = data["CONTRACT_NO"]??"";
+        frContractType.value =data["DOCTYPE"]??"";
+        txtCustomerCode.text  = data["SLCODE"]??"";
+        txtCustomerName.text  = data["SLDESCP"]??"";
+        txtContactNo.text  = data["MOBILE1"]??"";
+        txtApartmentCode.text = data["APARTMENT_CODE"]??"";
+        txtAddress.text=data["ADD1"]??"";
+        txtBuildingCode.text = data["BUILDING_CODE"]??"";
+        apiViewContarctItem(frContractno.value,frContractType.value);
+
+      }
+      else if(mode  ==  "AREAMASTER"){
+        txtAreaCode.text = data["DESCP"]??"";
+
+        //   apiGetDriverDetails();
+      }
+      else if(mode  ==  "GPRIORITYMASTER"){
+        priorityvalue.value = data["DESCP"]??"";
+
+        //   apiGetCustomerDetails();
+      }
     }
 
   }
@@ -555,24 +702,27 @@ cstmrCode.value="";
   }
 
   fnFill(data){
-    dprint("Values>>>>>>>  ${data}");
-    fnClear();
+    dprint("Docitemssss>>>>>>>  ${data}");
+
 
 
 
     var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
     var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
     var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
+    var contract  =g.fnValCheck(data["CONTRACT"])? data["CONTRACT"][0]:[];
+    var contractDet  = g.fnValCheck(data["CONTRACTDET"])?data["CONTRACTDET"]:[];
     dprint("HEADERLIST>>>>>>> ${headerList}");
     dprint("DET__LIST>>>>>>> ${detList}");
     dprint("ASSIGNMNT__LIST>>>>>>> ${assignmentList}");
+    dprint("contract>>>>>>> ${contract}");
+    dprint("CONTRACTDET>>>>>>> ${contractDet}");
     if(g.fnValCheck(headerList)){
       frDocno.value = (headerList["DOCNO"]??"").toString();
       frDocType.value = (headerList["DOCTYPE"]??"").toString();
       frLocation.value = (headerList["LOCATION"]??"").toString();
-      priorityvalue.value = (headerList["PRIORITY"]??"").toString();
+      priorityvalue.value = (headerList["PRIORITY"]??"NORMAL").toString();
       txtCustomerName.text = (headerList["PARTY_NAME"]??"").toString();
-
       cstmrName.value = (headerList["PARTY_NAME"]??"").toString();
       txtCustomerCode.text = (headerList["PARTY_CODE"]??"").toString();
       cstmrCode.value = (headerList["PARTY_CODE"]??"").toString();
@@ -584,6 +734,10 @@ cstmrCode.value="";
       txtLandmark.text = (headerList["LANDMARK"]??"").toString();
       txtAreaCode.text = (headerList["AREA_CODE"]??"").toString();
       frAssignmentStatus.value = (headerList["ASSIGNMENT_STATUS"]??"").toString();
+      frContractno.value = (headerList["CONTRACT_NO"]??"").toString();
+      frContractType.value = (headerList["CONTRACT_DOCTYPE"]??"").toString();
+      txtvehicleNumber.text =(headerList["VEHICLE_NO"]??"").toString();
+      txtdriver.text =(headerList["DEL_MAN_CODE"]??"").toString();
       if(headerList["DELIVERY_REQ_DATE"] != null|| headerList["DELIVERY_REQ_DATE"] != ""){
         try{
           txtdelivryDate.text =setDate(15, DateTime.parse(headerList["DELIVERY_REQ_DATE"].toString()));
@@ -623,6 +777,61 @@ cstmrCode.value="";
       update();
 
     }
+    if(g.fnValCheck(contract)){
+      frContractno.value = (contract["CONTRACT_NO"]??"").toString();
+      frContractType.value = (contract["DOCTYPE"]??"").toString();
+     // frLocation.value = (contract["LOCATION"]??"").toString();
+  //    priorityvalue.value = (contract["PRIORITY"]??"NORMAL").toString();
+      txtCustomerName.text = (contract["SLDESCP"]??"").toString();
+      cstmrName.value = (contract["SLDESCP"]??"").toString();
+      txtCustomerCode.text = (contract["SLCODE"]??"").toString();
+      cstmrCode.value = (contract["SLCODE"]??"").toString();
+      txtContactNo.text = (contract["MOBILE1"]??"").toString();
+      txtBuildingCode.text = (contract["BUILDING_CODE"]??"").toString();
+      txtApartmentCode.text = (contract["APARTMENT_CODE"]??"").toString();
+      txtRemark.text = (contract["REMARKS"]??"").toString();
+      txtAddress.text = (contract["ADD1"]??"").toString();
+    //  txtLandmark.text = (contract["LANDMARK"]??"").toString();
+      txtAreaCode.text = (contract["AREA"]??"").toString();
+    //  frAssignmentStatus.value = (contract["ASSIGNMENT_STATUS"]??"").toString();
+    //   if(contract["DELIVERY_REQ_DATE"] != null|| contract["DELIVERY_REQ_DATE"] != ""){
+    //     try{
+    //       txtdelivryDate.text =setDate(15, DateTime.parse(contract["DELIVERY_REQ_DATE"].toString()));
+    //
+    //     }catch(e){
+    //       dprint(e);
+    //     }
+    //   }
+    //
+    //   if(contract["DOCDATE"] != null|| contract["DOCDATE"] != ""){
+    //     try{
+    //       docDate.value=DateTime.parse(contract["DOCDATE"].toString());
+    //     }catch(e){
+    //       docDate.value =DateTime.now();
+    //     }
+    //   }
+
+    }
+    if(g.fnValCheck(contractDet)){
+      int i = 1;
+     // lstrContarctList.value = [];
+      lstrBookedList.value = [];
+      for (var e in contractDet) {
+        var datas = Map<String,dynamic>.from({
+          "STKCODE":e["STKCODE"],
+          "STKDESCP":e["STKDESCP"],
+           "RATE":e["PRICE1"],
+           "QTY": e["PLANNED_QTY"],
+          // "AMT":  g.mfnDbl(e["QTY1"])*g.mfnDbl(e["RATE"]),
+        });
+        lstrBookedList.value.add(datas);
+      //  lstrContarctList.value.add(datas);
+        i++;
+        update();
+      }
+      update();
+
+    }
 
 
   }
@@ -632,20 +841,25 @@ cstmrCode.value="";
       errorMsg(context, "Choose Customer");
       return;
     }
-    if(txtBuildingCode.text.isEmpty){
-      errorMsg(context, "Choose Building");
-      return;
-    }
-    //
-    if(txtApartmentCode.text.isEmpty){
-      errorMsg(context, "Choose Apartment");
-      return;
-    }
+    // if(txtBuildingCode.text.isEmpty){
+    //   errorMsg(context, "Choose Building");
+    //   return;
+    // }
+    // //
+    // if(txtApartmentCode.text.isEmpty){
+    //   errorMsg(context, "Choose Apartment");
+    //   return;
+    // }
+    // if(  g.wstrCylinderContractYN=="Y" && lstrContarctList.value.isEmpty){
+    //     errorMsg(context, "Choose Items");
+    //     return;
+    else if(lstrBookedList.value.isEmpty &&  g.wstrCylinderContractYN=="N"){
+        errorMsg(context, "Choose BookedItems");
+        return;
+      }
 
-    if(lstrBookedList.value.isEmpty){
-      errorMsg(context, "Choose Items");
-      return;
-    }
+
+
 
 
     apiSaveBooking(header,det,assignmnt,assignmnt_details,context);
@@ -696,7 +910,48 @@ cstmrCode.value="";
     lstrBookedList.removeWhere((element) => element["QTY"] <= 0);
 
   }
-
+  // fnChngeQtyOnContract(itemCode,mode,rate) {
+  //
+  //   dprint("contracttttttttttt>>>>");
+  //   var taxAmount = ''.obs;
+  //   var itemMenu = lstrProductItemDetailList.value.where((element) => element["STKCODE"] == itemCode).toList();
+  //
+  //   dprint("Item>>>>>> ${itemMenu}");
+  //   dprint("Mode>>>>> ${mode}");
+  //   dprint("price>>>>> ${rate}");
+  //
+  //   if(mode == "A"){
+  //     if(lstrContarctList.where((e) => e["STKCODE"] == itemCode).isEmpty){
+  //       var datas = Map<String, Object>.from({
+  //         "STKCODE": itemCode,
+  //         "STKDESCP": itemMenu[0]["STKDESCP"],
+  //         "QTY": 1,
+  //         "HEADER_DISC": 0.0,
+  //         "DISC_AMT": 0.0,
+  //         "AMT": 0.0,
+  //         "RATE":rate,
+  //         "TAX_PER":0.0,
+  //         "TAXABLE_AMT": 0.0,
+  //         "TOTAL_TAX_AMOUNT": 0.0,
+  //         "NET_AMOUNT": 0.0,
+  //       });
+  //       lstrContarctList.add(datas);
+  //     }
+  //     else{
+  //       var item = lstrContarctList.where((element) => element["STKCODE"] == itemCode).toList();
+  //       if(item.isNotEmpty){
+  //         item[0]["QTY"] = g.mfnDbltoInt(item[0]["QTY"]) + 1;
+  //       }
+  //     }
+  //   }else{
+  //     var item = lstrContarctList.where((element) => element["STKCODE"] == itemCode).toList();
+  //     if(item.isNotEmpty){
+  //       item[0]["QTY"] = item[0]["QTY"] == 0?0: g.mfnDbltoInt(item[0]["QTY"]) - 1;
+  //     }
+  //   }
+  //   lstrContarctList.removeWhere((element) => element["QTY"] <= 0);
+  //
+  // }
 
 
   var selectedproduct="".obs;
@@ -972,17 +1227,17 @@ cstmrCode.value="";
 
   }
 
-
-  apiGetCustomerDetails(slcode){
-    futureform = ApiCall().apiViewCustomerDetails(slcode);
-    futureform.then((value) => apiGetCustomerDetailsRes(value));
-  }
-  apiGetCustomerDetailsRes(value){
-    if(g.fnValCheck(value)){
-   //   fnFillCustomerDetails(value);
-    }
-
-  }
+  //
+  // apiGetCustomerDetails(slcode){
+  //   futureform = ApiCall().apiViewCustomerDetails(slcode);
+  //   futureform.then((value) => apiGetCustomerDetailsRes(value));
+  // }
+  // apiGetCustomerDetailsRes(value){
+  //   if(g.fnValCheck(value)){
+  //  //   fnFillCustomerDetails(value);
+  //   }
+  //
+  // }
 
   apiAddApartment(aprtmntcode,buildingcode,context){
     futureform = ApiCall().addAppartmnt(aprtmntcode,buildingcode);
@@ -1073,5 +1328,23 @@ cstmrCode.value="";
         errorMsg(context, msg);
       }
     }
+  }
+
+  apiViewContarctItem(contrNo,docTytpe){
+    futureform = ApiCall().apiViewContractItem(contrNo,docTytpe);
+    futureform.then((value) => apiViewContarctItemRes(value));
+  }
+  apiViewContarctItemRes(value){
+    if(g.fnValCheck(value)){
+      dprint("contracttttttttttt  ${value}");
+      // frDocType.value="";
+      // frDocno.value="";
+      // docDate.value =setDate(15,DateTime.now());
+      // priorityvalue.value='NORMAL';
+
+      // fnClear();
+      fnFill(value);
+    }
+
   }
 }

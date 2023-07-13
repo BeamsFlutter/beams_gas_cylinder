@@ -32,6 +32,11 @@ class Global {
     _wstrUserCD = "";
      _wstrUsername = "";
     _wstrempcode="";
+
+    _wstrVehicleNumber="";
+    _wstrDrviverCode="";
+    _wstrSman="";
+
   }
   var _wstrToken  = '';
   var _wstrIp = '';
@@ -52,6 +57,10 @@ class Global {
   var  _wstrUserCD = "";
   var  _wstrUsername = "";
   var  _wstrempcode = "";
+  var  _wstrCylinderContractYN = "";
+  var  _wstrVehicleNumber="";
+  var  _wstrDrviverCode="";
+  var  _wstrSman="";
 
 
   get wstrBaseUrl => _wstrBaseUrl;
@@ -145,9 +154,26 @@ class Global {
   set wstrYearcode(value) {
     _wstrYearcode = value;
   }
+  get wstrCylinderContractYN => _wstrCylinderContractYN;
+  set wstrCylinderContractYN(value) {
+    _wstrCylinderContractYN = value;
+  }
 
 
 
+  get wstrVehicleNumber => _wstrVehicleNumber;
+  set wstrVehicleNumber(value) {
+    _wstrVehicleNumber = value;
+  }
+
+  get wstrDrviverCode => _wstrDrviverCode;
+  set wstrDrviverCode(value) {
+    _wstrDrviverCode = value;
+  }
+  get wstrSman => _wstrSman;
+  set wstrSman(value) {
+    _wstrSman = value;
+  }
 
   bool fnValCheck(value){
     if(value == null){

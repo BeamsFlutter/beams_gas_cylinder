@@ -140,8 +140,8 @@ class HmContractReciptController extends GetxController{
      "REMITTO" : "",
      "CHQNO" : txtchequeNumber.text,
      "CHQDATE" : txtchequeDate.text,
-     "AMT" : g.mfnInt(txtAmount.text),
-     "AMTFC" :  g.mfnInt(txtAmount.text),
+     "AMT" : g.mfnDbl(txtAmount.text),
+     "AMTFC" :  g.mfnDbl(txtAmount.text),
      "PDC_YN" : "",
      "REMARKS" : "",
      "REF1" : "",
@@ -231,7 +231,7 @@ class HmContractReciptController extends GetxController{
       }else   if(payMode=="CQ"){
         paymentMode.value =PaymentMode.cheque;
         txtchequeNumber.text=(contractrec["CHQNO"] ?? "").toString();
-        txtchequeDate.text=setDate(7, DateTime.parse((contractrec["CHQDATE"] ?? "").toString()));
+        txtchequeDate.text=setDate(6, DateTime.parse((contractrec["CHQDATE"] ?? "").toString()));
       }
 
     }
@@ -250,7 +250,7 @@ class HmContractReciptController extends GetxController{
     frCustomerName.value = (data[0]["SLDESCP"] ?? "").toString();
     frBuildingCode.value = (data[0]["BUILDING_CODE"] ?? "").toString();
     frAprtmntCode.value = (data[0]["APARTMENT_CODE"] ?? "").toString();
-    txtAmount.text=(data[0]["AMTFC"] ?? "").toString();
+  //  txtAmount.text=(data[0]["AMTFC"] ?? "").toString();
     frContactNo.value = (data[0]["MOBILE1"] ?? "").toString();
     txtAmount.text =(data[0]["BALANCE_AMOUNT"] ?? "").toString();
     }

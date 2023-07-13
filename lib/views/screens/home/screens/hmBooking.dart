@@ -26,6 +26,7 @@ class _HmeBookingState extends State<HmeBooking> {
   void initState() {
     hmBookingController.pageController = PageController();
     hmBookingController.wstrPageMode.value = 'VIEW';
+
     hmBookingController.apiViewBooking('',"LAST");
     hmBookingController.apiGetPriority();
     hmBookingController.apiProductType();
@@ -126,6 +127,7 @@ class _HmeBookingState extends State<HmeBooking> {
                       Bounce(
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
+                          hmBookingController.fnLookup("AREAMASTER");
                           dprint("lookup>>>>>>>location");
                         },
                         child: Container(
@@ -149,6 +151,7 @@ class _HmeBookingState extends State<HmeBooking> {
                         duration: const Duration(milliseconds: 110),
                         onPressed: () {
                           dprint("lookup>>>>>>>Priority");
+                          hmBookingController.fnLookup("GPRIORITYMASTER");
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -221,7 +224,7 @@ class _HmeBookingState extends State<HmeBooking> {
                             },
                             icon: Icons.shopping_cart_outlined),
                       ),
-                      Flexible(
+                     hmBookingController.g.wstrCylinderContractYN=="Y"?gapHC(0): Flexible(
                         child: TabButton(
                             width: 0.3,
                             text: " Delivery",
@@ -259,7 +262,7 @@ class _HmeBookingState extends State<HmeBooking> {
                                 //2nd Page  design -----------------------------------
                                 Itemtab(),
                                 // 3rd Page for Delivery Details
-                                Deliverytab()
+                                hmBookingController.g.wstrCylinderContractYN=="Y"?gapHC(0):    Deliverytab()
                                 // Container for  1st page   design -----------------------------------
                               ],
                             ),
@@ -345,14 +348,14 @@ class _HmeBookingState extends State<HmeBooking> {
                       ),
                     )
                   : const BottomAppBar(),
-         floatingActionButton: Obx(() => (hmBookingController.wstrPageMode.value != "VIEW" )? FloatingActionButton(
+         floatingActionButton: Obx(() => (hmBookingController.wstrPageMode.value != "VIEW" && hmBookingController.g.wstrCylinderContractYN!="Y")? FloatingActionButton(
           backgroundColor: primaryColor,
           tooltip: 'Add Items',
           onPressed: () {
             hmBookingController.wOpenBottomSheet(context);
           },
-          child: Icon(Icons.add),
-        ):SizedBox()
+          child: const Icon(Icons.add),
+        ):const SizedBox()
         )
         ));
   }
@@ -389,10 +392,13 @@ class _HmeBookingState extends State<HmeBooking> {
         () => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            hmBookingController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
+          hmBookingController.wstrPageMode.value!="VIEW"&&hmBookingController.g.wstrCylinderContractYN=="Y"  ? tc('Search Contract', txtColor, 12):
+          hmBookingController.wstrPageMode.value!="VIEW" &&hmBookingController.g.wstrCylinderContractYN=="N" ?    tc('Search Customer', txtColor, 12):gapHC(0),
             hmBookingController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
             hmBookingController.wstrPageMode.value!="VIEW"?   Bounce(
               onPressed: () {
+                hmBookingController.wstrPageMode.value!="VIEW"&&hmBookingController.g.wstrCylinderContractYN=="Y"?
+                hmBookingController.fnLookup("gcylinder_contract"):
                 hmBookingController.fnLookup("SLMAST");
 
               },
@@ -448,6 +454,20 @@ class _HmeBookingState extends State<HmeBooking> {
 
                       ],
                     ),
+                    gapHC(1),
+                    hmBookingController.g.wstrCylinderContractYN=="Y"?Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tcn(hmBookingController.frContractno.value, txtColor, 10),
+                        Row(
+                          children: [
+                            hmBookingController.txtCustomerCode.text.isNotEmpty? const Icon(Icons.phone_android_outlined,size: 10,color: txtColor,):gapHC(0),
+                            gapWC(2),
+                            tcn(hmBookingController.txtContactNo.text, txtColor, 10),
+                          ],
+                        ),
+                      ],
+                    ):gapHC(0)
 
                   ],
                 ),
@@ -618,7 +638,7 @@ class _HmeBookingState extends State<HmeBooking> {
             // gapHC(10),
             wRoundedInputField(hmBookingController.txtAddress, "Address", "N",maxLine: 5, enable: false,       prefixicon:   Icons.abc_outlined,),
             gapHC(10),
-            wRoundedInputField(hmBookingController.txtRemark, "Remark", "N",maxLine: 5,   enable: hmBookingController.wstrPageMode.value=="VIEW"?false:true,     prefixicon:   Icons.apartment,),
+            wRoundedInputField(hmBookingController.txtRemark, "Remark", "N",maxLine: 5,   enable: hmBookingController.wstrPageMode.value=="VIEW"?false:true,     prefixicon:   Icons.note_alt_outlined,),
           ],
         ),
       )),
@@ -684,6 +704,7 @@ class _HmeBookingState extends State<HmeBooking> {
             ),
           ),
           Obx(() => Column(
+         //   children: hmBookingController.g.wstrCylinderContractYN=="Y"?wFilledContractedItemLIst(): wFilledItemLIst(),
             children: wFilledItemLIst(),
           )),
         ],
@@ -914,13 +935,10 @@ class _HmeBookingState extends State<HmeBooking> {
   }
 
   List<Widget> wFilledItemLIst() {
-    var bookedlist = hmBookingController.lstrBookedList.value;
+    var bookedlist =  hmBookingController.lstrBookedList.value;
     List<Widget> rtnList = [] ;
     var ftotal = 0.0;
     //   {  "STKCODE": "FIVE", "STKDESCP": "5L", "RATE": 10.0,"TYPE":"R"},
-
-
-
     for (var e in bookedlist) {
       dprint(e);
 
@@ -1013,6 +1031,102 @@ class _HmeBookingState extends State<HmeBooking> {
     }
     return rtnList;
   }
+  // List<Widget> wFilledContractedItemLIst() {
+  //   var contractlist = hmBookingController.lstrContarctList.value;
+  //   List<Widget> rtnList = [] ;
+  //   var ftotal = 0.0;
+  //   //   {  "STKCODE": "FIVE", "STKDESCP": "5L", "RATE": 10.0,"TYPE":"R"},
+  //   for (var e in contractlist) {
+  //     dprint(e);
+  //     var itemName = (e["STKDESCP"] ?? "").toString();
+  //     var itemCode = (e["STKCODE"] ?? "").toString();
+  //     var rate = hmBookingController.g.mfnDbl(e["RATE"].toString());
+  //     var qty = hmBookingController.g.mfnDbl(e["QTY"].toString());
+  //     var total = qty * rate;
+  //     dprint("Qty>>> ${qty}");
+  //     dprint("Rate>>> ${rate}");
+  //     dprint("Total>>> ${total}");
+  //     dprint("Total>>> ${total}");
+  //
+  //     var amt = total;
+  //     ftotal += amt;
+  //     dprint("FNTotal>>> ${ftotal}");
+  //     rtnList.add(Padding(
+  //       padding: const EdgeInsets.only(bottom: 3),
+  //       child: Container(
+  //         decoration: boxBaseDecoration(bGreyLight, 0),
+  //         padding: const EdgeInsets.all(10),
+  //         child: Row(
+  //           children: [
+  //             Expanded(
+  //                 child: tcn(itemName.toString(), Colors.black, 10)),
+  //             Flexible(
+  //                 flex: 1,
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.end,
+  //                   children: [tcn(rate.toString(), Colors.black, 10)],
+  //                 )),
+  //             Flexible(
+  //                 flex: 2,
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     hmBookingController.wstrPageMode!="VIEW"?  Bounce(
+  //                       onPressed: () {
+  //                         hmBookingController.fnChngeQtyOnContract(itemCode, "A", rate);
+  //                       },
+  //                       duration: const Duration(
+  //                           milliseconds: 110),
+  //                       child: Container(
+  //                           height: 20,
+  //                           width:20,
+  //                           decoration:boxDecoration(primaryColor, 10),
+  //                           child: const Center(
+  //                               child: Icon(
+  //                                 Icons.add,
+  //                                 color: Colors.white,
+  //                                 size: 16,
+  //                               ))),
+  //                     ):gapHC(0),
+  //                     gapWC(5),
+  //                     tcn(qty.toString(), Colors.black, 10),
+  //                     gapWC(5),
+  //                     hmBookingController.wstrPageMode!="VIEW"?   Bounce(
+  //                       onPressed: () {
+  //                         hmBookingController.fnChngeQtyOnContract(itemCode, "D", rate);
+  //                       },
+  //                       duration: const Duration(
+  //                           milliseconds: 110),
+  //                       child: Container(
+  //                           height: 20,
+  //                           width:20,
+  //                           decoration:boxDecoration(primaryColor, 10),
+  //                           child: const Center(
+  //                               child: Icon(
+  //                                 Icons.remove,
+  //                                 color: Colors.white,
+  //                                 size: 16,
+  //                               ))),
+  //                     ):gapHC(0),
+  //
+  //                   ],
+  //
+  //                 )),
+  //             Flexible(
+  //                 flex: 1,
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.end,
+  //                   children: [tcn(total.toString(), Colors.black, 10)],
+  //                 )),
+  //           ],
+  //         ),
+  //       ),
+  //     ));
+  //
+  //
+  //   }
+  //   return rtnList;
+  // }
 
 
   //===================================FUNCTIONS

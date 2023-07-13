@@ -1,3 +1,4 @@
+import 'package:beams_gas_cylinder/views/screens/home/screens/previousDeliveryOrder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:get/get.dart';
@@ -23,19 +24,32 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
   @override
   void initState() {
     hmDelivryOrderController.pageController = PageController();
-    var bookingNumber = widget.bookingNumber??"";
-
-    if(bookingNumber.isNotEmpty){
-      hmDelivryOrderController.wstrPageMode.value = "ADD";
-      dprint("Call Booking Detail Api");
-      hmDelivryOrderController.apiGetBooking(bookingNumber, "mode");
-    }else{
-      hmDelivryOrderController.wstrPageMode.value = 'VIEW';
-
-    }
-    hmDelivryOrderController.apiProductType();
-    hmDelivryOrderController.apiViewDeliveryOrder("", "LAST");
     hmDelivryOrderController.apiGetStockDetails("CCD");
+
+    hmDelivryOrderController.apiProductType();
+    var bookingNumber = widget.bookingNumber??"";
+    Future.delayed(const Duration(
+        seconds: 1
+    ),() {
+      if(bookingNumber.isNotEmpty){
+        hmDelivryOrderController.wstrPageMode.value = "ADD";
+        dprint("Call Booking Detail Api");
+        hmDelivryOrderController.apiGetBooking(bookingNumber, "mode");
+
+      }else{
+        hmDelivryOrderController.wstrPageMode.value = 'VIEW';
+        hmDelivryOrderController.apiViewDeliveryOrder("", "LAST");
+      }
+    },
+
+    );
+
+
+
+
+
+
+
 
     // TODO: implement initState
     super.initState();
@@ -44,7 +58,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return Obx(() => Scaffold(
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
@@ -55,364 +69,376 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             icon: const Icon(Icons.arrow_back),
           ),
           title: tcn('Delivery Order', Colors.white, 20),
-          actions: const [
-            Padding(
+          actions:  [
+            hmDelivryOrderController.wstrPageMode.value=="VIEW"? const Padding(
               padding: EdgeInsets.all(12.0),
               child: Icon(
                 Icons.water_drop_outlined,
                 color: Colors.white,
                 size: 25,
               ),
+            ):Bounce(
+              duration: const Duration(milliseconds: 110),
+              onPressed: (){
+                Get.to(()=>PreviousDeliveryOrder());
+
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
+                child: Container(
+                    decoration: boxDecoration(white, 30),
+                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 9),
+                    child: Center(child: tc("Previous", txtColor, 12))),
+              ),
             ),
           ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Obx(
-              () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Bounce(
+                      duration: const Duration(milliseconds: 110),
+                      onPressed: () {
+
+
+                        hmDelivryOrderController.fnLookup("GCYLINDER_DO");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: primaryColor),
+                            borderRadius: BorderRadius.circular(30)
+                        ),
+
+                        child: Row(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.tag,
+                                  color: black,
+                                  weight: 100,
+                                  size: 15,
+                                ),
+                                tc(hmDelivryOrderController.frDocno.value, txtColor, 12)
+                              ],
+                            ),
+                            gapWC(5),
+                            const Icon(Icons.search,size: 14,)
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month,
+                          color: black,
+                          size: 15,
+                        ),
+                        gapWC(3),
+                        tcn(
+                            setDate(7, hmDelivryOrderController.docDate.value)
+                                .toString()
+                                .toUpperCase(),
+                            txtColor,
+                            12)
+                      ],
+                    ),
+                  ],
+                ),
+                gapHC(15),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.grey.shade200,
+                  ),
+                  child:     Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Bounce(
-                        duration: const Duration(milliseconds: 110),
-                        onPressed: () {
-
-
-                          hmDelivryOrderController.fnLookup("GCYLINDER_DO");
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: primaryColor),
-                              borderRadius: BorderRadius.circular(30)
-                          ),
-
-                          child: Row(
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.tag,
-                                    color: black,
-                                    weight: 100,
-                                    size: 15,
-                                  ),
-                                  tc(hmDelivryOrderController.frDocno.value, txtColor, 12)
-                                ],
-                              ),
-                              gapWC(5),
-                              const Icon(Icons.search,size: 14,)
-                            ],
-                          ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.account_circle_outlined,
+                              color: Colors.black,
+                              size: 15,
+                            ),
+                            gapWC(5),
+                            Expanded(
+                              child: tc(hmDelivryOrderController.cstmrName.value,
+                                  Colors.black, 12),
+                            )
+                          ],
                         ),
                       ),
                       Row(
                         children: [
                           const Icon(
-                            Icons.calendar_month,
-                            color: black,
+                            Icons.tag_outlined,
+                            color: Colors.black,
                             size: 15,
                           ),
-                          gapWC(3),
-                          tcn(
-                              setDate(7, hmDelivryOrderController.docDate.value)
-                                  .toString()
-                                  .toUpperCase(),
-                              txtColor,
-                              12)
+                          gapWC(5),
+                          tc(hmDelivryOrderController.cstmrCode.value,
+                              Colors.black, 12)
                         ],
                       ),
                     ],
                   ),
-                  gapHC(15),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: Colors.grey.shade200,
-                    ),
-                    child:     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                gapHC(5),
+
+
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
+                //   onPressed: () {
+                //     hmDelivryOrderController.fnLookup("GUESTMASTER");
+                //
+                //   },
+                //   duration: const Duration(milliseconds: 110),
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //       color: Colors.grey.shade200,
+                //
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     padding: const EdgeInsets.all(10),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             Row(
+                //               children: [
+                //                 const Icon(
+                //                   Icons.account_circle_outlined,
+                //                   color: Colors.black,
+                //                   size: 15,
+                //                 ),
+                //                 gapWC(5),
+                //                 tc(hmDelivryOrderController.cstmrCode.value,
+                //                     Colors.black, 12)
+                //               ],
+                //             ),
+                //
+                //           ],
+                //         ),
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             Container(
+                //                 margin: const EdgeInsets.symmetric(horizontal:0),
+                //                 width: size.width-95,
+                //                 child: const Divider(thickness:1)),
+                //
+                //             const Icon(
+                //               Icons.search,
+                //               color: txtColor,
+                //               size: 25,
+                //             )
+                //           ],
+                //         ),
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
+                //             tcn("Credit Balance", Colors.black, 10),
+                //
+                //           ],
+                //         ),
+                //
+                //       ],
+                //     ),
+                //   ),
+                // ):gapHC(0),
+                //
+                // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
+
+
+                Container(
+
+                  padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 2),
+
+
+                  decoration: boxDecoration(primaryColor, 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: TabButton(
+                            width: 0.3,
+                            text: "Items",
+                            pageNumber: 0,
+                            selectedPage:
+                            hmDelivryOrderController.selectedPage.value,
+                            onPressed: () {
+                              hmDelivryOrderController.lstrSelectedPage.value = "IT";
+                              changePage(0);
+                            },
+                            icon: Icons.shopping_cart_outlined),
+                      ),
+                      Flexible(
+                        child: TabButton(
+                            width: 0.3,
+                            text: " Customer",
+                            pageNumber: 1,
+                            selectedPage:
+                            hmDelivryOrderController.selectedPage.value,
+                            onPressed: () {
+                              hmDelivryOrderController.lstrSelectedPage.value = "CD";
+                              changePage(1);
+                            },
+                            icon: Icons.person_2_outlined),
+                      ),
+                      Flexible(
+                        child: TabButton(
+                            width: 0.3,
+                            text: "Others",
+                            pageNumber: 2,
+                            selectedPage:
+                            hmDelivryOrderController.selectedPage.value,
+                            onPressed: () {
+                              hmDelivryOrderController.lstrSelectedPage.value = "OT";
+                              changePage(2);
+                            },
+                            icon: Icons.more_horiz),
+                      ),
+                    ],
+                  ),
+                ),
+                gapHC(8),
+                Expanded(
+                  child: Container(
+                    width: size.width,
+                    decoration: boxDecoration(white, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.account_circle_outlined,
-                                              color: Colors.black,
-                                              size: 15,
-                                            ),
-                                            gapWC(5),
-                                            Expanded(
-                                              child: tc(hmDelivryOrderController.cstmrName.value,
-                                                  Colors.black, 12),
-                                            )
-                                          ],
-                                        ),
-                        ),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.tag_outlined,
-                              color: Colors.black,
-                              size: 15,
-                            ),
-                            gapWC(5),
-                            tc(hmDelivryOrderController.cstmrCode.value,
-                                Colors.black, 12)
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  gapHC(5),
+                          child: PageView(
+                            onPageChanged: (int page) {
+                              hmDelivryOrderController.selectedPage.value =
+                                  page;
+                            },
+                            controller:
+                            hmDelivryOrderController.pageController,
+                            children: [
+                              // 1st page design ------ Choose Item
+                              wItemDetailScreen(MediaQuery.of(context).size),
 
+                              //2nd Page  design -----------------------------------
+                              wCustomerDetailsScreen(MediaQuery.of(context).size),
+                              wOthersScreen( MediaQuery.of(context).size)
 
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?    tc('Search Customer', txtColor, 12):gapHC(0),
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(5):gapHC(0),
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   Bounce(
-                  //   onPressed: () {
-                  //     hmDelivryOrderController.fnLookup("GUESTMASTER");
-                  //
-                  //   },
-                  //   duration: const Duration(milliseconds: 110),
-                  //   child: Container(
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.grey.shade200,
-                  //
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //     padding: const EdgeInsets.all(10),
-                  //     child: Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       children: [
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             Row(
-                  //               children: [
-                  //                 const Icon(
-                  //                   Icons.account_circle_outlined,
-                  //                   color: Colors.black,
-                  //                   size: 15,
-                  //                 ),
-                  //                 gapWC(5),
-                  //                 tc(hmDelivryOrderController.cstmrCode.value,
-                  //                     Colors.black, 12)
-                  //               ],
-                  //             ),
-                  //
-                  //           ],
-                  //         ),
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             Container(
-                  //                 margin: const EdgeInsets.symmetric(horizontal:0),
-                  //                 width: size.width-95,
-                  //                 child: const Divider(thickness:1)),
-                  //
-                  //             const Icon(
-                  //               Icons.search,
-                  //               color: txtColor,
-                  //               size: 25,
-                  //             )
-                  //           ],
-                  //         ),
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             tc(hmDelivryOrderController.cstmrName.value, Colors.black, 12),
-                  //             tcn("Credit Balance", Colors.black, 10),
-                  //
-                  //           ],
-                  //         ),
-                  //
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ):gapHC(0),
-                  //
-                  // hmDelivryOrderController.wstrPageMode.value!="VIEW"?   gapHC(10):gapHC(0),
-
-
-                  Container(
-
-                    padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 2),
-
-
-                    decoration: boxDecoration(primaryColor, 25),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: TabButton(
-                              width: 0.3,
-                              text: "Items",
-                              pageNumber: 0,
-                              selectedPage:
-                              hmDelivryOrderController.selectedPage.value,
-                              onPressed: () {
-                                hmDelivryOrderController.lstrSelectedPage.value = "IT";
-                                changePage(0);
-                              },
-                              icon: Icons.shopping_cart_outlined),
-                        ),
-                        Flexible(
-                          child: TabButton(
-                              width: 0.3,
-                              text: " Customer",
-                              pageNumber: 1,
-                              selectedPage:
-                              hmDelivryOrderController.selectedPage.value,
-                              onPressed: () {
-                                hmDelivryOrderController.lstrSelectedPage.value = "CD";
-                                changePage(1);
-                              },
-                              icon: Icons.person_2_outlined),
-                        ),
-                        Flexible(
-                          child: TabButton(
-                              width: 0.3,
-                              text: "Others",
-                              pageNumber: 2,
-                              selectedPage:
-                              hmDelivryOrderController.selectedPage.value,
-                              onPressed: () {
-                                hmDelivryOrderController.lstrSelectedPage.value = "OT";
-                                changePage(2);
-                              },
-                              icon: Icons.more_horiz),
-                        ),
-                      ],
-                    ),
-                  ),
-                  gapHC(8),
-                  Expanded(
-                    child: Container(
-                      width: size.width,
-                      decoration: boxDecoration(white, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: PageView(
-                              onPageChanged: (int page) {
-                                hmDelivryOrderController.selectedPage.value =
-                                    page;
-                              },
-                              controller:
-                                  hmDelivryOrderController.pageController,
-                              children: [
-                                // 1st page design ------ Choose Item
-                                wItemDetailScreen(MediaQuery.of(context).size),
-
-                                //2nd Page  design -----------------------------------
-                                wCustomerDetailsScreen(MediaQuery.of(context).size),
-                                wOthersScreen( MediaQuery.of(context).size)
-
-                                // 3rd Page for Delivery Details
-                                // Container for  1st page   design -----------------------------------
-                              ],
-                            ),
+                              // 3rd Page for Delivery Details
+                              // Container for  1st page   design -----------------------------------
+                            ],
                           ),
+                        ),
 
-                        ],
-                      ),
-                    ),
-                  ),
-                  gapHC(10),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
-                    decoration: boxDecoration(nearlyWhite, 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-
-                      children: [
-                        tcn('Net Amount', txtColor, 16),
-                        gapWC(40),
-                        tc(hmDelivryOrderController.txtNetAmt.text,Colors.black,15)
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                ),
+                gapHC(10),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                  decoration: boxDecoration(nearlyWhite, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      tcn('Net Amount', txtColor, 16),
+                      gapWC(40),
+                      tc(hmDelivryOrderController.txtNetAmt.text,Colors.black,15)
+                    ],
+                  ),
+                )
+              ],
             )),
         bottomNavigationBar: Obx(
-          () => (hmDelivryOrderController.wstrPageMode.value == "VIEW")
+              () => (hmDelivryOrderController.wstrPageMode.value == "VIEW")
               ? BottomNavigationItem(
-                  type: "booking",
-                  mode: hmDelivryOrderController.wstrPageMode.value,
-                  fnAdd: hmDelivryOrderController.fnAdd,
-                  fnEdit: hmDelivryOrderController.fnEdit,
-                  fnCancel: hmDelivryOrderController.fnCancel,
-                  fnPage: hmDelivryOrderController.fnPage,
-                  fnSave: hmDelivryOrderController.fnSave,
-                  fnDelete: hmDelivryOrderController.fnDelete,
-                )
+            type: "booking",
+            mode: hmDelivryOrderController.wstrPageMode.value,
+            fnAdd: hmDelivryOrderController.fnAdd,
+            fnEdit: hmDelivryOrderController.fnEdit,
+            fnCancel: hmDelivryOrderController.fnCancel,
+            fnPage: hmDelivryOrderController.fnPage,
+            fnSave: hmDelivryOrderController.fnSave,
+            fnDelete: hmDelivryOrderController.fnDelete,
+          )
               : (hmDelivryOrderController.wstrPageMode.value == "ADD" ||
-                      hmDelivryOrderController.wstrPageMode.value == "EDIT")
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Bounce(
-                              onPressed: () {
-                                // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
-                                // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
+              hmDelivryOrderController.wstrPageMode.value == "EDIT")
+              ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Bounce(
+                    onPressed: () {
+                      // dprint("BUILDING CODE  ${commonController.wstrBuildingCode.value}");
+                      // dprint("APRTMNT CODE  ${commonController.wstrAprtmntCode.value}");
 
-                                hmDelivryOrderController.fnSave(context);
-                              },
-                              duration: const Duration(milliseconds: 110),
-                              child: Container(
-                                decoration: boxDecoration(primaryColor, 30),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.task_alt,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                    gapWC(5),
-                                    tcn('Save', Colors.white, 15)
-                                  ],
-                                ),
-                              ),
-                            ),
+                      hmDelivryOrderController.fnSave(context);
+                    },
+                    duration: const Duration(milliseconds: 110),
+                    child: Container(
+                      decoration: boxDecoration(primaryColor, 30),
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.task_alt,
+                            color: Colors.white,
+                            size: 15,
                           ),
-                          Bounce(
-                            onPressed: () {
-                              hmDelivryOrderController.fnCancel();
-                            },
-                            duration: const Duration(milliseconds: 110),
-                            child: Container(
-                              decoration: boxBaseDecoration(baseLight, 30),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.cancel_outlined,
-                                    color: Colors.black,
-                                    size: 15,
-                                  ),
-                                  gapWC(5),
-                                  tcn('Cancel', Colors.black, 12)
-                                ],
-                              ),
-                            ),
-                          ),
+                          gapWC(5),
+                          tcn('Save', Colors.white, 15)
                         ],
                       ),
-                    )
-                  : const BottomAppBar(),
+                    ),
+                  ),
+                ),
+                Bounce(
+                  onPressed: () {
+                    hmDelivryOrderController.fnCancel();
+                  },
+                  duration: const Duration(milliseconds: 110),
+                  child: Container(
+                    decoration: boxBaseDecoration(baseLight, 30),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.black,
+                          size: 15,
+                        ),
+                        gapWC(5),
+                        tcn('Cancel', Colors.black, 12)
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+              : const BottomAppBar(),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
 
@@ -428,7 +454,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
           ),
         ):SizedBox())
 
-    );
+    ));
   }
 
   changePage(int pageNum) {
@@ -900,7 +926,7 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
               "Remark",
               "N",
               maxLine: 5,
-              prefixicon: Icons.apartment,
+              prefixicon: Icons.note_alt_outlined,
             ),
             gapHC(15),
 
@@ -960,6 +986,31 @@ class _HmeDeliveryOrderState extends State<HmeDeliveryOrder> {
             sufixIconColor: Colors.black,
             prefixIconColor: black,
             txtController: hmDelivryOrderController.txtVehiclenumber,
+            enableY:false,
+          ),
+        ),
+        gapHC(10),
+        tc('S.Man', black, 12),
+        gapHC(5),
+        Bounce(
+          duration: const Duration(milliseconds: 110),
+          onPressed: (){
+            if(hmDelivryOrderController.wstrPageMode.value  == "VIEW"){
+              return;
+            }else{
+              dprint(" SMANMAST Lookupp");
+              hmDelivryOrderController.fnLookup("SMANMAST");
+            }
+          },
+          child: CommonTextField(
+            lookupY: true,
+            obscureY: false,
+
+            textStyle: const TextStyle(color:txtColor,fontSize: 12),
+            prefixIcon: Icons.tag,
+            sufixIconColor: Colors.black,
+            prefixIconColor: black,
+            txtController: hmDelivryOrderController.txtsman,
             enableY:false,
           ),
         ),

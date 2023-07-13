@@ -20,7 +20,7 @@ class HmDeliveryOrderController extends GetxController{
   Rx<DateTime> delivryDate = DateTime.now().obs;
 
   RxString frDocno="".obs;
-  RxString frDocType="".obs;
+  var frDocType="CCD".obs;
   var g  = Global();
   var wstrPageMode = "VIEW".obs;
   late Future <dynamic> futureform;
@@ -39,6 +39,8 @@ class HmDeliveryOrderController extends GetxController{
   var selectedItem=''.obs;
   var selectedItemType=''.obs;
   var selectedRate=''.obs;
+  var contractNumber=''.obs;
+  var contractDocType=''.obs;
   //************************CONTROLLER
   final txtController = TextEditingController();
   final txtCustomerCode = TextEditingController();
@@ -54,6 +56,7 @@ class HmDeliveryOrderController extends GetxController{
   var txtAreaCode = TextEditingController();
   var txtDriver = TextEditingController();
   var txtVehiclenumber= TextEditingController();
+  var txtsman= TextEditingController();
   var txtlocation= TextEditingController();
   //************************PAYMENT__CONTROLLER
   var txtDiscountAmt = TextEditingController();
@@ -114,7 +117,7 @@ class HmDeliveryOrderController extends GetxController{
 
     dprint("######################   clear #####################");
     frDocno.value="";
-    frDocType.value="";
+    // frDocType.value="";
     txtLandmark.clear();
     txtRemark.clear();
     txtAddress.clear();
@@ -159,7 +162,7 @@ class HmDeliveryOrderController extends GetxController{
     dprint("FIlled  HEADER>>>>  ${headerList}");
     dprint("FIlled  DET>>>>  ${detList}");
 
-
+    txtsman.text=g.wstrSman;
 
     if(g.fnValCheck(headerList)){
       g.wstrCompany=(headerList["COMPANY"]??"").toString();
@@ -187,6 +190,8 @@ class HmDeliveryOrderController extends GetxController{
       txtContactNo.text = (headerList["MOBILE"]??"").toString();
       txtAreaCode.text = (headerList["AREA_CODE"]??"").toString();
       txtlocation.text = (headerList["LOC"]??"").toString();
+      txtAddress.text = (headerList["ADDRESS1"]??"").toString();
+
 
      txtTotalAmt.text = (headerList["GRAMTFC"]??"").toString();
 
@@ -242,7 +247,7 @@ class HmDeliveryOrderController extends GetxController{
       }
 
       for (var e in detList) {
-        dprint("##########dd##########  ${e}");
+        dprint("#########sss#dd##########  ${e}");
         var qty2 = g.mfnDbl(e["QTY2"]);
         var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
         var price =  g.mfnDbl(e["RATE"]);
@@ -429,7 +434,7 @@ class HmDeliveryOrderController extends GetxController{
         "COMPANY" : g.wstrCompany,
         "YEARCODE" :g.wstrYearcode,
         "DOCNO" : frDocno.value,
-        "DOCTYPE" : "CCD",
+        "DOCTYPE" :  frDocType.value,
         "DOCDATE":  setDate(2,docDate.value),
         "SRNO": i,
         "REMARKS":txtRemark.text,
@@ -456,9 +461,9 @@ class HmDeliveryOrderController extends GetxController{
         "NETAMT": netAmount,
         "NETAMTFC": netAmount*currRate,
         "PRVDOCTABLE": "",
-        "PRVYEARCODE": "",
-        "PRVDOCNO": "",
-        "PRVDOCTYPE": "",
+        "PRVYEARCODE": e["YEARCODE"],
+        "PRVDOCNO": e["DOCNO"],
+        "PRVDOCTYPE": e["DOCTYPE"],
         "PRVDOCSRNO": 0,
         "PRVDOCQTY": 0,
         "DBACCODE": "",
@@ -483,8 +488,8 @@ class HmDeliveryOrderController extends GetxController{
         "CYLINDER_STKDESCP": e["STKDESCP"],
         "CYLINDER_QTY1": qty2,
         "CYLINDER_UNIT": unit2,
-        "DRIVER": txtDriver.text,
-        "SMAN": "",
+        "DRIVER": txtDriver.text??g.wstrDrviverCode,
+        "SMAN": txtsman.text??g.wstrSman,
         "PARTYCODE" : cstmrCode.value,
         "PARTYNAME" : cstmrName.value,
         "DUEDATE": "",
@@ -519,7 +524,7 @@ class HmDeliveryOrderController extends GetxController{
       ApiParams.company : g.wstrCompany,
       ApiParams.yearcode  : g.wstrYearcode,
       "DOCNO" : frDocno.value,
-      "DOCTYPE" : "CCD",
+      "DOCTYPE" : frDocType.value,
       "DOCDATE" : setDate(2,docDate.value),
       "BRNCODE" : "",
       "DIVCODE" : "",
@@ -530,8 +535,8 @@ class HmDeliveryOrderController extends GetxController{
       "PARTYNAME" : cstmrName.value,
       "PRVDOCNO" : "",
       "PRVDOCTYPE" : "",
-      "SMAN" : "",
-      "VEHICLE_NO" :txtVehiclenumber.text,
+      "SMAN" : txtsman.text??g.wstrSman,
+      "VEHICLE_NO" :txtVehiclenumber.text??g.wstrVehicleNumber,
       "LOC" : txtlocation.text,
       "CASH_CREDIT" : "CR",
       "CURR" : "AED",
@@ -575,11 +580,14 @@ class HmDeliveryOrderController extends GetxController{
       "PRVMULTIDOCNO" : "",
       "VAT_PERC" : 0,
       "TOTAL_TAXAMTFC" : totalTaxAmt*currRate,
-      "TOTAL_TAXAMT" : totalTaxAmt
+      "TOTAL_TAXAMT" : totalTaxAmt,
+      "CONTRACT_NO":contractNumber.value,
+      "CONTRACT_DOCTYPE":contractDocType.value
     });
 
 
     dprint("tableDo>>q>> ${tableDo}");
+    dprint("tableDoDet>>q>> ${tableDoDet}");
 
 
     apiSaveDeliverOrder(tableDoDet, tableDo, context);
@@ -596,13 +604,16 @@ class HmDeliveryOrderController extends GetxController{
 
   }
   fnFillBookingDetails(data){
+    dprint("ddddddddata  ${data}");
     var headerList  =g.fnValCheck(data["HEADER"])? data["HEADER"][0]:[];
-    var detList  = g.fnValCheck(data["DET"])?data["DET"][0]:[];
-    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"][0]:[];
+    var detList  = g.fnValCheck(data["DET"])?data["DET"]:[];
+    var assignmentList  = g.fnValCheck(data["ASSIGNMENTDET"])?data["ASSIGNMENTDET"]:[];
     dprint("hhhhhhhhhh${headerList}");
     txtCustomerCode.text = headerList["PARTY_CODE"].toString();
     cstmrCode.value = headerList["PARTY_CODE"].toString();
     cstmrName.value = headerList["PARTY_NAME"].toString();
+    contractNumber.value = headerList["CONTRACT_NO"].toString();
+    contractDocType.value = headerList["CONTRACT_DOCTYPE"].toString();
     txtCustomerName.text = headerList["PARTY_NAME"].toString();
     txtContactNo.text = headerList["MOBILE_NO"].toString();
     txtBuildingCode.text = headerList["BLDG_NO"].toString();
@@ -611,8 +622,105 @@ class HmDeliveryOrderController extends GetxController{
     txtLandmark.text = headerList["LANDMARK"].toString();
     txtAddress.text = headerList["CUST_ADDRESS"].toString();
     txtRemark.text = headerList["REMARKS"].toString();
-    txtDriver.text =detList["DEL_MAN_CODE"].toString();
-    txtVehiclenumber.text =detList["VEHICLE_NO"].toString();
+    // txtDriver.text =detList[0]["DEL_MAN_CODE"].toString();
+    // txtVehiclenumber.text =detList[0]["VEHICLE_NO"].toString();
+    txtsman.text=g.wstrSman;
+    txtVehiclenumber.text=g.wstrVehicleNumber;
+    txtDriver.text=g.wstrDrviverCode;
+    if(g.fnValCheck(detList)){
+      int i = 1;
+      lstrDeliveredList.value = [];
+
+
+      var totalAmount = 0.0;
+      var totalGrAmt = 0.0;
+      var totalTaxAmt = 0.0;
+      var totalDiscountAmt = 0.0;
+      var balanceAmount = 0.0;
+      var addlAmount =  0.0;
+      var netAmount = 0.0;
+      var currRate =  1.0;
+      var srno = 0;
+      for(var e in detList){
+        var qty = g.mfnDbl(e["QTY1"]);
+        var rtnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldrate =g.mfnDbl(e["CYL_SELL_RATE"]);
+        var disc  =0.0;
+
+        var soldQty = qty - rtnQty;
+        var gasAmount  =  qty * price ;
+        var soldAmount =  soldQty * soldrate;
+
+        var gramt =  gasAmount + soldAmount;
+        var amt = gramt - disc;
+        totalAmount = totalAmount + amt;
+      }
+
+      for (var e in detList) {
+        dprint("##########dd##########  ${e}");
+        var qty2 = g.mfnDbl(e["QTY2"]);
+        var returnQty  = g.mfnDbl(e["RETURN_QTY"]);
+        var price =  g.mfnDbl(e["RATE"]);
+        var soldRate = g.mfnDbl(e["CYL_SELL_RATE"]);
+        var vat = g.mfnDbl(e["VAT"]);
+        var disc  = 0.0;
+        var unitCf = g.mfnDbl(e["CAT_WEIGHT"]) == 0?1:0;
+
+        var qty1 = qty2 * unitCf;
+
+        var rate2 = price;
+        var rate1 = price*unitCf;
+
+        var unit1 = e["UNIT"];
+        var unit2 = e["UNIT2"];
+        dprint("##########qty1##########  ${qty1}");
+        dprint("##########qty2##########  ${qty2}");
+
+        var datas =Map<String,dynamic>.from({
+          "STKCODE": e["STOCK_CODE"],
+          "STKDESCP": e["STOCK_DESC"],
+          "QTY": e["QTY1"],
+          "RATE": e["RATE"],
+          "VAT_PERC":e["VAT"],
+
+          "DOCNO":e["DOCNO"],
+          "DOCTYPE":e["DOCTYPE"],
+          "YEARCODE":e["YEARCODE"],
+
+          "RETURN_QTY": returnQty,
+          "DISC_AMT": e["DISC_AMT"],
+
+          "NQTY":g.mfnDbl(e["QTY1"]),
+          "EQTY":g.mfnDbl(e["RETURN_QTY"]),
+          "RQTY":0,
+          "UNIT":unit1,
+          "UNIT2":unit2,
+          "CYL_SELL_RATE":e["SOLD_RATE"],
+          "SALEUNIT":unit2,
+          "CYLINDER_YN":"Y",
+          "CATWEIGHT":e["UNITCF"],
+          "MATERIAL_CODE":e["MATERIAL_CODE"]??"",
+          "PRICE2":e["PRICE2"]??"",
+          "PRICE1":e["PRICE1"]??"",
+          "CYLINDER_TYPE":e["CYLINDER_CAT"],
+
+
+        });
+
+
+        lstrDeliveredList.value.add(datas);
+        i++;
+        update();
+      }
+      dprint("Calll  payment............");
+      // fnPaymntCalc();
+
+      // txtTotalAmt.text =  totalAmount.toStringAsFixed(2);
+
+
+
+    }
 
 
   }
@@ -622,13 +730,14 @@ class HmDeliveryOrderController extends GetxController{
   var totalGrAmt = 0.0.obs;
 
   fnPaymntCalc() {
+    dprint("******************************PAYMNET_CALC********************     ${lstrStockDetailList.value[0]["Column1"]}");
 
       var totalAmount =  0.0;
       var taxAmount =  0.0;
       var netAmount =  0.0;
       var balanceAmount =  0.0;
       var grAmount =  0.0;
-      var taxincldYN = lstrStockDetailList[0]["Column1"];
+      var taxincldYN = lstrStockDetailList.value[0]["Column1"];
       dprint("taxincldYN>>>>>>>> ${taxincldYN}");
 
       var discAmount =  g.mfnDbl(txtDiscountAmt.text);
@@ -1135,7 +1244,7 @@ class HmDeliveryOrderController extends GetxController{
                  Get.back();
                  return Container();
                }
-                dprint("item>>>A>>> ${item}");
+                dprint("item>>>Ade>>> ${item}");
                 var itemName  = (item[0]["STKDESCP"]??"").toString();
                 var itemCode  = (item[0]["STKCODE"]??"").toString();
                 var rate  = g.mfnDbl(item[0]["RATE"].toString());
@@ -1801,6 +1910,12 @@ class HmDeliveryOrderController extends GetxController{
         txtDriver.text = data["DEL_MAN_CODE"]??"";
         txtVehiclenumber.text = data["VEHICLE_NO"]??"";
       }
+      else if (mode == "SMANMAST") {
+        dprint("SMANMASTsssssssss ${data}");
+        txtsman.text = data["CODE"];
+
+        //    apiGetCustomerInfo();
+      }
       else if(mode  ==  "CRVEHICLEMASTER"){
         txtVehiclenumber.text = data["VEHICLE_NO"]??"";
 
@@ -1894,6 +2009,36 @@ class HmDeliveryOrderController extends GetxController{
             lstrPageSize: '100',
             lstrFilter: lstrFilter,
             keyColumn: 'VEHICLE_NO',
+            mode: "S",
+            layoutName: "B",
+            callback: (data){
+              fnFillCustomerData(data,mode);
+            },
+            searchYn: 'Y',
+          )
+      );
+    }
+    else if(mode == "SMANMAST"){
+      final List<Map<String, dynamic>> lookup_Columns = [
+        {'Column': 'CODE', 'Display': 'Code'},
+        {'Column': "DESCP", 'Display': 'N'},
+      ];
+      final List<Map<String, dynamic>> lookup_Filldata = [
+      ];
+      var lstrFilter =[];
+
+      Get.to(
+          Lookup(
+            txtControl: txtController,
+            oldValue: "",
+            lstrTable: 'SMANMAST',
+            title: 'sman',
+            lstrColumnList: lookup_Columns,
+            lstrFilldata: lookup_Filldata,
+            lstrPage: '0',
+            lstrPageSize: '100',
+            lstrFilter: lstrFilter,
+            keyColumn: 'CODE',
             mode: "S",
             layoutName: "B",
             callback: (data){
@@ -2135,7 +2280,7 @@ class HmDeliveryOrderController extends GetxController{
   //**************************************************API
 
   apiViewDeliveryOrder(docno,mode){
-   futureform = ApiCall().apiViewDeliveryOrder(docno,mode);
+   futureform = ApiCall().apiViewDeliveryOrder(docno,mode,frDocType.value);
     futureform.then((value) => apiViewDeliveryOrderRes(value));
   }
   apiViewDeliveryOrderRes(value){
@@ -2267,6 +2412,8 @@ class HmDeliveryOrderController extends GetxController{
     if(g.fnValCheck(value)){
       bookingList.value=[];
       fnFillBookingDetails(value);
+      dprint("<<<<<<<<<<Calll  payment............>>>>>>>>>>");
+      fnPaymntCalc();
     }
 
   }
